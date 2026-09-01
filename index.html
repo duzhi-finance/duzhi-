@@ -1,0 +1,2999 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>duzhi｜專業財務管理平台</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --pink:#C9938A; --soft-pink:#E8C4BC; --light-pink:#F5E6E3;
+  --blue:#7A9BAD; --soft-blue:#B8CFDA; --light-blue:#E3EDF3;
+  --sage:#9AAE9B; --light-sage:#E8F0E8;
+  --cream:#FAF3EE; --bg:#FAFAF8; --dark:#37352F; --medium:#5A5248; --gray:#9B9A97;
+  --gold:#C9A66B; --light-gold:#F3EBDB;
+  --radius-lg:24px; --radius-md:16px; --radius-sm:10px;
+  --shadow: 0 2px 12px rgba(55,53,47,0.06), 0 1px 2px rgba(55,53,47,0.04);
+  --shadow-hover: 0 8px 24px rgba(55,53,47,0.1);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%;}
+body{
+  font-family:'Noto Sans TC', sans-serif;
+  background:var(--bg);
+  color:var(--dark);
+  -webkit-font-smoothing:antialiased;
+  padding-bottom:170px;
+}
+button, input, select, textarea{font-family:inherit; font-size:inherit; color:inherit;}
+button{cursor:pointer; border:none; background:none;}
+a{color:inherit; text-decoration:none;}
+::selection{background:var(--soft-pink); color:var(--dark);}
+
+/* ---------- Layout shell ---------- */
+.app-shell{display:flex; min-height:100%;}
+.sidenav{
+  display:none;
+  width:220px; flex-shrink:0;
+  background:var(--cream);
+  border-right:1px solid rgba(55,53,47,0.06);
+  padding:28px 16px;
+  position:sticky; top:0; height:100vh;
+}
+.sidenav .brand{font-size:20px; font-weight:900; margin-bottom:4px;}
+.sidenav .brand-sub{font-size:12px; color:var(--gray); margin-bottom:28px;}
+.sidenav .nav-item{
+  display:flex; align-items:center; gap:10px;
+  padding:12px 14px; border-radius:var(--radius-sm);
+  font-weight:700; font-size:14px; color:var(--medium);
+  margin-bottom:4px;
+}
+.sidenav .nav-item .ic{font-size:18px;}
+.sidenav .nav-item .nav-text{display:flex; flex-direction:column; line-height:1.3;}
+.sidenav .nav-item .nav-text .en{font-size:9px; color:var(--gray); font-weight:500; letter-spacing:.02em;}
+.sidenav .nav-item.active{background:#fff; color:var(--dark); box-shadow:var(--shadow);}
+.main-col{flex:1; min-width:0;}
+
+.topbar{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:20px 20px 8px;
+  max-width:720px; margin:0 auto;
+}
+.topbar .greeting{font-size:22px; font-weight:900;}
+.topbar .date{font-size:12px; color:var(--gray); margin-top:2px;}
+.topbar .avatar{
+  width:40px; height:40px; border-radius:50%;
+  background:linear-gradient(135deg, var(--soft-pink), var(--soft-blue));
+  display:flex; align-items:center; justify-content:center; font-size:18px;
+}
+
+main{max-width:720px; margin:0 auto; padding:8px 20px 20px;}
+.page{display:none; animation:fadein .25s ease;}
+.page.active{display:block;}
+@keyframes fadein{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
+
+/* ---------- Cards ---------- */
+.card{
+  background:#fff;
+  border-radius:var(--radius-lg);
+  padding:20px;
+  box-shadow:var(--shadow);
+  margin-bottom:14px;
+}
+.card-title{font-size:13px; font-weight:700; color:var(--medium); margin-bottom:10px; display:flex; align-items:center; gap:6px;}
+.section-label{font-size:12px; font-weight:700; color:var(--gray); letter-spacing:.04em; margin:22px 0 10px; padding-left:2px;}
+
+/* Hero balance card */
+.hero-card{
+  background:linear-gradient(135deg, var(--light-pink) 0%, var(--light-blue) 100%);
+  border-radius:var(--radius-lg);
+  padding:26px 22px;
+  margin-bottom:16px;
+  position:relative;
+  overflow:hidden;
+}
+.hero-card .label{font-size:13px; font-weight:700; color:var(--medium); opacity:.85;}
+.en-label{font-size:9px; font-weight:600; opacity:.65; display:block;}
+.hero-sub .pill .t .en-label{display:inline; font-size:8.5px; opacity:.6;}
+.hero-card .amount{font-size:40px; font-weight:900; margin-top:4px; letter-spacing:-.01em;}
+.hero-card .amount .cur{font-size:20px; font-weight:700; margin-right:2px; opacity:.7;}
+.hero-sub{display:flex; gap:10px; margin-top:16px;}
+.hero-sub .pill{
+  flex:1; background:rgba(255,255,255,.55); border-radius:var(--radius-sm);
+  padding:10px 12px;
+}
+.hero-sub .pill .t{font-size:11px; color:var(--medium); font-weight:700;}
+.hero-sub .pill .v{font-size:17px; font-weight:900; margin-top:2px;}
+.hero-doodle{position:absolute; right:-10px; bottom:-14px; font-size:70px; opacity:.15; transform:rotate(-8deg);}
+
+/* Stat grid (four numbers) */
+.stat-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:6px;}
+.stat-card{background:#fff; border-radius:var(--radius-md); padding:16px; box-shadow:var(--shadow);}
+.stat-card .t{font-size:12px; font-weight:700; color:var(--gray);}
+.stat-card .v{font-size:22px; font-weight:900; margin-top:4px;}
+.stat-card.income .v{color:var(--sage);}
+.stat-card.expense .v{color:var(--pink);}
+
+/* Category bars */
+.cat-row{display:flex; align-items:center; gap:10px; padding:9px 0;}
+.cat-row .ic{
+  width:34px; height:34px; border-radius:10px; display:flex; align-items:center; justify-content:center;
+  font-size:16px; flex-shrink:0;
+}
+.cat-row .info{flex:1; min-width:0;}
+.cat-row .name{font-size:13px; font-weight:700;}
+.cat-row .bar-track{height:6px; border-radius:4px; background:var(--light-pink); margin-top:5px; overflow:hidden;}
+.cat-row .bar-fill{height:100%; border-radius:4px;}
+.cat-row .amt{font-size:13px; font-weight:900; flex-shrink:0; padding-left:8px;}
+
+/* Donut */
+.donut-wrap{display:flex; align-items:center; gap:18px;}
+.donut{width:110px; height:110px; border-radius:50%; flex-shrink:0;}
+.donut-legend{flex:1; display:flex; flex-direction:column; gap:6px;}
+.legend-item{display:flex; align-items:center; gap:7px; font-size:12px; font-weight:700; color:var(--medium);}
+.legend-dot{width:9px; height:9px; border-radius:50%; flex-shrink:0;}
+
+/* Anomaly / alert banner */
+.alert-card{
+  background:var(--light-gold); border-radius:var(--radius-md); padding:14px 16px;
+  display:flex; gap:10px; align-items:flex-start; margin-bottom:10px;
+}
+.alert-card .ic{font-size:18px;}
+.alert-card .txt{font-size:13px; font-weight:700; color:var(--medium); line-height:1.5;}
+
+/* Buttons */
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:6px;
+  padding:12px 18px; border-radius:100px; font-weight:700; font-size:14px;
+}
+.btn-primary{background:var(--pink); color:#fff;}
+.btn-primary:active{opacity:.85;}
+.btn-soft{background:var(--light-pink); color:var(--dark);}
+.btn-outline{background:#fff; border:1.5px solid var(--light-pink); color:var(--medium);}
+.btn-block{width:100%;}
+.btn-sm{padding:8px 14px; font-size:12px; border-radius:100px;}
+.btn-ghost{background:transparent; color:var(--gray); font-weight:700; font-size:13px;}
+.btn-danger{color:var(--pink);}
+
+/* FAB */
+.fab{
+  position:fixed; right:20px; bottom:92px; z-index:40;
+  width:58px; height:58px; border-radius:50%;
+  background:var(--pink); color:#fff; font-size:28px; font-weight:400;
+  box-shadow:0 8px 20px rgba(201,147,138,0.45);
+  display:flex; align-items:center; justify-content:center;
+}
+@media(min-width:860px){ .fab{bottom:32px; right:calc((100vw - 720px)/2 + 0px);} }
+
+/* Bottom nav (mobile) */
+.bottomnav{
+  position:fixed; left:0; right:0; bottom:0; z-index:30;
+  background:#fff; border-top:1px solid rgba(55,53,47,0.07);
+  display:flex; padding:8px 6px calc(8px + env(safe-area-inset-bottom));
+}
+.bottomnav .nav-item{
+  flex:1; display:flex; flex-direction:column; align-items:center; gap:3px;
+  padding:6px 0; border-radius:12px; color:var(--gray); font-size:10.5px; font-weight:700;
+}
+.bottomnav .nav-item .ic{font-size:19px;}
+.bottomnav .nav-item .en{display:block; font-size:8.5px; font-weight:500; opacity:.7;}
+.bottomnav .nav-item.active{color:var(--pink);}
+
+@media(min-width:860px){
+  .sidenav{display:block;}
+  .bottomnav{display:none;}
+  body{padding-bottom:0;}
+}
+
+/* ---------- List page ---------- */
+.search-bar{
+  display:flex; align-items:center; gap:8px; background:#fff; border-radius:100px;
+  padding:11px 16px; box-shadow:var(--shadow); margin-bottom:12px;
+}
+.search-bar input{flex:1; border:none; outline:none; background:transparent; font-size:14px;}
+.filter-row{display:flex; gap:8px; overflow-x:auto; padding-bottom:6px; margin-bottom:12px; scrollbar-width:none;}
+.filter-row::-webkit-scrollbar{display:none;}
+.chip{
+  flex-shrink:0; padding:8px 14px; border-radius:100px; font-size:12px; font-weight:700;
+  background:#fff; color:var(--medium); box-shadow:var(--shadow); white-space:nowrap;
+}
+.chip.active{background:var(--dark); color:#fff;}
+
+.tx-group-label{font-size:12px; font-weight:700; color:var(--gray); margin:16px 0 8px;}
+.tx-item{
+  display:flex; align-items:center; gap:12px; background:#fff; border-radius:var(--radius-md);
+  padding:13px 14px; margin-bottom:8px; box-shadow:var(--shadow);
+}
+.tx-item .ic{
+  width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center; font-size:17px; flex-shrink:0;
+}
+.tx-item .mid{flex:1; min-width:0;}
+.tx-item .item-name{font-size:14px; font-weight:700; display:flex; align-items:center; gap:6px;}
+.tx-item .meta{font-size:11.5px; color:var(--gray); margin-top:2px; display:flex; gap:6px; flex-wrap:wrap;}
+.tx-item .tag{background:var(--light-blue); color:var(--blue); padding:1px 7px; border-radius:100px; font-size:10px; font-weight:700;}
+.tx-item .badge{background:var(--light-gold); color:#8a6d2f; padding:1px 7px; border-radius:100px; font-size:10px; font-weight:700;}
+.tx-item .amt{font-size:15px; font-weight:900; flex-shrink:0;}
+.tx-item .amt.income{color:var(--sage);}
+.tx-item .amt.expense{color:var(--dark);}
+.empty-state{text-align:center; padding:60px 20px; color:var(--gray);}
+.empty-state .ic{font-size:40px; margin-bottom:10px;}
+.empty-state .t{font-size:13px; font-weight:700;}
+
+/* ---------- Modal ---------- */
+.modal-overlay{
+  position:fixed; inset:0; background:rgba(55,53,47,0.35); z-index:100;
+  display:none; align-items:flex-end; justify-content:center;
+}
+.modal-overlay.open{display:flex;}
+@media(min-width:860px){ .modal-overlay{align-items:center;} }
+.modal-sheet{
+  background:var(--bg); width:100%; max-width:520px; max-height:88vh; overflow-y:auto;
+  border-radius:26px 26px 0 0; padding:22px 20px calc(24px + env(safe-area-inset-bottom));
+}
+@media(min-width:860px){ .modal-sheet{border-radius:26px; max-height:82vh;} }
+.modal-header{display:flex; align-items:center; justify-content:space-between; margin-bottom:18px;}
+.modal-header h3{font-size:18px; font-weight:900;}
+.modal-close{width:32px; height:32px; border-radius:50%; background:var(--light-pink); font-size:16px; display:flex; align-items:center; justify-content:center; color:var(--medium);}
+
+.field{margin-bottom:14px;}
+.field label{display:block; font-size:12px; font-weight:700; color:var(--medium); margin-bottom:6px;}
+.field input, .field select, .field textarea{
+  width:100%; padding:12px 14px; border-radius:var(--radius-sm); border:1.5px solid var(--light-pink);
+  background:#fff; outline:none;
+}
+.field input:focus, .field select:focus, .field textarea:focus{border-color:var(--pink);}
+.field .hint{font-size:11px; color:var(--sage); margin-top:5px; font-weight:700;}
+.type-toggle{display:flex; gap:8px;}
+.type-toggle button{flex:1; padding:11px; border-radius:var(--radius-sm); border:1.5px solid var(--light-pink); font-weight:700; font-size:13px; color:var(--medium); background:#fff;}
+.type-toggle button.active.expense{background:var(--pink); color:#fff; border-color:var(--pink);}
+.type-toggle button.active.income{background:var(--sage); color:#fff; border-color:var(--sage);}
+
+/* Redesigned amount hero + polished modal sections */
+.amount-hero{background:linear-gradient(135deg, var(--light-pink), var(--light-blue)); border-radius:20px; padding:22px 20px 18px; text-align:center; margin:14px 0 16px;}
+.amount-hero .cur-prefix{font-size:15px; font-weight:700; color:var(--medium); vertical-align:middle;}
+.amount-hero input{background:transparent; border:none; text-align:center; font-size:38px; font-weight:900; color:var(--dark); width:100%; outline:none; padding:0;}
+.amount-hero input::placeholder{color:var(--pink); opacity:.4;}
+.currency-chip-row{display:flex; gap:6px; justify-content:center; margin-top:12px; flex-wrap:wrap;}
+.currency-chip{padding:6px 13px; border-radius:100px; font-size:11px; font-weight:700; background:rgba(255,255,255,.65); color:var(--medium); cursor:pointer;}
+.currency-chip.active{background:var(--dark); color:#fff;}
+.modal-section-label{font-size:11px; font-weight:700; color:var(--gray); letter-spacing:.05em; margin:20px 0 10px; display:flex; align-items:center; gap:6px;}
+.switch-row{display:flex; align-items:center; justify-content:space-between; padding:13px 14px; background:var(--cream); border-radius:var(--radius-md); margin-bottom:10px;}
+.switch-row .lbl{font-size:13px; font-weight:700;}
+.switch{position:relative; width:42px; height:24px; flex-shrink:0;}
+.switch input{opacity:0; width:0; height:0; position:absolute;}
+.switch .slider{position:absolute; inset:0; background:var(--soft-pink); border-radius:100px; transition:.2s; cursor:pointer;}
+.switch .slider:before{content:''; position:absolute; width:18px; height:18px; left:3px; top:3px; background:#fff; border-radius:50%; transition:.2s; box-shadow:0 1px 3px rgba(0,0,0,0.15);}
+.switch input:checked + .slider{background:var(--pink);}
+.switch input:checked + .slider:before{transform:translateX(18px);}
+.switch-panel{background:var(--cream); border-radius:0 0 var(--radius-md) var(--radius-md); margin:-10px 0 10px; padding:2px 14px 14px;}
+.period-chip-row{display:flex; gap:6px; flex-wrap:wrap;}
+.period-chip{padding:8px 15px; border-radius:100px; font-size:12.5px; font-weight:700; background:#fff; color:var(--medium); cursor:pointer; border:1.5px solid var(--light-pink);}
+.period-chip.active{background:var(--pink); color:#fff; border-color:var(--pink);}
+.cat-picker{display:grid; grid-template-columns:repeat(4,1fr); gap:8px;}
+.cat-pick{
+  display:flex; flex-direction:column; align-items:center; gap:4px; padding:10px 4px;
+  border-radius:var(--radius-sm); border:1.5px solid var(--light-pink); background:#fff; font-size:11px; font-weight:700; color:var(--medium);
+}
+.cat-pick.active{border-color:var(--pink); background:var(--light-pink); color:var(--dark);}
+.cat-pick .ic{font-size:18px;}
+.field-row{display:flex; gap:10px;}
+.field-row .field{flex:1;}
+.tag-input-chips{display:flex; flex-wrap:wrap; gap:6px; margin-top:6px;}
+.tag-input-chips .tc{background:var(--light-blue); color:var(--blue); font-size:11px; font-weight:700; padding:5px 10px; border-radius:100px; display:flex; align-items:center; gap:5px;}
+
+/* ---------- Tools grid ---------- */
+.tool-pie-wrap{display:flex; justify-content:center; margin:14px 0 22px;}
+.tool-list{display:flex; flex-direction:column; gap:10px;}
+.tool-card{
+  display:flex; align-items:center; gap:14px; background:#fff; border-radius:var(--radius-lg); padding:16px; box-shadow:var(--shadow);
+}
+.tool-card .num{
+  width:32px; height:32px; border-radius:50%; background:var(--light-pink); color:var(--pink); font-weight:900; font-size:14px;
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+.tool-card .ic{font-size:24px; flex-shrink:0;}
+.tool-card .t{flex:1;}
+.tool-card .t .title{font-size:14.5px; font-weight:700; display:flex; align-items:center; gap:6px;}
+.tool-card .t .sub{font-size:11.5px; color:var(--gray); margin-top:2px;}
+.tool-card .t .en{font-size:9.5px; color:var(--gray); opacity:.75;}
+.pro-badge{background:var(--gold); color:#fff; font-size:9px; font-weight:900; padding:2px 7px; border-radius:100px; letter-spacing:.02em;}
+.family-badge{background:var(--blue); color:#fff; font-size:9px; font-weight:900; padding:2px 7px; border-radius:100px; letter-spacing:.02em;}
+.locked-state{text-align:center; padding:50px 24px; background:#fff; border-radius:var(--radius-lg); box-shadow:var(--shadow);}
+.locked-state .lock-ic{font-size:40px; margin-bottom:14px;}
+.locked-state h3{font-size:16px; font-weight:900;}
+.locked-state p{font-size:12.5px; color:var(--gray); margin-top:8px; line-height:1.7; max-width:280px; margin-left:auto; margin-right:auto;}
+.locked-state .btn{margin-top:18px;}
+.tool-card .arrow{color:var(--gray); font-size:16px;}
+
+.tool-page-head{display:flex; align-items:center; gap:10px; margin-bottom:16px;}
+.tool-page-head .back{width:34px; height:34px; border-radius:50%; background:#fff; box-shadow:var(--shadow); display:flex; align-items:center; justify-content:center; font-size:16px;}
+.tool-page-head h2{font-size:18px; font-weight:900;}
+.tool-page-head h2 .en-h2{font-size:10.5px; font-weight:700; color:var(--gray); vertical-align:middle; margin-left:4px;}
+.tool-page-head .sub{font-size:12px; color:var(--gray);}
+
+.result-hero{
+  text-align:center; padding:26px 16px; border-radius:var(--radius-lg);
+  background:linear-gradient(135deg, var(--light-sage), var(--light-blue)); margin-bottom:16px;
+}
+.result-hero .t{font-size:12.5px; font-weight:700; color:var(--medium);}
+.result-hero .v{font-size:32px; font-weight:900; margin-top:6px;}
+.result-hero .d{font-size:12px; color:var(--medium); margin-top:6px;}
+
+.rowline{display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--light-pink);}
+.rowline:last-child{border-bottom:none;}
+.rowline .l{font-size:13px; color:var(--medium); font-weight:700;}
+.rowline .r{font-size:14px; font-weight:900;}
+.add-row-btn{display:flex; align-items:center; gap:6px; font-size:12.5px; font-weight:700; color:var(--pink); padding:8px 0;}
+
+.progress-track{height:10px; background:var(--light-pink); border-radius:100px; overflow:hidden; margin-top:8px;}
+.progress-fill{height:100%; background:linear-gradient(90deg, var(--pink), var(--soft-pink)); border-radius:100px;}
+
+.policy-card{background:#fff; border-radius:var(--radius-md); padding:15px; box-shadow:var(--shadow); margin-bottom:10px;}
+.policy-card .top{display:flex; justify-content:space-between; align-items:flex-start;}
+.policy-card .name{font-size:14px; font-weight:900;}
+.policy-card .co{font-size:11.5px; color:var(--gray); margin-top:2px;}
+.policy-card .tag2{background:var(--light-blue); color:var(--blue); font-size:10.5px; font-weight:700; padding:3px 9px; border-radius:100px;}
+.policy-grid{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:10px; font-size:12px;}
+.policy-grid .k{color:var(--gray); font-weight:700;}
+.policy-grid .v{font-weight:900; margin-top:1px;}
+
+.checklist-grid{display:grid; grid-template-columns:1fr 1fr; gap:8px;}
+.check-item{
+  display:flex; align-items:center; gap:8px; background:#fff; border-radius:var(--radius-sm); padding:12px; box-shadow:var(--shadow);
+}
+.check-item input{width:18px; height:18px; accent-color:var(--sage);}
+.check-item .l{font-size:12.5px; font-weight:700; flex:1;}
+
+/* Goals / piggy bank */
+.goal-card{background:#fff; border-radius:var(--radius-lg); padding:18px; box-shadow:var(--shadow); margin-bottom:12px;}
+.goal-card .top{display:flex; justify-content:space-between; align-items:flex-start;}
+.goal-card .name{font-size:15px; font-weight:900; display:flex; align-items:center; gap:8px;}
+.goal-card .streak{font-size:11px; color:var(--gold); font-weight:700; margin-top:2px;}
+.goal-card .amounts{font-size:12px; color:var(--gray); margin-top:2px; font-weight:700;}
+.goal-body{display:flex; gap:16px; align-items:center; margin-top:12px;}
+.goal-house{width:70px; height:70px; flex-shrink:0; position:relative;}
+.goal-progress-wrap{flex:1;}
+.goal-pct{font-size:22px; font-weight:900;}
+.goal-actions{display:flex; gap:8px; margin-top:12px;}
+
+/* Investment / split rows */
+.invest-card{background:#fff; border-radius:var(--radius-md); padding:15px; box-shadow:var(--shadow); margin-bottom:10px;}
+.invest-card .top{display:flex; justify-content:space-between; align-items:flex-start;}
+.invest-card .name{font-size:14px; font-weight:900;}
+.invest-card .market{font-size:11px; color:var(--gray); margin-top:2px;}
+.invest-grid{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:10px; font-size:12px;}
+.invest-grid .k{color:var(--gray); font-weight:700;}
+.invest-grid .v{font-weight:900; margin-top:1px;}
+.gain-pos{color:var(--sage);} .gain-neg{color:var(--pink);}
+
+/* Settings */
+.settings-item{display:flex; align-items:center; justify-content:space-between; background:#fff; border-radius:var(--radius-md); padding:14px 16px; margin-bottom:8px; box-shadow:var(--shadow);}
+.settings-item .l{font-size:13.5px; font-weight:700;}
+.settings-item .r{font-size:12px; color:var(--gray); display:flex; align-items:center; gap:4px;}
+.mini-list-row{display:flex; align-items:center; justify-content:space-between; padding:9px 0; border-bottom:1px solid var(--light-pink);}
+.mini-list-row:last-child{border-bottom:none;}
+.mini-list-row .l{font-size:13px; font-weight:700;}
+.mini-list-row .r{font-size:12px; color:var(--gray);}
+.x-btn{color:var(--pink); font-size:12px; font-weight:900; padding:4px 8px;}
+
+.toast{
+  position:fixed; bottom:100px; left:50%; transform:translateX(-50%); z-index:200;
+  background:var(--dark); color:#fff; padding:11px 20px; border-radius:100px; font-size:13px; font-weight:700;
+  opacity:0; pointer-events:none; transition:opacity .25s, transform .25s;
+}
+.toast.show{opacity:1; transform:translateX(-50%) translateY(-6px);}
+
+.hand-divider{text-align:center; color:var(--soft-pink); font-size:12px; margin:18px 0;}
+
+/* ---------- Report / advisor elements ---------- */
+.report-cta{
+  display:flex; align-items:center; gap:14px; border-radius:var(--radius-lg); padding:18px;
+  background:linear-gradient(135deg, var(--dark) 0%, #4a453c 100%); color:#fff; margin-bottom:16px;
+  box-shadow:var(--shadow-hover);
+}
+.report-cta .ic{font-size:26px; flex-shrink:0;}
+.report-cta .t{flex:1;}
+.report-cta .t .title{font-size:14.5px; font-weight:900;}
+.report-cta .t .sub{font-size:11.5px; opacity:.75; margin-top:2px;}
+.report-cta .arrow{font-size:18px; opacity:.7;}
+
+.status-badge{display:inline-block; padding:3px 10px; border-radius:100px; font-size:11px; font-weight:700;}
+.status-good{background:var(--light-sage); color:#4f6b52;}
+.status-mid{background:var(--light-gold); color:#8a6d2f;}
+.status-bad{background:var(--light-pink); color:var(--pink);}
+
+.report-header{
+  border-radius:var(--radius-lg); padding:22px; margin-bottom:14px;
+  background:linear-gradient(135deg, var(--cream), var(--light-pink));
+}
+.report-header .brand-row{display:flex; align-items:center; justify-content:space-between;}
+.report-header .brand-row .logo{font-size:13px; font-weight:900; letter-spacing:.03em;}
+.report-header .brand-row .date{font-size:11px; color:var(--medium);}
+.report-header h2{font-size:20px; font-weight:900; margin-top:14px;}
+.report-header .p{font-size:12.5px; color:var(--medium); margin-top:4px;}
+
+.metric-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+.metric-card{background:#fff; border-radius:var(--radius-md); padding:15px; box-shadow:var(--shadow);}
+.metric-card .t{font-size:11.5px; font-weight:700; color:var(--gray);}
+.metric-card .v{font-size:21px; font-weight:900; margin-top:5px;}
+.metric-card .stat{margin-top:7px;}
+
+.advice-item{display:flex; gap:10px; padding:11px 0; border-bottom:1px solid var(--light-pink); align-items:flex-start;}
+.advice-item:last-child{border-bottom:none;}
+.advice-item .dot{width:6px; height:6px; border-radius:50%; background:var(--pink); margin-top:6px; flex-shrink:0;}
+.advice-item .txt{font-size:13px; color:var(--medium); line-height:1.6;}
+
+.mini-bar-chart{display:flex; align-items:flex-end; gap:8px; height:90px; margin-top:12px;}
+.mini-bar-chart .col{flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; height:100%; justify-content:flex-end;}
+.mini-bar-chart .bar{width:100%; border-radius:6px 6px 2px 2px; min-height:3px;}
+.mini-bar-chart .lbl{font-size:10px; color:var(--gray); font-weight:700;}
+
+@media print{
+  .bottomnav, .fab, .sidenav, .topbar, .report-print-hide{display:none !important;}
+  body{padding-bottom:0;}
+  main{max-width:100%; padding:0;}
+  .card, .metric-card, .report-header{box-shadow:none; border:1px solid #eee;}
+}
+
+/* ================================================================
+   LANDING / INTRO PAGE  (all rules prefixed lp- to avoid collisions)
+   ================================================================ */
+#landingPage{display:block; background:var(--bg); padding-bottom:0;}
+#appShell{display:none;}
+.lp-serif{font-family:'Noto Serif TC', serif;}
+.lp-wrap{max-width:1080px; margin:0 auto; padding:0 24px;}
+.lp-h1, .lp-h2{font-family:'Noto Serif TC', serif; font-weight:900; letter-spacing:-.01em; color:var(--dark);}
+.lp-eyebrow{font-size:12.5px; font-weight:700; letter-spacing:.14em; color:var(--pink); text-transform:uppercase;}
+
+.lp-nav{position:sticky; top:0; z-index:50; background:rgba(250,251,248,0.88); backdrop-filter:blur(10px); border-bottom:1px solid rgba(55,53,47,0.06);}
+.lp-nav-inner{display:flex; align-items:center; justify-content:space-between; padding:16px 24px; max-width:1080px; margin:0 auto;}
+.lp-logo{font-family:'Noto Serif TC', serif; font-weight:900; font-size:18px;}
+.lp-links{display:none; gap:30px; font-size:13.5px; font-weight:700; color:var(--medium);}
+.lp-nav-cta{background:var(--dark); color:#fff; padding:10px 20px; border-radius:100px; font-size:13px; font-weight:700;}
+@media(min-width:800px){ .lp-links{display:flex;} }
+
+.lp-hero{padding:64px 0 40px; position:relative;}
+.lp-hero-grid{display:grid; grid-template-columns:1fr; gap:44px; align-items:center;}
+@media(min-width:900px){ .lp-hero-grid{grid-template-columns:1.1fr .9fr;} }
+.lp-h1{font-size:34px; line-height:1.36; margin:16px 0 18px;}
+.lp-h1 .lp-accent{color:var(--pink);}
+@media(min-width:640px){ .lp-h1{font-size:44px;} }
+.lp-lead{font-size:15.5px; color:var(--medium); line-height:1.85; max-width:480px;}
+.lp-actions{display:flex; flex-wrap:wrap; gap:12px; margin-top:28px;}
+.lp-btn{display:inline-flex; align-items:center; gap:8px; padding:14px 26px; border-radius:100px; font-weight:700; font-size:14.5px; cursor:pointer; border:none;}
+.lp-btn-dark{background:var(--dark); color:#fff;}
+.lp-btn-outline{border:1.5px solid rgba(55,53,47,0.18); color:var(--dark); background:transparent;}
+.lp-trust{display:flex; gap:22px; margin-top:34px; flex-wrap:wrap;}
+.lp-trust .item{font-size:12px; color:var(--gray); font-weight:700;}
+.lp-trust .item b{display:block; font-size:20px; color:var(--dark); font-family:'Noto Serif TC', serif; font-weight:900;}
+
+.lp-mockup-stage{position:relative; display:flex; justify-content:center;}
+.lp-phone{width:250px; background:#fff; border-radius:32px; padding:14px; box-shadow:0 30px 60px rgba(55,53,47,0.18), 0 4px 14px rgba(55,53,47,0.08); transform:rotate(3deg); position:relative; z-index:2;}
+.lp-phone .lp-screen{background:var(--bg); border-radius:22px; padding:16px 14px 20px; min-height:400px;}
+.lp-phone .lp-hi{font-size:11px; color:var(--gray); font-weight:700;}
+.lp-phone .lp-greet{font-size:15px; font-weight:900; margin-top:2px;}
+.lp-phone .lp-hero-mini{margin-top:14px; border-radius:18px; padding:16px; background:linear-gradient(135deg, var(--light-pink), var(--light-blue));}
+.lp-phone .lp-hero-mini .l{font-size:10px; font-weight:700; color:var(--medium);}
+.lp-phone .lp-hero-mini .v{font-size:23px; font-weight:900; margin-top:2px;}
+.lp-phone .lp-pillrow{display:flex; gap:6px; margin-top:10px;}
+.lp-phone .lp-pillrow div{flex:1; background:rgba(255,255,255,.6); border-radius:9px; padding:7px; font-size:8.5px; font-weight:700; color:var(--medium);}
+.lp-phone .lp-pillrow div span{display:block; font-size:11px; font-weight:900; color:var(--dark); margin-top:1px;}
+.lp-phone .lp-mini-card{background:#fff; border-radius:16px; padding:12px; margin-top:10px; box-shadow:0 2px 10px rgba(55,53,47,0.05);}
+.lp-phone .lp-row{display:flex; align-items:center; gap:8px; padding:6px 0;}
+.lp-phone .lp-row .ic{width:22px; height:22px; border-radius:7px; display:flex; align-items:center; justify-content:center; font-size:11px;}
+.lp-phone .lp-row .bar{flex:1; height:5px; background:var(--light-pink); border-radius:4px; overflow:hidden;}
+.lp-phone .lp-row .bar i{display:block; height:100%; border-radius:4px;}
+.lp-float-card{position:absolute; z-index:3; background:#fff; border-radius:16px; padding:12px 14px; box-shadow:0 14px 30px rgba(55,53,47,0.14); font-size:11.5px; font-weight:700;}
+.lp-float-card.c1{top:8%; left:-4%; color:var(--sage);}
+.lp-float-card.c2{bottom:10%; right:-6%; color:var(--gold);}
+.lp-float-card .lbl{font-size:9.5px; color:var(--gray); font-weight:700;}
+.lp-blob{position:absolute; border-radius:50%; z-index:0; opacity:.5;}
+
+.lp-section{padding:70px 0;}
+.lp-section-head{max-width:600px; margin:0 auto 40px; text-align:center;}
+.lp-section-head .lp-h2{font-size:27px; margin-top:10px; line-height:1.45;}
+.lp-section-head p{color:var(--medium); font-size:14px; margin-top:12px; line-height:1.8;}
+
+.lp-philosophy{background:var(--dark); color:#fff;}
+.lp-philosophy .lp-wrap{display:grid; grid-template-columns:1fr; gap:34px;}
+@media(min-width:860px){ .lp-philosophy .lp-wrap{grid-template-columns:.8fr 1.2fr;} }
+.lp-philosophy .lp-eyebrow{color:var(--soft-pink);}
+.lp-philosophy .lp-h2{font-size:25px; color:#fff; margin-top:10px; line-height:1.55;}
+.lp-philosophy p{color:rgba(255,255,255,0.72); font-size:14.5px; line-height:2; margin-bottom:16px;}
+.lp-philosophy .lp-sign{font-family:'Noto Serif TC', serif; font-size:14.5px; margin-top:20px; color:var(--soft-pink);}
+
+.lp-compare{display:grid; grid-template-columns:1fr; gap:16px;}
+@media(min-width:760px){ .lp-compare{grid-template-columns:1fr 1fr;} }
+.lp-compare-card{border-radius:22px; padding:26px;}
+.lp-compare-card.bad{background:var(--light-pink);}
+.lp-compare-card.good{background:var(--light-sage);}
+.lp-compare-card .tag{font-size:12px; font-weight:900; letter-spacing:.05em;}
+.lp-compare-card.bad .tag{color:var(--pink);}
+.lp-compare-card.good .tag{color:#4f6b52;}
+.lp-compare-card ul{margin-top:16px; list-style:none;}
+.lp-compare-card li{font-size:13.5px; padding:9px 0; border-bottom:1px solid rgba(55,53,47,0.08);}
+.lp-compare-card li:last-child{border-bottom:none;}
+
+.lp-feat-grid{display:grid; grid-template-columns:1fr; gap:16px;}
+@media(min-width:700px){ .lp-feat-grid{grid-template-columns:1fr 1fr;} }
+@media(min-width:1000px){ .lp-feat-grid{grid-template-columns:1fr 1fr 1fr;} }
+.lp-feat-card{background:#fff; border-radius:22px; padding:26px; box-shadow:0 2px 14px rgba(55,53,47,0.05); border:1px solid rgba(55,53,47,0.05);}
+.lp-feat-card .num{font-family:'Noto Serif TC', serif; font-size:13px; color:var(--pink); font-weight:900;}
+.lp-feat-card .ic{font-size:24px; margin:14px 0 10px;}
+.lp-feat-card h3{font-size:16px; font-weight:900; font-family:'Noto Sans TC', sans-serif;}
+.lp-feat-card p{font-size:13px; color:var(--medium); margin-top:8px; line-height:1.75;}
+
+.lp-report-showcase{background:linear-gradient(135deg, var(--cream), var(--light-blue)); border-radius:32px; padding:44px 26px; text-align:center;}
+@media(min-width:760px){ .lp-report-showcase{padding:56px 60px;} }
+.lp-report-mini{max-width:420px; margin:30px auto 0; background:#fff; border-radius:24px; padding:22px; box-shadow:0 20px 50px rgba(55,53,47,0.12); text-align:left;}
+.lp-report-mini .head{display:flex; justify-content:space-between; font-size:10.5px; color:var(--gray); font-weight:700;}
+.lp-report-mini h4{font-size:15px; margin-top:8px; font-weight:900;}
+.lp-report-mini .grid4{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:14px;}
+.lp-report-mini .grid4 div{background:var(--bg); border-radius:12px; padding:10px;}
+.lp-report-mini .grid4 .l{font-size:10px; color:var(--gray); font-weight:700;}
+.lp-report-mini .grid4 .v{font-size:16px; font-weight:900; margin-top:2px;}
+.lp-report-mini .badge{display:inline-block; margin-top:4px; font-size:9px; font-weight:700; padding:2px 7px; border-radius:100px; background:var(--light-sage); color:#4f6b52;}
+
+.lp-audience-grid{display:grid; grid-template-columns:1fr; gap:14px;}
+@media(min-width:760px){ .lp-audience-grid{grid-template-columns:repeat(3,1fr);} }
+.lp-audience-card{text-align:center; padding:30px 20px;}
+.lp-audience-card .ic{font-size:32px;}
+.lp-audience-card h3{font-size:15px; font-weight:900; margin-top:12px;}
+.lp-audience-card p{font-size:12.5px; color:var(--medium); margin-top:8px; line-height:1.7;}
+
+.lp-pricing-grid{display:grid; grid-template-columns:1fr; gap:18px; max-width:900px; margin:0 auto;}
+@media(min-width:700px){ .lp-pricing-grid{grid-template-columns:1fr 1fr;} }
+@media(min-width:980px){ .lp-pricing-grid.lp-pricing-3{grid-template-columns:1fr 1fr 1fr; max-width:1040px;} }
+.lp-price-card{border-radius:26px; padding:32px; background:#fff; border:1.5px solid rgba(55,53,47,0.08); position:relative;}
+.lp-price-card.featured{background:var(--dark); color:#fff;}
+.lp-price-card .plan{font-size:13px; font-weight:900; letter-spacing:.04em; color:var(--pink);}
+.lp-price-card.featured .plan{color:var(--soft-pink);}
+.lp-price-card .price{font-family:'Noto Serif TC', serif; font-size:32px; font-weight:900; margin:12px 0 4px;}
+.lp-price-card .unit{font-size:12px; color:var(--gray); font-weight:700;}
+.lp-price-card.featured .unit{color:rgba(255,255,255,0.6);}
+.lp-price-card ul{margin-top:20px; list-style:none;}
+.lp-price-card li{font-size:13px; padding:8px 0;}
+.lp-price-card .badge-top{position:absolute; top:-12px; right:24px; background:var(--gold); color:#fff; font-size:11px; font-weight:700; padding:5px 14px; border-radius:100px;}
+.lp-price-card .lp-btn{width:100%; justify-content:center; margin-top:22px;}
+
+.lp-faq-item{border-bottom:1px solid rgba(55,53,47,0.1); padding:20px 0;}
+.lp-faq-item summary{font-size:14.5px; font-weight:700; cursor:pointer; list-style:none; display:flex; justify-content:space-between; align-items:center;}
+.lp-faq-item summary::-webkit-details-marker{display:none;}
+.lp-faq-item summary::after{content:'+'; font-size:20px; color:var(--pink); font-weight:400;}
+.lp-faq-item[open] summary::after{content:'–';}
+.lp-faq-item p{font-size:13px; color:var(--medium); margin-top:12px; line-height:1.8;}
+
+.lp-final-cta{background:linear-gradient(135deg, var(--pink), var(--gold)); border-radius:32px; padding:52px 26px; text-align:center; color:#fff;}
+.lp-final-cta .lp-h2{color:#fff; font-size:25px;}
+.lp-final-cta p{color:rgba(255,255,255,0.88); font-size:14px; margin:12px 0 24px;}
+.lp-final-cta .lp-btn-dark{background:#fff; color:var(--dark);}
+
+.lp-footer{padding:36px 0; text-align:center; color:var(--gray); font-size:12px;}
+
+.lp-reveal{opacity:0; transform:translateY(18px); transition:opacity .7s ease, transform .7s ease;}
+.lp-reveal.show{opacity:1; transform:translateY(0);}
+</style>
+</head>
+<body>
+
+<!-- ================================================================
+     LANDING / INTRODUCTION PAGE
+     ================================================================ -->
+<div id="landingPage">
+
+<nav class="lp-nav">
+  <div class="lp-nav-inner">
+    <div class="lp-logo">duzhi</div>
+    <div class="lp-links">
+      <a href="#lp-philosophy">理念</a>
+      <a href="#lp-features">核心功能</a>
+      <a href="#lp-report">健診報告</a>
+      <a href="#lp-pricing">方案</a>
+      <a href="#lp-faq">常見問題</a>
+    </div>
+    <button class="lp-nav-cta" onclick="enterApp()">開始使用</button>
+  </div>
+</nav>
+
+<header class="lp-hero">
+  <div class="lp-wrap">
+    <div class="lp-hero-grid">
+      <div>
+        <div class="lp-eyebrow">專業財務管理平台</div>
+        <h1 class="lp-h1">讓專業判斷，<br>建立在<span class="lp-accent">看得見的事實</span>上</h1>
+        <p class="lp-lead">duzhi 是一套讓使用者自主記錄財務、並自動生成專業健診報告的系統。不需安裝、不需教學，開啟即可使用，讓每一次專業建議都有數字支持。</p>
+        <div class="lp-actions">
+          <button class="lp-btn lp-btn-dark" onclick="enterApp()">開始使用系統 →</button>
+          <a href="#lp-features" class="lp-btn lp-btn-outline">了解核心功能</a>
+        </div>
+        <div class="lp-trust">
+          <div class="item"><b>9</b>大財務模組整合</div>
+          <div class="item"><b>1</b>頁式專業健診報告</div>
+          <div class="item"><b>0</b>安裝門檻・純網頁</div>
+        </div>
+      </div>
+
+      <div class="lp-mockup-stage">
+        <div class="lp-blob" style="width:280px; height:280px; background:var(--light-pink); top:-20px; right:20px;"></div>
+        <div class="lp-blob" style="width:200px; height:200px; background:var(--light-blue); bottom:-10px; left:0;"></div>
+        <div class="lp-float-card c1"><div class="lbl">本月已存</div>NT$ 12,400 ↑</div>
+        <div class="lp-float-card c2"><div class="lbl">保障覆蓋率</div>80% 良好</div>
+        <div class="lp-phone">
+          <div class="lp-screen">
+            <div class="lp-hi">哈囉 👋</div>
+            <div class="lp-greet">早安 ☀️</div>
+            <div class="lp-hero-mini">
+              <div class="l">目前可用</div>
+              <div class="v">NT$ 86,200</div>
+              <div class="lp-pillrow">
+                <div>本月收入<span>68,000</span></div>
+                <div>本月支出<span>41,300</span></div>
+                <div>本月已存<span>26,700</span></div>
+              </div>
+            </div>
+            <div class="lp-mini-card">
+              <div class="lp-row"><div class="ic" style="background:#C9938A22;">🍜</div><div class="bar"><i style="width:70%; background:var(--pink);"></i></div></div>
+              <div class="lp-row"><div class="ic" style="background:#7A9BAD22;">🚗</div><div class="bar"><i style="width:40%; background:var(--blue);"></i></div></div>
+              <div class="lp-row"><div class="ic" style="background:#9AAE9B22;">🏠</div><div class="bar"><i style="width:55%; background:var(--sage);"></i></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="lp-philosophy" id="lp-philosophy">
+  <div class="lp-wrap">
+    <div>
+      <div class="lp-eyebrow">我們的理念</div>
+      <h2 class="lp-h2">專業，<br>從看懂數字開始。</h2>
+    </div>
+    <div>
+      <p>多數建議之所以難以落地，往往不是因為專業不足，而是對當下情況的掌握，只停留在一次談話的印象裡。憑經驗判斷,終究難以取代真實的數字。</p>
+      <p>我們相信，真正讓人願意採納建議的，不是話術，而是一份清楚、屬於自己的財務全貌。當一個人能親眼看見資金流向與風險缺口，專業建議才有了落地的依據。</p>
+      <p>duzhi 因此而生：一套簡單到願意每天打開的記錄工具，加上一份專業到能直接呈現的健診報告，讓專業不只停留在語言，而能被看見、被信任。</p>
+      <div class="lp-sign">—— 獻給認真看待每一項財務判斷的人</div>
+    </div>
+  </div>
+</section>
+
+<section class="lp-section">
+  <div class="lp-wrap">
+    <div class="lp-section-head">
+      <div class="lp-eyebrow">為什麼需要 duzhi</div>
+      <h2 class="lp-h2">資料不完整，<br>建議就只能憑經驗</h2>
+    </div>
+    <div class="lp-compare lp-reveal">
+      <div class="lp-compare-card bad">
+        <div class="tag">✕ 常見的困境</div>
+        <ul>
+          <li>記錄工具太複雜，幾天後就被放棄</li>
+          <li>財務建議只能憑經驗估算大致的收支狀況</li>
+          <li>每次討論都要重新確認一次基本資料</li>
+          <li>想產出一份專業報告，得自己手動整理</li>
+        </ul>
+      </div>
+      <div class="lp-compare-card good">
+        <div class="tag">✓ duzhi 怎麼解決</div>
+        <ul>
+          <li>極簡輸入「午餐 120」自動歸類，容易持續使用</li>
+          <li>收支、資產、風險資料自動彙整成健診報告</li>
+          <li>資料一次記錄，隨時更新、隨時可調閱</li>
+          <li>一鍵生成專業報告，直接列印或匯出</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="lp-section" id="lp-features" style="background:var(--cream);">
+  <div class="lp-wrap">
+    <div class="lp-section-head">
+      <div class="lp-eyebrow">核心功能</div>
+      <h2 class="lp-h2">記錄、分析、決策，<br>一站完成的財務系統</h2>
+      <p>不只是記帳本，而是把建立財務全貌所需的每一個問題，變成可以自己填答的表單。</p>
+    </div>
+    <div class="lp-feat-grid lp-reveal">
+      <div class="lp-feat-card"><div class="num">01</div><div class="ic">🧾</div><h3>收支記錄</h3><p>手動輸入或掃描發票快速入帳，支援多帳戶、多張信用卡與電子票證管理，一次整合個人總資產。</p></div>
+      <div class="lp-feat-card"><div class="num">02</div><div class="ic">📈</div><h3>圖表分析</h3><p>自動生成每月收支圓餅圖、長條圖與消費類別占比，趨勢一眼看懂。</p></div>
+      <div class="lp-feat-card"><div class="num">03</div><div class="ic">🔔</div><h3>預算控制</h3><p>設定每月與各類別花費上限，超過額度即時提醒，避免月底才發現超支。</p></div>
+      <div class="lp-feat-card"><div class="num">04</div><div class="ic">🤝</div><h3>多人共用</h3><p>支援家庭或情侶共同記帳，自動計算每人分攤金額與應收應付結餘。</p></div>
+      <div class="lp-feat-card"><div class="num">05</div><div class="ic">📊</div><h3>投資理財</h3><p>追蹤台股、美股、加密貨幣等資產漲跌，損益一目了然，納入整體淨資產計算。</p></div>
+      <div class="lp-feat-card"><div class="num">06</div><div class="ic">🧯</div><h3>緊急預備金</h3><p>依平均支出自動抓算建議準備金額，設定目標月數並追蹤累積進度。</p></div>
+      <div class="lp-feat-card"><div class="num">07</div><div class="ic">🏠</div><h3>存錢罐</h3><p>許願想買的球鞋、3C 產品，甚至頭期款，每天存入一筆，看著小房子一磚一瓦蓋起來。</p></div>
+      <div class="lp-feat-card"><div class="num">08</div><div class="ic">💱</div><h3>外幣換算</h3><p>設定匯率即可自動換算外幣消費金額，出國或跨境消費也能統一記錄。</p></div>
+      <div class="lp-feat-card"><div class="num">09</div><div class="ic">🗓️</div><h3>週報／月報／年報</h3><p>財務健診報告可依週、月、年彈性切換週期，短期波動與長期趨勢都掌握得到。</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="lp-section">
+  <div class="lp-wrap">
+    <div class="lp-section-head">
+      <div class="lp-eyebrow">五大財務規劃視角</div>
+      <h2 class="lp-h2">從記錄，走向真正的規劃</h2>
+      <p>記帳只是起點，這五個視角，才是讓數字變成判斷依據的關鍵。</p>
+    </div>
+    <div class="lp-feat-grid lp-reveal">
+      <div class="lp-feat-card"><div class="num">A</div><div class="ic">🔍</div><h3>一生所需資金總覽</h3><p>從理想生活推算一生總花費，對照現階段財務，讓規劃有具體數字支持。</p></div>
+      <div class="lp-feat-card"><div class="num">B</div><div class="ic">🧮</div><h3>財務自由測算</h3><p>輸入投入資金與預期報酬率，換算達成財務自由所需的時間。</p></div>
+      <div class="lp-feat-card"><div class="num">C</div><div class="ic">💻</div><h3>資產負債總表</h3><p>釐清現階段的身價，資產與負債一目了然，投資部位也自動併入計算。</p></div>
+      <div class="lp-feat-card"><div class="num">D</div><div class="ic">📋</div><h3>收支結構分析</h3><p>自動拆分必要與非必要開銷，清楚看懂資金可以如何調整。</p></div>
+      <div class="lp-feat-card"><div class="num">E</div><div class="ic">🛡️</div><h3>保障配置檢視</h3><p>盤點所有風險保障項目，用清單式檢核找出缺口。</p></div>
+      <div class="lp-feat-card"><div class="num">F</div><div class="ic">📊</div><h3>專業財務健診報告</h3><p>彙整以上所有資料，依週報、月報或年報彈性生成一頁式報告，附上建議語句，直接列印呈現。</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="lp-section" id="lp-report">
+  <div class="lp-wrap">
+    <div class="lp-report-showcase lp-reveal">
+      <div class="lp-eyebrow">讓專業「看得見」</div>
+      <h2 class="lp-h2" style="margin-top:10px;">一份禁得起細看的報告</h2>
+      <p style="color:var(--medium); font-size:14px; margin-top:12px; max-width:480px; margin-left:auto; margin-right:auto;">系統依記錄的收支、資產與保障資料，自動計算儲蓄率、緊急預備金、負債比率與保障覆蓋率，並生成對應的建議方向。</p>
+      <div class="lp-report-mini">
+        <div class="head"><span>duzhi｜財務健診</span><span>2026 年 8 月</span></div>
+        <h4>財務健診報告・範例</h4>
+        <div class="grid4">
+          <div><div class="l">儲蓄率</div><div class="v">24%</div><span class="badge">良好</span></div>
+          <div><div class="l">緊急預備金</div><div class="v">4.2 個月</div><span class="badge" style="background:var(--light-gold); color:#8a6d2f;">注意</span></div>
+          <div><div class="l">負債比率</div><div class="v">18%</div><span class="badge">良好</span></div>
+          <div><div class="l">保障覆蓋率</div><div class="v">60%</div><span class="badge" style="background:var(--light-gold); color:#8a6d2f;">注意</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="lp-section" style="background:var(--cream);">
+  <div class="lp-wrap">
+    <div class="lp-section-head">
+      <div class="lp-eyebrow">適合的使用情境</div>
+      <h2 class="lp-h2">不只是工具，<br>更是專業形象的延伸</h2>
+    </div>
+    <div class="lp-audience-grid lp-reveal">
+      <div class="lp-audience-card"><div class="ic">🧭</div><h3>獨立執業者</h3><p>用一份報告取代經驗判斷，讓每一次建議都有數字依據。</p></div>
+      <div class="lp-audience-card"><div class="ic">🏢</div><h3>團隊與事務所</h3><p>提供團隊一致的工具與流程，塑造專業一致的形象。</p></div>
+      <div class="lp-audience-card"><div class="ic">📈</div><h3>長期自我追蹤</h3><p>建立穩定的記錄習慣，累積長期資產配置的判斷依據。</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="lp-section" id="lp-pricing">
+  <div class="lp-wrap">
+    <div class="lp-section-head">
+      <div class="lp-eyebrow">方案價格</div>
+      <h2 class="lp-h2">把工具準備好，<br>讓下一次判斷更有底氣</h2>
+    </div>
+    <div class="lp-pricing-grid lp-pricing-3 lp-reveal">
+      <div class="lp-price-card">
+        <div class="plan">免費版</div>
+        <div class="price">NT$0</div>
+        <div class="unit">永久免費・單一裝置</div>
+        <ul>
+          <li>✓ 記帳、預算控制、圖表分析</li>
+          <li>✓ 五大規劃工具（基本額度）</li>
+          <li>✓ 匯出／匯入備份</li>
+          <li>✕ 財務健診報告</li>
+          <li>✕ 存錢罐、投資理財、多人分帳</li>
+        </ul>
+        <button class="lp-btn lp-btn-outline" onclick="enterApp()">立即免費使用</button>
+      </div>
+      <div class="lp-price-card featured">
+        <div class="badge-top">最多人選擇</div>
+        <div class="plan">專業版</div>
+        <div class="price">NT$149<span style="font-size:14px; font-weight:700;">／月</span></div>
+        <div class="unit">或 NT$1,290／年（省 28%）</div>
+        <ul>
+          <li>✓ 免費版所有功能</li>
+          <li>✓ 財務健診報告無限生成（週／月／年報）</li>
+          <li>✓ 存錢罐、投資理財、緊急預備金追蹤</li>
+          <li>✓ 外幣即時換算</li>
+          <li>✓ 優先客服支援</li>
+        </ul>
+        <button class="lp-btn lp-btn-dark" onclick="enterApp()">開始 7 天免費試用</button>
+      </div>
+      <div class="lp-price-card">
+        <div class="plan">家庭 / 團隊版</div>
+        <div class="price">NT$349<span style="font-size:14px; font-weight:700;">／月起</span></div>
+        <div class="unit">依成員／席位數彈性報價</div>
+        <ul>
+          <li>✓ 專業版所有功能</li>
+          <li>✓ 多人分帳與共同記帳</li>
+          <li>✓ 品牌客製（Logo／配色）</li>
+          <li>✓ 專屬導入教學與教材</li>
+        </ul>
+        <button class="lp-btn lp-btn-outline" onclick="enterApp()">預約導入諮詢</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="lp-section" id="lp-faq" style="background:var(--cream);">
+  <div class="lp-wrap" style="max-width:720px;">
+    <div class="lp-section-head">
+      <div class="lp-eyebrow">常見問題</div>
+      <h2 class="lp-h2">使用前，你可能想先知道</h2>
+    </div>
+    <div class="lp-reveal">
+      <details class="lp-faq-item" open>
+        <summary>需要下載 App 或註冊帳號嗎？</summary>
+        <p>不需要。duzhi 是純網頁系統，開啟即可使用。資料僅儲存在您目前使用的裝置與瀏覽器中，換裝置、清除瀏覽器資料或重灌手機都會遺失，請於設定頁使用「匯出備份」功能定期備份，換裝置時再以「匯入備份」還原資料。</p>
+      </details>
+      <details class="lp-faq-item">
+        <summary>支援哪些支付方式與電子票證？</summary>
+        <p>記帳時可選擇銀行帳戶、現金、信用卡、LINE Pay、街口支付、Apple Pay、PayPal、全支付，以及悠遊卡、一卡通、iCash 等電子票證。銀行與載具的即時自動同步為後續規劃功能，目前刷卡／感應消費請手動輸入一筆，系統會自動協助分類與統計。</p>
+      </details>
+      <details class="lp-faq-item">
+        <summary>可以記錄外幣消費嗎？</summary>
+        <p>可以，在設定頁輸入目前匯率，記帳時選擇幣別，系統會自動換算為新台幣金額並計入統計；匯率需手動更新，即時連結銀行匯率為後續規劃功能。</p>
+      </details>
+      <details class="lp-faq-item">
+        <summary>健診報告的建議是自動產生的嗎？可以直接使用嗎？</summary>
+        <p>報告中的指標（儲蓄率、緊急預備金、負債比、保障覆蓋率）皆依輸入資料自動計算，可切換週報、月報、年報檢視不同週期；建議語句為系統依數字狀態產生的提醒方向，仍建議親自檢視後再進一步說明，報告僅供財務規劃參考。</p>
+      </details>
+      <details class="lp-faq-item">
+        <summary>多人分帳的資料是即時同步的嗎？</summary>
+        <p>目前分帳功能是在同一份資料中記錄每筆支出的付款人與分攤成員，自動算出彼此的應收應付；多裝置即時同步為後續規劃功能，目前可透過匯出／匯入備份手動同步。</p>
+      </details>
+      <details class="lp-faq-item">
+        <summary>家庭 / 團隊版可以客製化品牌嗎？</summary>
+        <p>可以，家庭 / 團隊版提供 Logo、主色調客製，讓系統成為你專屬的品牌延伸。</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section class="lp-section">
+  <div class="lp-wrap">
+    <div class="lp-final-cta lp-reveal">
+      <h2 class="lp-h2">讓每一次判斷，<br>都從一份看得懂的報告開始</h2>
+      <p>不需要說服對方相信專業，讓數字自己說話。</p>
+      <button class="lp-btn lp-btn-dark" onclick="enterApp()">開始使用系統 →</button>
+    </div>
+  </div>
+</section>
+
+<footer class="lp-footer">
+  <div class="lp-wrap">duzhi｜專業財務管理平台</div>
+</footer>
+
+</div>
+<!-- ============ END LANDING PAGE ============ -->
+
+<div class="app-shell" id="appShell">
+
+  <!-- Desktop side nav -->
+  <nav class="sidenav" id="sidenav">
+    <div class="brand">duzhi</div>
+    <div class="brand-sub">專業財務管理平台 · Personal Finance Platform</div>
+    <div class="nav-item" data-page="dashboard"><span class="ic">🏠</span><span class="nav-text">首頁<span class="en">Home</span></span></div>
+    <div class="nav-item" data-page="list"><span class="ic">🧾</span><span class="nav-text">記帳明細<span class="en">Ledger</span></span></div>
+    <div class="nav-item" data-page="tools"><span class="ic">🧭</span><span class="nav-text">財務工具<span class="en">Tools</span></span></div>
+    <div class="nav-item" data-page="settings"><span class="ic">⚙️</span><span class="nav-text">設定<span class="en">Settings</span></span></div>
+    <div class="nav-item" onclick="backToIntro()" style="margin-top:20px; color:var(--gray);"><span class="ic">←</span><span class="nav-text">返回介紹頁<span class="en">Back to Intro</span></span></div>
+  </nav>
+
+  <div class="main-col">
+    <header class="topbar">
+      <div>
+        <div class="greeting" id="greetingText">哈囉 👋</div>
+        <div class="date" id="todayDate"></div>
+      </div>
+      <div class="avatar">💰</div>
+    </header>
+
+    <main>
+      <!-- ================= DASHBOARD ================= -->
+      <section class="page active" id="page-dashboard">
+        <div class="hero-card">
+          <div class="hero-doodle">🐷</div>
+          <div class="label">目前可用 <span class="en-label">Available Balance</span></div>
+          <div class="amount"><span class="cur">NT$</span><span id="dashAvailable">0</span></div>
+          <div class="hero-sub">
+            <div class="pill"><div class="t">本月收入 <span class="en-label">Income</span></div><div class="v" id="dashIncome">0</div></div>
+            <div class="pill"><div class="t">本月支出 <span class="en-label">Expense</span></div><div class="v" id="dashExpense">0</div></div>
+            <div class="pill"><div class="t">本月已存 <span class="en-label">Saved</span></div><div class="v" id="dashSaved">0</div></div>
+          </div>
+        </div>
+
+        <div id="anomalyArea"></div>
+
+        <div class="card">
+          <div class="card-title">🥧 本月花費分佈</div>
+          <div class="donut-wrap">
+            <div class="donut" id="dashDonut"></div>
+            <div class="donut-legend" id="dashLegend"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📂 分類明細</div>
+          <div id="dashCatRows"></div>
+        </div>
+
+        <div class="report-cta" onclick="goPage('tool-report')">
+          <div class="ic">📊</div>
+          <div class="t"><div class="title">查看我的財務健診報告 <span class="pro-badge">PRO</span></div><div class="sub">專屬顧問視角，一頁看懂財務體質 <span class="en">· Financial Report</span></div></div>
+          <div class="arrow">›</div>
+        </div>
+
+        <div class="hand-divider">✎ 記得每天記一筆，才不會亂花錢喔</div>
+      </section>
+
+      <!-- ================= LIST ================= -->
+      <section class="page" id="page-list">
+        <div class="search-bar">
+          <span>🔍</span>
+          <input type="text" id="searchInput" placeholder="搜尋項目、備註、標籤…">
+        </div>
+        <div class="filter-row" id="filterRow"></div>
+        <div id="txListArea"></div>
+      </section>
+
+      <!-- ================= TOOLS HUB ================= -->
+      <section class="page" id="page-tools">
+        <div class="report-cta" onclick="goPage('tool-report')">
+          <div class="ic">📊</div>
+          <div class="t"><div class="title">財務健診報告 <span class="pro-badge">PRO</span></div><div class="sub">彙整五大工具，生成專業總覽 <span class="en">· Financial Report</span></div></div>
+          <div class="arrow">›</div>
+        </div>
+        <div class="tool-pie-wrap">
+          <svg width="150" height="150" viewBox="0 0 150 150">
+            <circle cx="75" cy="75" r="60" fill="none" stroke="var(--light-pink)" stroke-width="30" stroke-dasharray="75.4 301.6" stroke-dashoffset="0" transform="rotate(-90 75 75)"/>
+            <circle cx="75" cy="75" r="60" fill="none" stroke="var(--soft-blue)" stroke-width="30" stroke-dasharray="60.3 301.6" stroke-dashoffset="-75.4" transform="rotate(-90 75 75)"/>
+            <circle cx="75" cy="75" r="60" fill="none" stroke="var(--blue)" stroke-width="30" stroke-dasharray="60.3 301.6" stroke-dashoffset="-135.7" transform="rotate(-90 75 75)"/>
+            <circle cx="75" cy="75" r="60" fill="none" stroke="var(--sage)" stroke-width="30" stroke-dasharray="60.3 301.6" stroke-dashoffset="-196" transform="rotate(-90 75 75)"/>
+            <circle cx="75" cy="75" r="60" fill="none" stroke="var(--soft-pink)" stroke-width="30" stroke-dasharray="45.2 301.6" stroke-dashoffset="-256.3" transform="rotate(-90 75 75)"/>
+          </svg>
+        </div>
+        <div class="tool-list">
+          <div class="tool-card" onclick="goPage('tool-life')"><div class="num">1</div><div class="ic">🔍</div><div class="t"><div class="title">一生要花多少錢</div><div class="sub">理想生活 V.S 現階段財務 <span class="en">· Lifetime Cost</span></div></div><div class="arrow">›</div></div>
+          <div class="tool-card" onclick="goPage('tool-freedom')"><div class="num">2</div><div class="ic">🧮</div><div class="t"><div class="title">財務自由計算器</div><div class="sub">投入資金 V.S 報酬率 <span class="en">· Financial Freedom</span></div></div><div class="arrow">›</div></div>
+          <div class="tool-card" onclick="goPage('tool-balance')"><div class="num">3</div><div class="ic">💻</div><div class="t"><div class="title">資產負債表</div><div class="sub">釐清現階段的身價 <span class="en">· Balance Sheet</span></div></div><div class="arrow">›</div></div>
+          <div class="tool-card" onclick="goPage('tool-income')"><div class="num">4</div><div class="ic">📋</div><div class="t"><div class="title">收入支出總表</div><div class="sub">檢視每月必須及非必須開銷 <span class="en">· Income & Expense</span></div></div><div class="arrow">›</div></div>
+          <div class="tool-card" onclick="goPage('tool-policy')"><div class="num">5</div><div class="ic">🛡️</div><div class="t"><div class="title">保障配置檢視</div><div class="sub">盤點所有保障項目，補足缺口 <span class="en">· Coverage Review</span></div></div><div class="arrow">›</div></div>
+          <div class="tool-card" onclick="goPage('tool-analysis')"><div class="num">6</div><div class="ic">📈</div><div class="t"><div class="title">圖表分析</div><div class="sub">收支趨勢、類別占比一次看 <span class="en">· Chart Analysis</span></div></div><div class="arrow">›</div></div>
+          <div class="tool-card" onclick="goPage('tool-invest')"><div class="num">7</div><div class="ic">📊</div><div class="t"><div class="title">投資理財 <span class="pro-badge">PRO</span></div><div class="sub">追蹤股票、加密貨幣等資產 <span class="en">· Investments</span></div></div><div class="arrow">›</div></div>
+          <div class="tool-card" onclick="goPage('tool-goals')"><div class="num">8</div><div class="ic">🏠</div><div class="t"><div class="title">存錢罐 <span class="pro-badge">PRO</span></div><div class="sub">許願、存錢、蓋一棟屬於自己的房子 <span class="en">· Savings Goals</span></div></div><div class="arrow">›</div></div>
+          <div class="tool-card" onclick="goPage('tool-split')"><div class="num">9</div><div class="ic">🤝</div><div class="t"><div class="title">多人分帳 <span class="family-badge">FAMILY</span></div><div class="sub">家庭或情侶共同記帳與分攤 <span class="en">· Split Expenses</span></div></div><div class="arrow">›</div></div>
+        </div>
+      </section>
+
+      <!-- ===== Tool 1: Life cost ===== -->
+      <section class="page" id="page-tool-life">
+        <div class="tool-page-head"><div class="back" onclick="goPage('tools')">←</div><div><h2>一生要花多少錢 <span class="en-h2">Lifetime Cost</span></h2><div class="sub">理想生活 V.S 現階段財務</div></div></div>
+        <div class="card">
+          <div class="field"><label>目前年齡</label><input type="number" id="lifeAge" placeholder="例如 32"></div>
+          <div class="field"><label>預期壽命</label><input type="number" id="lifeExpect" placeholder="例如 85"></div>
+          <div class="field"><label>每月理想生活費（元）</label><input type="number" id="lifeMonthly" placeholder="例如 45000"></div>
+          <div class="field"><label>未來大額支出總和（買房／子女教育／退休金等，元）</label><input type="number" id="lifeBig" placeholder="例如 3000000"></div>
+          <button class="btn btn-primary btn-block" onclick="calcLifeCost()">開始計算</button>
+        </div>
+        <div id="lifeResult"></div>
+      </section>
+
+      <!-- ===== Tool 2: Freedom calculator ===== -->
+      <section class="page" id="page-tool-freedom">
+        <div class="tool-page-head"><div class="back" onclick="goPage('tools')">←</div><div><h2>財務自由計算器 <span class="en-h2">Financial Freedom</span></h2><div class="sub">投入資金 V.S 報酬率</div></div></div>
+        <div class="card">
+          <div class="field"><label>目前投入資金（元）</label><input type="number" id="frCurrent" placeholder="例如 200000"></div>
+          <div class="field"><label>每月投入金額（元）</label><input type="number" id="frMonthly" placeholder="例如 10000"></div>
+          <div class="field"><label>預期年化報酬率（%）</label><input type="number" id="frRate" placeholder="例如 6"></div>
+          <div class="field"><label>目標每月被動收入（元，以 4% 提領率估算）</label><input type="number" id="frTarget" placeholder="例如 40000"></div>
+          <button class="btn btn-primary btn-block" onclick="calcFreedom()">開始計算</button>
+        </div>
+        <div id="freedomResult"></div>
+      </section>
+
+      <!-- ===== Tool 3: Balance sheet ===== -->
+      <section class="page" id="page-tool-balance">
+        <div class="tool-page-head"><div class="back" onclick="goPage('tools')">←</div><div><h2>資產負債表 <span class="en-h2">Balance Sheet</span></h2><div class="sub">釐清現階段的身價</div></div></div>
+        <div class="result-hero">
+          <div class="t">目前淨資產（身價）</div>
+          <div class="v" id="netWorthVal">NT$ 0</div>
+        </div>
+        <div class="donut-wrap card" style="justify-content:center;">
+          <div class="donut" id="balDonut"></div>
+          <div class="donut-legend" id="balLegend"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">💰 資產</div>
+          <div id="assetRows"></div>
+          <div class="add-row-btn" onclick="addBalanceRow('assets')">＋ 新增資產項目</div>
+        </div>
+        <div class="card">
+          <div class="card-title">📉 負債</div>
+          <div id="liabRows"></div>
+          <div class="add-row-btn" onclick="addBalanceRow('liabilities')">＋ 新增負債項目</div>
+        </div>
+        <div class="card">
+          <div class="card-title">🧯 緊急預備金 <span class="pro-badge" style="margin-left:4px;">PRO</span></div>
+          <div class="locked-state" id="efLockGate" style="padding:24px 10px;">
+            <div class="lock-ic" style="font-size:28px;">🔒</div>
+            <p style="margin-top:6px;">緊急預備金追蹤是 PRO 功能，輸入授權碼即可解鎖。</p>
+            <button class="btn btn-primary btn-sm" onclick="openLicenseModal()">輸入授權碼解鎖</button>
+          </div>
+          <div id="efContent" style="display:none;">
+            <div class="field-row">
+              <div class="field"><label>目標月數</label><input type="number" id="efTargetMonths" min="1" max="24" oninput="updateEmergencyFund()"></div>
+              <div class="field"><label>目前已存金額</label><input type="number" id="efCurrentAmount" min="0" oninput="updateEmergencyFund()"></div>
+            </div>
+            <div class="rowline"><div class="l">建議準備金額</div><div class="r" id="efTargetAmount">NT$ 0</div></div>
+            <div class="progress-track"><div class="progress-fill" id="efBar" style="width:0%; background:linear-gradient(90deg, var(--sage), var(--light-sage));"></div></div>
+            <div class="field hint" style="margin-top:8px;">依近 3 個月平均支出估算，建議準備 3～6 個月生活費作為緊急預備金。</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== Tool 4: Income/Expense summary ===== -->
+      <section class="page" id="page-tool-income">
+        <div class="tool-page-head"><div class="back" onclick="goPage('tools')">←</div><div><h2>收入支出總表 <span class="en-h2">Income &amp; Expense</span></h2><div class="sub">檢視每月必須及非必須開銷</div></div></div>
+        <div class="card">
+          <div class="field" style="margin-bottom:0;"><label>選擇月份</label><input type="month" id="incMonthPicker"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">⚖️ 必要 V.S 非必要</div>
+          <div class="rowline"><div class="l">必要開銷</div><div class="r" id="essentialTotal">NT$ 0</div></div>
+          <div class="progress-track"><div class="progress-fill" id="essentialBar" style="width:0%"></div></div>
+          <div class="rowline" style="margin-top:14px;"><div class="l">非必要開銷</div><div class="r" id="nonEssentialTotal">NT$ 0</div></div>
+          <div class="progress-track"><div class="progress-fill" id="nonEssentialBar" style="width:0%; background:linear-gradient(90deg, var(--soft-blue), var(--blue));"></div></div>
+        </div>
+        <div class="card">
+          <div class="card-title">📂 分類總表</div>
+          <div id="incomeSummaryRows"></div>
+        </div>
+      </section>
+
+      <!-- ===== Tool 5: Policy review ===== -->
+      <section class="page" id="page-tool-policy">
+        <div class="tool-page-head"><div class="back" onclick="goPage('tools')">←</div><div><h2>保障配置檢視 <span class="en-h2">Coverage Review</span></h2><div class="sub">盤點所有保障項目，補足缺口</div></div></div>
+        <div class="result-hero">
+          <div class="t">年度保障費用總計</div>
+          <div class="v" id="policyTotalPremium">NT$ 0</div>
+        </div>
+        <div class="card">
+          <div class="card-title">🛡️ 保障類別盤點</div>
+          <div class="checklist-grid" id="coverageChecklist"></div>
+        </div>
+        <div class="card-title" style="margin:18px 4px 8px;">📄 我的保障項目</div>
+        <div id="policyListArea"></div>
+        <button class="btn btn-soft btn-block" onclick="openPolicyModal()">＋ 新增保障項目</button>
+      </section>
+
+      <!-- ===== Tool 6: Chart Analysis ===== -->
+      <section class="page" id="page-tool-analysis">
+        <div class="tool-page-head"><div class="back" onclick="goPage('tools')">←</div><div><h2>圖表分析 <span class="en-h2">Chart Analysis</span></h2><div class="sub">收支趨勢、類別占比一次看</div></div></div>
+        <div class="card">
+          <div class="field" style="margin-bottom:0;"><label>選擇月份</label><input type="month" id="analysisMonthPicker"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">🥧 類別占比（圓餅圖）</div>
+          <div class="donut-wrap">
+            <div class="donut" id="analysisDonut"></div>
+            <div class="donut-legend" id="analysisLegend"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">📊 近 6 個月收支（長條圖）</div>
+          <div class="mini-bar-chart" id="analysisBarChart" style="height:120px;"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">📂 分類占比明細</div>
+          <div id="analysisCatRows"></div>
+        </div>
+      </section>
+
+      <!-- ===== Tool 7: Investments ===== -->
+      <section class="page" id="page-tool-invest">
+        <div class="tool-page-head"><div class="back" onclick="goPage('tools')">←</div><div><h2>投資理財 <span class="en-h2">Investments</span></h2><div class="sub">追蹤股票、加密貨幣等資產</div></div></div>
+        <div class="locked-state" id="investLockGate">
+          <div class="lock-ic">🔒</div>
+          <h3>投資理財是 PRO 功能</h3>
+          <p>追蹤台股、美股、加密貨幣資產漲跌，並自動併入你的淨資產計算。輸入授權碼即可解鎖。</p>
+          <button class="btn btn-primary" onclick="openLicenseModal()">輸入授權碼解鎖</button>
+        </div>
+        <div id="investContent" style="display:none;">
+          <div class="result-hero">
+            <div class="t">投資總市值</div>
+            <div class="v" id="investTotalVal">NT$ 0</div>
+            <div class="d" id="investGainVal"></div>
+          </div>
+          <div id="investListArea"></div>
+          <button class="btn btn-soft btn-block" onclick="addInvestment()">＋ 新增持有部位</button>
+          <div class="field hint" style="margin-top:10px;">目前市價需手動更新，即時股價／幣價自動同步為後續規劃功能。</div>
+        </div>
+      </section>
+
+      <!-- ===== Tool 8: Savings Goals (piggy bank) ===== -->
+      <section class="page" id="page-tool-goals">
+        <div class="tool-page-head"><div class="back" onclick="goPage('tools')">←</div><div><h2>存錢罐 <span class="en-h2">Savings Goals</span></h2><div class="sub">許願、存錢，蓋一棟屬於自己的房子</div></div></div>
+        <div class="locked-state" id="goalsLockGate">
+          <div class="lock-ic">🔒</div>
+          <h3>存錢罐是 PRO 功能</h3>
+          <p>許願想買的球鞋、3C 產品，甚至頭期款，每天存入一筆，看著小房子一磚一瓦蓋起來。輸入授權碼即可解鎖。</p>
+          <button class="btn btn-primary" onclick="openLicenseModal()">輸入授權碼解鎖</button>
+        </div>
+        <div id="goalsContent" style="display:none;">
+          <div id="goalsListArea" class="tool-list"></div>
+          <button class="btn btn-soft btn-block" onclick="addGoal()">＋ 新增願望目標</button>
+        </div>
+      </section>
+
+      <!-- ===== Tool 9: Multi-person split ===== -->
+      <section class="page" id="page-tool-split">
+        <div class="tool-page-head"><div class="back" onclick="goPage('tools')">←</div><div><h2>多人分帳 <span class="en-h2">Split Expenses</span></h2><div class="sub">家庭或情侶共同記帳與分攤</div></div></div>
+        <div class="locked-state" id="splitLockGate">
+          <div class="lock-ic">🔒</div>
+          <h3>多人分帳是家庭 / 團隊版功能</h3>
+          <p>支援家庭或情侶共同記帳，自動計算每人分攤金額與應收應付結餘。輸入授權碼即可解鎖。</p>
+          <button class="btn btn-primary" onclick="openLicenseModal()">輸入授權碼解鎖</button>
+        </div>
+        <div id="splitContent" style="display:none;">
+          <div class="card">
+            <div class="card-title">👥 成員管理</div>
+            <div id="memberListArea"></div>
+            <div class="add-row-btn" onclick="addMember()">＋ 新增成員</div>
+          </div>
+          <div class="card-title" style="margin:18px 4px 8px;">💰 分帳結算</div>
+          <div id="splitBalanceArea"></div>
+          <div class="card-title" style="margin:18px 4px 8px;">🧾 共同記帳紀錄</div>
+          <div id="splitTxListArea"></div>
+        </div>
+      </section>
+
+      <!-- ===== Report: Financial Health Report ===== -->
+      <section class="page" id="page-tool-report">
+        <div class="tool-page-head report-print-hide"><div class="back" onclick="goPage('tools')">←</div><div><h2>財務健診報告 <span class="en-h2">Health Report</span></h2><div class="sub">顧問視角．一頁看懂財務體質</div></div></div>
+
+        <div class="locked-state" id="reportLockGate">
+          <div class="lock-ic">🔒</div>
+          <h3>財務健診報告是 PRO 功能</h3>
+          <p>彙整儲蓄率、緊急預備金、負債比率、保障覆蓋率等指標，自動生成一頁式專業報告。輸入授權碼即可解鎖。</p>
+          <button class="btn btn-primary" onclick="openLicenseModal()">輸入授權碼解鎖</button>
+        </div>
+
+        <div id="reportContent" style="display:none;">
+        <div class="report-header">
+          <div class="brand-row"><div class="logo">duzhi｜財務健診報告</div><div class="date" id="reportDate"></div></div>
+          <h2 id="reportClientTitle">您的財務健診報告</h2>
+          <div class="p">本報告依您輸入的記帳、資產負債與保障資料自動彙整，僅供財務規劃參考。</div>
+        </div>
+
+        <div class="card report-print-hide" style="padding:12px 16px;">
+          <div class="filter-row" style="margin:0; padding:0;" id="reportPeriodTabs">
+            <div class="chip" data-period="week">週報</div>
+            <div class="chip active" data-period="month">月報</div>
+            <div class="chip" data-period="year">年報</div>
+          </div>
+        </div>
+
+        <div class="section-label">財務體質總覽</div>
+        <div class="metric-grid">
+          <div class="metric-card"><div class="t">儲蓄率</div><div class="v" id="mSavingsRate">—</div><div class="stat" id="mSavingsStatus"></div></div>
+          <div class="metric-card"><div class="t">緊急預備金</div><div class="v" id="mEmergency">—</div><div class="stat" id="mEmergencyStatus"></div></div>
+          <div class="metric-card"><div class="t">負債比率</div><div class="v" id="mDebtRatio">—</div><div class="stat" id="mDebtStatus"></div></div>
+          <div class="metric-card"><div class="t">保障覆蓋率</div><div class="v" id="mCoverage">—</div><div class="stat" id="mCoverageStatus"></div></div>
+        </div>
+        <div class="field hint" style="margin:10px 2px 0;">儲蓄率 ≥20% 良好．10–20% 注意．&lt;10% 待改善　｜　緊急預備金 ≥6個月 良好．3–6個月 注意．&lt;3個月 待改善　｜　負債比率 &lt;30% 良好．30–50% 注意．&gt;50% 待改善　｜　保障覆蓋率 ≥80% 良好．50–80% 注意．&lt;50% 待改善</div>
+
+        <div class="card" style="margin-top:14px;">
+          <div class="card-title" id="reportTrendTitle">📈 近三個月收支趨勢</div>
+          <div class="mini-bar-chart" id="reportTrendChart"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">💼 資產負債總覽</div>
+          <div class="rowline"><div class="l">總資產</div><div class="r" id="rAssets">NT$ 0</div></div>
+          <div class="rowline"><div class="l">總負債</div><div class="r" id="rLiab">NT$ 0</div></div>
+          <div class="rowline"><div class="l">淨資產（身價）</div><div class="r" id="rNet">NT$ 0</div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🛡️ 保障缺口</div>
+          <div id="reportCoverageList"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">✍️ 顧問建議</div>
+          <div id="reportAdvice"></div>
+        </div>
+
+        <button class="btn btn-outline btn-block report-print-hide" onclick="window.print()">🖨️ 列印／匯出 PDF</button>
+        <div style="height:8px;"></div>
+        </div>
+      </section>
+
+      <!-- ================= SETTINGS ================= -->
+      <section class="page" id="page-settings">
+        <div class="section-label">授權方案 · Plan</div>
+        <div class="card">
+          <div class="rowline"><div class="l">目前方案</div><div class="r" id="licenseTierDisplay">免費版 Free</div></div>
+          <div class="field hint" id="licenseKeyDisplay" style="margin-top:6px;"></div>
+          <button class="btn btn-primary btn-block" style="margin-top:10px;" onclick="openLicenseModal()">輸入授權碼解鎖 Enter License Key</button>
+        </div>
+
+        <div class="section-label">個人資訊</div>
+        <div class="card">
+          <div class="field" style="margin-bottom:0;">
+            <label>您的稱呼（顯示於首頁問候與健診報告）</label>
+            <input type="text" id="clientNameInput" placeholder="例如：Shirley" oninput="updateClientName(this.value)">
+          </div>
+        </div>
+
+        <div class="section-label">固定支出</div>
+        <div id="fixedListArea"></div>
+        <button class="btn btn-soft btn-block" onclick="openFixedModal()">＋ 新增固定支出</button>
+
+        <div class="section-label">帳戶 / 支付方式</div>
+        <div id="accountListArea"></div>
+        <button class="btn btn-soft btn-block" onclick="openAccountModal()">＋ 新增帳戶</button>
+
+        <div class="section-label">預算控制</div>
+        <div class="card">
+          <div class="field"><label>每月總支出上限（元，0 表示不設限）</label><input type="number" id="budgetOverall" oninput="updateBudgetOverall(this.value)"></div>
+          <div class="field" style="margin-bottom:0;"><label>分類上限（元，留空表示不設限）</label></div>
+          <div id="budgetCatRows" style="margin-top:8px;"></div>
+        </div>
+
+        <div class="section-label">匯率設定</div>
+        <div class="card">
+          <div class="field hint" style="margin-top:0;">記帳時可選擇外幣，系統依此匯率換算為新台幣金額（需手動更新匯率）。</div>
+          <div id="exchangeRateRows" style="margin-top:8px;"></div>
+        </div>
+
+        <div class="section-label">資料備份</div>
+        <div class="field hint" style="margin:0 2px 8px;">資料僅存在此裝置的瀏覽器中，換裝置、清除瀏覽器資料時會遺失，建議定期匯出備份，換裝置時再匯入即可還原。</div>
+        <div class="settings-item" onclick="exportBackup()"><div class="l">📤 匯出備份（JSON）</div><div class="r">›</div></div>
+        <div class="settings-item" onclick="document.getElementById('importFile').click()"><div class="l">📥 匯入備份</div><div class="r">›</div></div>
+        <input type="file" id="importFile" accept="application/json" style="display:none;">
+
+        <div class="section-label">危險區域</div>
+        <div class="settings-item" onclick="clearAllData()"><div class="l" style="color:var(--pink);">🗑️ 清除所有資料</div><div class="r">›</div></div>
+
+        <button class="btn btn-ghost btn-block" onclick="backToIntro()" style="margin-top:14px;">← 返回介紹頁</button>
+        <div style="height:20px;"></div>
+      </section>
+    </main>
+  </div>
+
+  <button class="fab" onclick="openTxModal()">＋</button>
+
+  <nav class="bottomnav">
+    <div class="nav-item active" data-page="dashboard"><span class="ic">🏠</span>首頁<span class="en">Home</span></div>
+    <div class="nav-item" data-page="list"><span class="ic">🧾</span>記帳<span class="en">Ledger</span></div>
+    <div class="nav-item" data-page="tools"><span class="ic">🧭</span>工具<span class="en">Tools</span></div>
+    <div class="nav-item" data-page="settings"><span class="ic">⚙️</span>設定<span class="en">Settings</span></div>
+  </nav>
+</div>
+
+<!-- ============ Transaction Modal ============ -->
+<div class="modal-overlay" id="txModalOverlay">
+  <div class="modal-sheet">
+    <div class="modal-header"><h3 id="txModalTitle">新增記帳 <span style="font-size:10px; color:var(--gray); font-weight:700;">Add Entry</span></h3><div class="modal-close" onclick="closeTxModal()">✕</div></div>
+    <div class="type-toggle">
+      <button type="button" class="expense" id="typeExpenseBtn" onclick="setTxType('expense')">支出 Expense</button>
+      <button type="button" class="income" id="typeIncomeBtn" onclick="setTxType('income')">收入 Income</button>
+    </div>
+
+    <div class="amount-hero">
+      <input type="number" id="txAmount" placeholder="0" inputmode="decimal">
+      <div class="currency-chip-row" id="currencyChipRow"></div>
+    </div>
+    <div class="hint" id="currencyHint" style="display:none; text-align:center; margin-top:-10px; margin-bottom:14px;"></div>
+
+    <div class="modal-section-label">📝 基本資訊 · Basic Info</div>
+    <div class="field">
+      <label>項目 Item</label>
+      <input type="text" id="txItem" placeholder="例如：午餐、火鍋、加油" oninput="autoSuggestCategory()">
+      <div class="hint" id="autoHint" style="display:none;"></div>
+    </div>
+    <div class="field" style="margin-bottom:0;">
+      <label>分類 Category</label>
+      <div class="cat-picker" id="catPicker"></div>
+    </div>
+
+    <div class="modal-section-label">💳 日期與付款 · Date & Payment</div>
+    <div class="field-row">
+      <div class="field"><label>日期 Date</label><input type="date" id="txDate"></div>
+      <div class="field"><label>支付方式 Method</label><select id="txPayMethod"></select></div>
+    </div>
+    <div class="field" style="margin-bottom:0;"><label>帳戶 Account</label><select id="txAccount"></select></div>
+
+    <div class="modal-section-label">⚙️ 進階選項 · More Options</div>
+
+    <div class="switch-row">
+      <div class="lbl">分期付款 Installment</div>
+      <label class="switch"><input type="checkbox" id="txInstallmentToggle" onchange="toggleInstallmentUI()"><span class="slider"></span></label>
+    </div>
+    <div class="switch-panel" id="installmentPanel" style="display:none;">
+      <div class="period-chip-row" id="installmentChipRow"></div>
+    </div>
+
+    <div class="switch-row">
+      <div class="lbl">與他人分攤 Split with others</div>
+      <label class="switch"><input type="checkbox" id="txSplitToggle" onchange="toggleSplitUI()"><span class="slider"></span></label>
+    </div>
+    <div class="switch-panel" id="splitUIArea" style="display:none;">
+      <div class="field"><label>付款人 Paid by</label><select id="txPaidBy"></select></div>
+      <div class="field" style="margin-bottom:0;"><label>分攤成員 Split with</label><div id="txSplitMembers" class="tag-input-chips"></div></div>
+    </div>
+
+    <div class="field" style="margin-top:16px;">
+      <label>標籤 Tags（用逗號分隔）</label>
+      <input type="text" id="txTags" placeholder="例如：聚餐,朋友">
+    </div>
+    <div class="field">
+      <label>備註 Note</label>
+      <textarea id="txNote" rows="2" placeholder="選填"></textarea>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="saveTx()">儲存 Save</button>
+    <button class="btn btn-ghost btn-block" id="txDeleteBtn" style="display:none; margin-top:6px;" onclick="deleteTxFromModal()">刪除這筆紀錄 Delete</button>
+  </div>
+</div>
+
+<!-- ============ Fixed Expense Modal ============ -->
+<div class="modal-overlay" id="fixedModalOverlay">
+  <div class="modal-sheet">
+    <div class="modal-header"><h3>新增固定支出</h3><div class="modal-close" onclick="closeModal('fixedModalOverlay')">✕</div></div>
+    <div class="field"><label>項目名稱</label><input type="text" id="fixedItem" placeholder="例如：房租"></div>
+    <div class="field"><label>金額</label><input type="number" id="fixedAmount" placeholder="0"></div>
+    <div class="field"><label>分類</label>
+      <div class="cat-picker" id="fixedCatPicker"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>每月幾號扣款</label><input type="number" id="fixedDay" min="1" max="28" placeholder="例如 5"></div>
+      <div class="field"><label>帳戶</label><select id="fixedAccount"></select></div>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="saveFixed()">儲存</button>
+  </div>
+</div>
+
+<!-- ============ Account Modal ============ -->
+<div class="modal-overlay" id="accountModalOverlay">
+  <div class="modal-sheet">
+    <div class="modal-header"><h3>新增帳戶</h3><div class="modal-close" onclick="closeModal('accountModalOverlay')">✕</div></div>
+    <div class="field"><label>名稱</label><input type="text" id="accName" placeholder="例如：玉山銀行"></div>
+    <div class="field"><label>類型</label>
+      <select id="accType">
+        <option value="bank">銀行帳戶</option>
+        <option value="credit">信用卡</option>
+        <option value="cash">現金</option>
+        <option value="linepay">LINE Pay</option>
+        <option value="jkopay">街口支付</option>
+        <option value="applepay">Apple Pay</option>
+        <option value="paypal">PayPal</option>
+        <option value="pxpay">全支付</option>
+        <option value="easycard">悠遊卡</option>
+        <option value="ipass">一卡通</option>
+        <option value="icash">iCash</option>
+        <option value="invoicecarrier">手機發票條碼</option>
+        <option value="other">其他</option>
+      </select>
+    </div>
+    <div class="field hint" style="margin-top:-6px;">💳 信用卡、電子支付與電子票證目前無法自動連接發卡機構，刷卡／感應後請手動輸入金額，這裡先幫你建好帳戶方便快速選取；銀行與載具自動同步為後續規劃功能。</div>
+    <button class="btn btn-primary btn-block" onclick="saveAccount()">儲存</button>
+  </div>
+</div>
+
+<!-- ============ Policy Modal ============ -->
+<div class="modal-overlay" id="policyModalOverlay">
+  <div class="modal-sheet">
+    <div class="modal-header"><h3>新增保障項目</h3><div class="modal-close" onclick="closeModal('policyModalOverlay')">✕</div></div>
+    <div class="field"><label>項目名稱</label><input type="text" id="polName" placeholder="例如：長期照護保障"></div>
+    <div class="field"><label>提供機構</label><input type="text" id="polCompany" placeholder="例如：OO機構"></div>
+    <div class="field"><label>保障類型</label>
+      <select id="polType"><option value="life">人身保障</option><option value="medical">醫療保障</option><option value="accident">意外保障</option><option value="critical">重大疾病保障</option><option value="disability">失能保障</option><option value="other">其他</option></select>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>保障額度（元）</label><input type="number" id="polAmount" placeholder="0"></div>
+      <div class="field"><label>年度費用（元）</label><input type="number" id="polPremium" placeholder="0"></div>
+    </div>
+    <div class="field"><label>繳費方式</label><input type="text" id="polPayWay" placeholder="例如：年繳、信用卡自動扣款"></div>
+    <div class="field"><label>備註</label><textarea id="polNote" rows="2"></textarea></div>
+    <button class="btn btn-primary btn-block" onclick="savePolicy()">儲存</button>
+  </div>
+</div>
+
+<!-- ============ Balance Row Modal ============ -->
+<div class="modal-overlay" id="balanceRowModalOverlay">
+  <div class="modal-sheet">
+    <div class="modal-header"><h3 id="balanceRowModalTitle">新增項目</h3><div class="modal-close" onclick="closeModal('balanceRowModalOverlay')">✕</div></div>
+    <div class="field"><label>項目名稱</label><input type="text" id="balanceRowName" placeholder="例如：定存、股票、房貸"></div>
+    <div class="field"><label>金額（元）</label><input type="number" id="balanceRowAmount" placeholder="0"></div>
+    <button class="btn btn-primary btn-block" onclick="saveBalanceRow()">儲存</button>
+  </div>
+</div>
+
+<!-- ============ Investment Modal ============ -->
+<div class="modal-overlay" id="investModalOverlay">
+  <div class="modal-sheet">
+    <div class="modal-header"><h3>新增持有部位</h3><div class="modal-close" onclick="closeModal('investModalOverlay')">✕</div></div>
+    <div class="field"><label>名稱／代號</label><input type="text" id="invName" placeholder="例如：0050、AAPL、BTC"></div>
+    <div class="field"><label>市場類型</label>
+      <select id="invMarket"><option value="台股">台股</option><option value="美股">美股</option><option value="加密貨幣">加密貨幣</option><option value="其他">其他</option></select>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>持有數量</label><input type="number" id="invQuantity" placeholder="0"></div>
+      <div class="field"><label>平均成本</label><input type="number" id="invAvgCost" placeholder="0"></div>
+    </div>
+    <div class="field"><label>目前市價</label><input type="number" id="invCurrentPrice" placeholder="0"></div>
+    <button class="btn btn-primary btn-block" onclick="saveInvestment()">儲存</button>
+  </div>
+</div>
+
+<!-- ============ Investment Price Update Modal ============ -->
+<div class="modal-overlay" id="investPriceModalOverlay">
+  <div class="modal-sheet">
+    <div class="modal-header"><h3>更新市價</h3><div class="modal-close" onclick="closeModal('investPriceModalOverlay')">✕</div></div>
+    <div class="field"><label>最新市價</label><input type="number" id="invNewPrice" placeholder="0"></div>
+    <button class="btn btn-primary btn-block" onclick="saveInvestPrice()">更新</button>
+  </div>
+</div>
+
+<!-- ============ Goal Modal ============ -->
+<div class="modal-overlay" id="goalModalOverlay">
+  <div class="modal-sheet">
+    <div class="modal-header"><h3>新增願望目標</h3><div class="modal-close" onclick="closeModal('goalModalOverlay')">✕</div></div>
+    <div class="field"><label>選一個圖示</label>
+      <div class="cat-picker" id="goalIconPicker"></div>
+    </div>
+    <div class="field"><label>願望名稱</label><input type="text" id="goalName" placeholder="例如：新球鞋、iPhone、頭期款"></div>
+    <div class="field"><label>目標金額（元）</label><input type="number" id="goalTarget" placeholder="0"></div>
+    <button class="btn btn-primary btn-block" onclick="saveGoal()">儲存</button>
+  </div>
+</div>
+
+<!-- ============ Goal Deposit Modal ============ -->
+<div class="modal-overlay" id="goalDepositModalOverlay">
+  <div class="modal-sheet">
+    <div class="modal-header"><h3 id="goalDepositTitle">今天存一筆</h3><div class="modal-close" onclick="closeModal('goalDepositModalOverlay')">✕</div></div>
+    <div class="field"><label>存入金額（元）</label><input type="number" id="goalDepositAmount" placeholder="0"></div>
+    <div class="filter-row" style="margin:0 0 14px;">
+      <div class="chip" onclick="document.getElementById('goalDepositAmount').value=50">+50</div>
+      <div class="chip" onclick="document.getElementById('goalDepositAmount').value=100">+100</div>
+      <div class="chip" onclick="document.getElementById('goalDepositAmount').value=500">+500</div>
+      <div class="chip" onclick="document.getElementById('goalDepositAmount').value=1000">+1000</div>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="saveGoalDeposit()">存入</button>
+  </div>
+</div>
+
+<!-- ============ Member Modal ============ -->
+<div class="modal-overlay" id="memberModalOverlay">
+  <div class="modal-sheet">
+    <div class="modal-header"><h3>新增成員</h3><div class="modal-close" onclick="closeModal('memberModalOverlay')">✕</div></div>
+    <div class="field"><label>成員姓名</label><input type="text" id="memberName" placeholder="例如：小明"></div>
+    <button class="btn btn-primary btn-block" onclick="saveMember()">儲存</button>
+  </div>
+</div>
+
+<!-- ============ Generic Confirm Modal ============ -->
+<div class="modal-overlay" id="confirmModalOverlay">
+  <div class="modal-sheet">
+    <div class="modal-header"><h3 id="confirmModalTitle">確認</h3><div class="modal-close" onclick="closeModal('confirmModalOverlay')">✕</div></div>
+    <div class="field hint" id="confirmModalMsg" style="font-size:13px; margin-top:-4px;"></div>
+    <div class="field-row">
+      <button class="btn btn-outline btn-block" onclick="closeModal('confirmModalOverlay')">取消</button>
+      <button class="btn btn-primary btn-block" id="confirmModalOkBtn" style="background:var(--pink);">確定</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ License Modal ============ -->
+<div class="modal-overlay" id="licenseModalOverlay">
+  <div class="modal-sheet">
+    <div class="modal-header"><h3>輸入授權碼 <span style="font-size:10px; color:var(--gray); font-weight:700;">License Key</span></h3><div class="modal-close" onclick="closeModal('licenseModalOverlay')">✕</div></div>
+    <div class="field"><label>授權碼 License Key</label><input type="text" id="licenseKeyInput" placeholder="DUZHI-PRO-XXXXX-XXXX" style="text-transform:uppercase;"></div>
+    <div class="field hint" style="margin-top:-6px;">購買後會收到你的授權碼，貼上即可解鎖 PRO 或家庭 / 團隊版功能。</div>
+    <button class="btn btn-primary btn-block" onclick="saveLicenseFromModal()">解鎖 Unlock</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ==================================================================
+   STATE + STORAGE
+   ================================================================== */
+const STORE_KEY = 'bafang_finance_app_v1';
+const DEFAULT_CATEGORIES = [
+  {id:'food', name:'餐飲', icon:'🍜', color:'var(--pink)', essential:true},
+  {id:'shopping', name:'購物', icon:'🛍️', color:'var(--soft-pink)', essential:false},
+  {id:'transport', name:'交通', icon:'🚗', color:'var(--blue)', essential:true},
+  {id:'life', name:'生活', icon:'🏠', color:'var(--sage)', essential:true},
+  {id:'fun', name:'娛樂', icon:'🎬', color:'var(--soft-blue)', essential:false},
+  {id:'protection', name:'保障', icon:'🛡️', color:'var(--medium)', essential:true},
+  {id:'other', name:'其他', icon:'✨', color:'var(--gray)', essential:false},
+];
+const KEYWORD_MAP = {
+  food:['午餐','晚餐','早餐','火鍋','便當','咖啡','飲料','小吃','餐廳','宵夜','麥當勞','星巴克','早餐店','聚餐','奶茶'],
+  shopping:['衣服','鞋子','網購','蝦皮','購物','包包','化妝品','momo','淘寶'],
+  transport:['捷運','公車','加油','停車','uber','計程車','高鐵','油錢','火車','機票','停車費'],
+  life:['房租','水電','電話費','網路費','日用品','家具','管理費','瓦斯','電費','水費'],
+  fun:['電影','唱歌','ktv','旅遊','遊戲','訂閱','netflix','演唱會','展覽'],
+  protection:['保障費用','保障項目','人身保障','醫療保障','意外保障'],
+};
+const COVERAGE_TYPES = [
+  {id:'life', name:'人身保障'}, {id:'medical', name:'醫療保障'}, {id:'accident', name:'意外保障'},
+  {id:'critical', name:'重大疾病保障'}, {id:'disability', name:'失能保障'},
+];
+
+function defaultState(){
+  return {
+    transactions: [],
+    fixedExpenses: [],
+    accounts: [
+      {id:'acc_cash', name:'現金', type:'cash'},
+      {id:'acc_bank1', name:'玉山銀行', type:'bank'},
+      {id:'acc_credit1', name:'玉山信用卡', type:'credit'},
+      {id:'acc_linepay', name:'LINE Pay', type:'linepay'},
+      {id:'acc_jkopay', name:'街口支付', type:'jkopay'},
+      {id:'acc_pxpay', name:'全支付', type:'pxpay'},
+      {id:'acc_paypal', name:'PayPal', type:'paypal'},
+      {id:'acc_easycard', name:'悠遊卡', type:'easycard'},
+    ],
+    settings: { clientName:'' },
+    categories: DEFAULT_CATEGORIES,
+    balanceSheet: {assets:[], liabilities:[]},
+    policies: [],
+    coverage: {},
+    lastGeneratedMonth: null,
+    license: { key:'', tier:'free' },
+    emergencyFund: { targetMonths:6, currentAmount:0 },
+    budget: { overall:0, byCategory:{} },
+    members: ['我'],
+    investments: [],
+    goals: [],
+    exchangeRates: { USD:32, JPY:0.21, EUR:35, CNY:4.4 },
+  };
+}
+let state = loadState();
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORE_KEY);
+    if(!raw) return defaultState();
+    const parsed = JSON.parse(raw);
+    return Object.assign(defaultState(), parsed);
+  }catch(e){ return defaultState(); }
+}
+function saveState(){
+  localStorage.setItem(STORE_KEY, JSON.stringify(state));
+}
+function uid(prefix){ return prefix+'_'+Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+
+/* ==================================================================
+   LICENSING (offline checksum-based license keys)
+   Format: DUZHI-<TIER>-<RANDOM5>-<CHECKSUM4>   TIER: PRO or FAM
+   ================================================================== */
+const LICENSE_SALT = 'duzhi-license-salt-v1';
+function hashStr(str){
+  let h = 0;
+  for(let i=0;i<str.length;i++){ h = (h*31 + str.charCodeAt(i)) >>> 0; }
+  return h;
+}
+function computeChecksum(tier, randomPart){
+  const h = hashStr(tier+'-'+randomPart+'-'+LICENSE_SALT);
+  return (h % 10000).toString().padStart(4,'0');
+}
+function validateLicenseKey(key){
+  if(!key) return null;
+  const parts = key.trim().toUpperCase().split('-');
+  if(parts.length!==4 || parts[0]!=='DUZHI') return null;
+  const [,tier,randomPart,checksum] = parts;
+  if(tier!=='PRO' && tier!=='FAM') return null;
+  if(computeChecksum(tier, randomPart)!==checksum) return null;
+  return tier==='PRO' ? 'pro' : 'family';
+}
+function isPro(){ return state.license && (state.license.tier==='pro' || state.license.tier==='family'); }
+function isFamily(){ return state.license && state.license.tier==='family'; }
+function applyLicenseKey(key){
+  const tier = validateLicenseKey(key);
+  if(!tier){ toast('授權碼無效，請確認後再試一次'); return false; }
+  state.license = { key: key.trim().toUpperCase(), tier };
+  saveState();
+  toast(tier==='family' ? '🎉 已解鎖家庭 / 團隊版！' : '🎉 已解鎖專業版！');
+  return true;
+}
+function renderLockGate(gateId, contentId, requiredTier){
+  const hasAccess = requiredTier==='family' ? isFamily() : isPro();
+  document.getElementById(gateId).style.display = hasAccess ? 'none' : 'block';
+  document.getElementById(contentId).style.display = hasAccess ? '' : 'none';
+  return hasAccess;
+}
+function openLicenseModal(){
+  document.getElementById('licenseKeyInput').value = state.license.key || '';
+  document.getElementById('licenseModalOverlay').classList.add('open');
+}
+function saveLicenseFromModal(){
+  const key = document.getElementById('licenseKeyInput').value;
+  if(applyLicenseKey(key)){
+    closeModal('licenseModalOverlay');
+    refreshCurrentPage();
+  }
+}
+
+
+/* ==================================================================
+   NAV
+   ================================================================== */
+function goPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>{
+    n.classList.toggle('active', n.dataset.page===name);
+  });
+  window.scrollTo(0,0);
+  if(name==='dashboard') renderDashboard();
+  if(name==='list') renderList();
+  if(name==='tool-balance') renderBalanceSheet();
+  if(name==='tool-income') renderIncomeSummary();
+  if(name==='tool-policy') renderPolicies();
+  if(name==='tool-analysis') renderAnalysis();
+  if(name==='tool-invest') renderInvestments();
+  if(name==='tool-goals') renderGoals();
+  if(name==='tool-split') renderSplit();
+  if(name==='tool-report') renderReport();
+  if(name==='settings') renderSettings();
+}
+document.querySelectorAll('.nav-item').forEach(item=>{
+  item.addEventListener('click', ()=>{
+    const p = item.dataset.page;
+    if(p) goPage(p);
+  });
+});
+
+/* ==================================================================
+   UTIL
+   ================================================================== */
+function fmt(n){ return Math.round(n).toLocaleString('zh-Hant-TW'); }
+function todayStr(){ const d=new Date(); return d.toISOString().slice(0,10); }
+function monthKey(dateStr){ return dateStr.slice(0,7); }
+function catById(id){ return state.categories.find(c=>c.id===id) || state.categories[state.categories.length-1]; }
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toast._tm);
+  toast._tm = setTimeout(()=>t.classList.remove('show'), 1800);
+}
+
+/* ==================================================================
+   FIXED EXPENSE AUTO-GENERATION
+   ================================================================== */
+function generateFixedExpensesForThisMonth(){
+  const now = new Date();
+  const ym = now.toISOString().slice(0,7);
+  state.fixedExpenses.forEach(fx=>{
+    fx.generatedMonths = fx.generatedMonths || [];
+    if(fx.generatedMonths.includes(ym)) return;
+    const day = Math.min(fx.day || 1, 28);
+    if(now.getDate() < day) return; // wait until the day arrives
+    const dateStr = ym+'-'+String(day).padStart(2,'0');
+    state.transactions.push({
+      id: uid('tx'),
+      type:'expense',
+      amount: fx.amount,
+      category: fx.category,
+      item: fx.item,
+      date: dateStr,
+      payMethod: fx.account,
+      account: fx.account,
+      note:'固定支出自動產生',
+      tags:['固定支出'],
+      installmentTotal:1, installmentIndex:1, installmentGroup:null,
+      isFixed:true,
+    });
+    fx.generatedMonths.push(ym);
+  });
+  saveState();
+}
+
+/* ==================================================================
+   TRANSACTION MODAL
+   ================================================================== */
+let txEditingId = null;
+let txCurrentType = 'expense';
+
+function populateSelects(){
+  const pay = document.getElementById('txPayMethod');
+  const acc = document.getElementById('txAccount');
+  const fxAcc = document.getElementById('fixedAccount');
+  const paidBy = document.getElementById('txPaidBy');
+  [pay, acc, fxAcc].forEach(sel=>{ if(sel) sel.innerHTML=''; });
+  state.accounts.forEach(a=>{
+    const opt1 = document.createElement('option'); opt1.value=a.id; opt1.textContent=a.name;
+    pay.appendChild(opt1);
+    const opt2 = document.createElement('option'); opt2.value=a.id; opt2.textContent=a.name;
+    acc.appendChild(opt2);
+    const opt3 = document.createElement('option'); opt3.value=a.id; opt3.textContent=a.name;
+    fxAcc.appendChild(opt3);
+  });
+  if(paidBy){
+    paidBy.innerHTML='';
+    (state.members||[]).forEach(m=>{
+      const opt = document.createElement('option'); opt.value=m; opt.textContent=m;
+      paidBy.appendChild(opt);
+    });
+  }
+  const splitWrap = document.getElementById('txSplitMembers');
+  if(splitWrap){
+    splitWrap.innerHTML='';
+    (state.members||[]).forEach(m=>{
+      const label = document.createElement('label');
+      label.className='tc'; label.style.cursor='pointer';
+      label.innerHTML = `<input type="checkbox" value="${m}" style="width:auto; margin:0;"> ${m}`;
+      splitWrap.appendChild(label);
+    });
+  }
+}
+function updateCurrencyHint(){
+  const cur = txSelectedCurrency;
+  const hint = document.getElementById('currencyHint');
+  if(cur==='TWD'){ hint.style.display='none'; return; }
+  const rate = state.exchangeRates[cur] || 0;
+  hint.style.display='block';
+  hint.textContent = `依匯率 1 ${cur} ≈ ${rate} TWD 換算，可於設定頁調整匯率`;
+}
+function toggleSplitUI(){
+  document.getElementById('splitUIArea').style.display = document.getElementById('txSplitToggle').checked ? 'block' : 'none';
+}
+function toggleInstallmentUI(){
+  document.getElementById('installmentPanel').style.display = document.getElementById('txInstallmentToggle').checked ? 'block' : 'none';
+}
+const CURRENCY_OPTIONS = ['TWD','USD','JPY','EUR','CNY'];
+let txSelectedCurrency = 'TWD';
+function buildCurrencyChips(){
+  const wrap = document.getElementById('currencyChipRow');
+  wrap.innerHTML='';
+  CURRENCY_OPTIONS.forEach(cur=>{
+    const el = document.createElement('div');
+    el.className = 'currency-chip' + (cur===txSelectedCurrency?' active':'');
+    el.textContent = cur;
+    el.onclick = ()=>{ txSelectedCurrency = cur; buildCurrencyChips(); updateCurrencyHint(); };
+    wrap.appendChild(el);
+  });
+}
+const INSTALLMENT_OPTIONS = [3,6,12,24];
+let txInstallmentPeriod = 3;
+function buildInstallmentChips(){
+  const wrap = document.getElementById('installmentChipRow');
+  wrap.innerHTML='';
+  INSTALLMENT_OPTIONS.forEach(n=>{
+    const el = document.createElement('div');
+    el.className = 'period-chip' + (n===txInstallmentPeriod?' active':'');
+    el.textContent = n+' 期';
+    el.onclick = ()=>{ txInstallmentPeriod = n; buildInstallmentChips(); };
+    wrap.appendChild(el);
+  });
+}
+function buildCatPicker(containerId, onPick){
+  const wrap = document.getElementById(containerId);
+  wrap.innerHTML='';
+  state.categories.forEach(c=>{
+    const el = document.createElement('div');
+    el.className='cat-pick';
+    el.dataset.cat = c.id;
+    el.innerHTML = `<span class="ic">${c.icon}</span><span>${c.name}</span>`;
+    el.onclick = ()=> onPick(c.id, wrap);
+    wrap.appendChild(el);
+  });
+}
+function selectCatUI(wrap, catId){
+  wrap.querySelectorAll('.cat-pick').forEach(el=>el.classList.toggle('active', el.dataset.cat===catId));
+}
+let txSelectedCat = 'food';
+buildCatPicker('catPicker', (id, wrap)=>{ txSelectedCat = id; selectCatUI(wrap, id); });
+
+function setTxType(type){
+  txCurrentType = type;
+  document.getElementById('typeExpenseBtn').classList.toggle('active', type==='expense');
+  document.getElementById('typeIncomeBtn').classList.toggle('active', type==='income');
+}
+function autoSuggestCategory(){
+  const item = document.getElementById('txItem').value.trim().toLowerCase();
+  const hint = document.getElementById('autoHint');
+  if(!item){ hint.style.display='none'; return; }
+  for(const [cat, words] of Object.entries(KEYWORD_MAP)){
+    if(words.some(w=> item.includes(w.toLowerCase()))){
+      txSelectedCat = cat;
+      selectCatUI(document.getElementById('catPicker'), cat);
+      hint.style.display='block';
+      hint.textContent = '✓ 已自動分類為「'+catById(cat).name+'」';
+      return;
+    }
+  }
+  hint.style.display='none';
+}
+function openTxModal(existingTx){
+  populateSelects();
+  document.getElementById('txDeleteBtn').style.display='none';
+  txEditingId = null;
+  if(existingTx){
+    txEditingId = existingTx.id;
+    document.getElementById('txModalTitle').textContent='編輯記帳 Edit Entry';
+    document.getElementById('txAmount').value = existingTx.originalAmount || existingTx.amount;
+    txSelectedCurrency = existingTx.currency || 'TWD';
+    document.getElementById('txItem').value = existingTx.item;
+    document.getElementById('txDate').value = existingTx.date;
+    document.getElementById('txPayMethod').value = existingTx.payMethod;
+    document.getElementById('txAccount').value = existingTx.account;
+    document.getElementById('txTags').value = (existingTx.tags||[]).join(',');
+    document.getElementById('txNote').value = existingTx.note||'';
+    const hasInstallment = (existingTx.installmentTotal||1)>1;
+    document.getElementById('txInstallmentToggle').checked = hasInstallment;
+    txInstallmentPeriod = hasInstallment ? existingTx.installmentTotal : 3;
+    toggleInstallmentUI();
+    txSelectedCat = existingTx.category;
+    setTxType(existingTx.type);
+    document.getElementById('txDeleteBtn').style.display='block';
+    document.getElementById('txSplitToggle').checked = !!(existingTx.splitMembers && existingTx.splitMembers.length);
+    toggleSplitUI();
+    if(existingTx.paidBy) document.getElementById('txPaidBy').value = existingTx.paidBy;
+    document.querySelectorAll('#txSplitMembers input').forEach(cb=>{ cb.checked = (existingTx.splitMembers||[]).includes(cb.value); });
+  } else {
+    document.getElementById('txModalTitle').textContent='新增記帳 Add Entry';
+    document.getElementById('txAmount').value='';
+    txSelectedCurrency='TWD';
+    document.getElementById('txItem').value='';
+    document.getElementById('txDate').value = todayStr();
+    document.getElementById('txTags').value='';
+    document.getElementById('txNote').value='';
+    document.getElementById('txInstallmentToggle').checked=false;
+    txInstallmentPeriod = 3;
+    toggleInstallmentUI();
+    txSelectedCat='food';
+    setTxType('expense');
+    document.getElementById('txSplitToggle').checked=false;
+    toggleSplitUI();
+    document.querySelectorAll('#txSplitMembers input').forEach(cb=>cb.checked=false);
+  }
+  selectCatUI(document.getElementById('catPicker'), txSelectedCat);
+  buildCurrencyChips();
+  buildInstallmentChips();
+  document.getElementById('autoHint').style.display='none';
+  updateCurrencyHint();
+  document.getElementById('txModalOverlay').classList.add('open');
+}
+function closeTxModal(){ document.getElementById('txModalOverlay').classList.remove('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+
+function saveTx(){
+  const rawAmount = parseFloat(document.getElementById('txAmount').value);
+  const currency = txSelectedCurrency;
+  const item = document.getElementById('txItem').value.trim();
+  const date = document.getElementById('txDate').value;
+  if(!rawAmount || rawAmount<=0){ toast('請輸入金額'); return; }
+  if(!item){ toast('請輸入項目'); return; }
+  if(!date){ toast('請選擇日期'); return; }
+  const amount = currency==='TWD' ? rawAmount : Math.round(rawAmount * (state.exchangeRates[currency]||1) * 100)/100;
+  const payMethod = document.getElementById('txPayMethod').value;
+  const account = document.getElementById('txAccount').value;
+  const tags = document.getElementById('txTags').value.split(',').map(s=>s.trim()).filter(Boolean);
+  const note = document.getElementById('txNote').value.trim();
+  const installmentTotal = document.getElementById('txInstallmentToggle').checked ? txInstallmentPeriod : 1;
+  const isSplit = document.getElementById('txSplitToggle').checked;
+  const paidBy = isSplit ? document.getElementById('txPaidBy').value : null;
+  const splitMembers = isSplit ? Array.from(document.querySelectorAll('#txSplitMembers input:checked')).map(cb=>cb.value) : [];
+
+  if(txEditingId){
+    const tx = state.transactions.find(t=>t.id===txEditingId);
+    Object.assign(tx, {amount, originalAmount:rawAmount, currency, item, date, payMethod, account, tags, note, type:txCurrentType, category:txSelectedCat, paidBy, splitMembers});
+  } else if(installmentTotal>1){
+    const group = uid('grp');
+    const perAmount = Math.round((amount/installmentTotal)*100)/100;
+    const baseDate = new Date(date);
+    for(let i=0;i<installmentTotal;i++){
+      const d = new Date(baseDate); d.setMonth(d.getMonth()+i);
+      state.transactions.push({
+        id: uid('tx'), type:txCurrentType, amount:perAmount, originalAmount:rawAmount, currency, category:txSelectedCat, item,
+        date: d.toISOString().slice(0,10), payMethod, account, note, tags,
+        installmentTotal, installmentIndex:i+1, installmentGroup:group, paidBy, splitMembers,
+      });
+    }
+  } else {
+    state.transactions.push({
+      id: uid('tx'), type:txCurrentType, amount, originalAmount:rawAmount, currency, category:txSelectedCat, item, date,
+      payMethod, account, note, tags, installmentTotal:1, installmentIndex:1, installmentGroup:null, paidBy, splitMembers,
+    });
+  }
+  saveState();
+  closeTxModal();
+  toast('已儲存 ✓');
+  refreshCurrentPage();
+}
+function deleteTxFromModal(){
+  if(!txEditingId) return;
+  state.transactions = state.transactions.filter(t=>t.id!==txEditingId);
+  saveState();
+  closeTxModal();
+  toast('已刪除');
+  refreshCurrentPage();
+}
+function refreshCurrentPage(){
+  const active = document.querySelector('.page.active').id.replace('page-','');
+  goPage(active);
+}
+
+/* ==================================================================
+   DASHBOARD
+   ================================================================== */
+function monthRange(ym){
+  return state.transactions.filter(t=>monthKey(t.date)===ym);
+}
+function renderGreeting(){
+  const now = new Date();
+  document.getElementById('todayDate').textContent = now.toLocaleDateString('zh-Hant-TW', {year:'numeric', month:'long', day:'numeric', weekday:'short'});
+  const hr = now.getHours();
+  const timeWord = (hr<12?'早安 ☀️': hr<18?'午安 🌤️':'晚安 🌙');
+  const name = (state.settings && state.settings.clientName) ? state.settings.clientName.trim() : '';
+  document.getElementById('greetingText').textContent = name ? `${name}，${timeWord}` : `哈囉 👋 ${timeWord}`;
+}
+function renderDashboard(){
+  renderGreeting();
+  const now = new Date();
+  const ym = now.toISOString().slice(0,7);
+
+  const allIncome = state.transactions.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+  const allExpense = state.transactions.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+  document.getElementById('dashAvailable').textContent = fmt(allIncome-allExpense);
+
+  const monthTx = monthRange(ym);
+  const mi = monthTx.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+  const me = monthTx.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+  document.getElementById('dashIncome').textContent = fmt(mi);
+  document.getElementById('dashExpense').textContent = fmt(me);
+  document.getElementById('dashSaved').textContent = fmt(mi-me);
+
+  // category breakdown this month
+  const catTotals = {};
+  monthTx.filter(t=>t.type==='expense').forEach(t=>{ catTotals[t.category]=(catTotals[t.category]||0)+t.amount; });
+  const maxCat = Math.max(1, ...Object.values(catTotals));
+  const rowsWrap = document.getElementById('dashCatRows');
+  rowsWrap.innerHTML='';
+  state.categories.forEach(c=>{
+    const val = catTotals[c.id]||0;
+    if(val===0) return;
+    rowsWrap.innerHTML += `<div class="cat-row">
+      <div class="ic" style="background:${c.color}22;">${c.icon}</div>
+      <div class="info"><div class="name">${c.name}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${(val/maxCat*100)}%; background:${c.color};"></div></div>
+      </div>
+      <div class="amt">$${fmt(val)}</div>
+    </div>`;
+  });
+  if(Object.keys(catTotals).length===0){
+    rowsWrap.innerHTML = '<div class="empty-state" style="padding:24px 0;"><div class="ic">🌱</div><div class="t">這個月還沒有支出紀錄</div></div>';
+  }
+
+  // donut
+  renderDonut('dashDonut', 'dashLegend', catTotals);
+
+  // anomaly detection: compare to average of previous 3 months
+  const anomalyArea = document.getElementById('anomalyArea');
+  anomalyArea.innerHTML='';
+
+  // budget control alerts
+  if(state.budget.overall>0 && me>state.budget.overall){
+    anomalyArea.innerHTML += `<div class="alert-card"><div class="ic">🚨</div><div class="txt">本月支出已達 $${fmt(me)}，超出設定的預算上限 $${fmt(state.budget.overall)}。</div></div>`;
+  }
+  Object.entries(state.budget.byCategory||{}).forEach(([catId,cap])=>{
+    const cur = catTotals[catId]||0;
+    if(cap>0 && cur>cap){
+      anomalyArea.innerHTML += `<div class="alert-card"><div class="ic">🚨</div><div class="txt">「${catById(catId).name}」本月已花 $${fmt(cur)}，超出分類預算 $${fmt(cap)}。</div></div>`;
+    }
+  });
+
+  const prevMonths = [1,2,3].map(i=>{
+    const d = new Date(now.getFullYear(), now.getMonth()-i, 1);
+    return d.toISOString().slice(0,7);
+  });
+  state.categories.forEach(c=>{
+    const cur = catTotals[c.id]||0;
+    if(cur < 500) return;
+    const pastVals = prevMonths.map(pm=>{
+      const t = monthRange(pm).filter(tx=>tx.type==='expense' && tx.category===c.id);
+      return t.reduce((s,tx)=>s+tx.amount,0);
+    }).filter(v=>v>0);
+    if(pastVals.length===0) return;
+    const avg = pastVals.reduce((a,b)=>a+b,0)/pastVals.length;
+    if(avg>0 && cur > avg*1.5){
+      anomalyArea.innerHTML += `<div class="alert-card"><div class="ic">⚠️</div><div class="txt">本月「${c.name}」花費 $${fmt(cur)}，比過去平均高出 ${Math.round((cur/avg-1)*100)}%，留意一下荷包～</div></div>`;
+    }
+  });
+}
+function renderDonut(circleId, legendId, catTotals){
+  const donut = document.getElementById(circleId);
+  const legend = document.getElementById(legendId);
+  const entries = state.categories.map(c=>({...c, val: catTotals[c.id]||0})).filter(e=>e.val>0);
+  const total = entries.reduce((s,e)=>s+e.val,0);
+  legend.innerHTML='';
+  if(total===0){
+    donut.style.background = 'var(--light-pink)';
+    legend.innerHTML = '<div class="legend-item">尚無資料</div>';
+    return;
+  }
+  let acc=0; const stops=[];
+  entries.forEach(e=>{
+    const pct = e.val/total*100;
+    const colorVal = getComputedStyle(document.documentElement).getPropertyValue(e.color.replace('var(','').replace(')','')) || e.color;
+    stops.push(`${e.color} ${acc}% ${acc+pct}%`);
+    acc += pct;
+    legend.innerHTML += `<div class="legend-item"><span class="legend-dot" style="background:${e.color};"></span>${e.name} ${Math.round(pct)}%</div>`;
+  });
+  donut.style.background = `conic-gradient(${stops.join(',')})`;
+  donut.style.position='relative';
+}
+
+/* ==================================================================
+   LIST PAGE
+   ================================================================== */
+let listFilterCat = 'all';
+let listSearchTerm = '';
+function renderFilterChips(){
+  const wrap = document.getElementById('filterRow');
+  wrap.innerHTML = `<div class="chip ${listFilterCat==='all'?'active':''}" data-cat="all">全部</div>`;
+  state.categories.forEach(c=>{
+    wrap.innerHTML += `<div class="chip ${listFilterCat===c.id?'active':''}" data-cat="${c.id}">${c.icon} ${c.name}</div>`;
+  });
+  wrap.querySelectorAll('.chip').forEach(chip=>{
+    chip.onclick = ()=>{ listFilterCat = chip.dataset.cat; renderList(); };
+  });
+}
+document.getElementById('searchInput').addEventListener('input', (e)=>{
+  listSearchTerm = e.target.value.trim().toLowerCase();
+  renderList();
+});
+function renderList(){
+  renderFilterChips();
+  const area = document.getElementById('txListArea');
+  let items = [...state.transactions].sort((a,b)=> b.date.localeCompare(a.date));
+  if(listFilterCat!=='all') items = items.filter(t=>t.category===listFilterCat);
+  if(listSearchTerm){
+    items = items.filter(t =>
+      t.item.toLowerCase().includes(listSearchTerm) ||
+      (t.note||'').toLowerCase().includes(listSearchTerm) ||
+      (t.tags||[]).some(tag=>tag.toLowerCase().includes(listSearchTerm))
+    );
+  }
+  if(items.length===0){
+    area.innerHTML = '<div class="empty-state"><div class="ic">🗒️</div><div class="t">沒有符合的紀錄</div></div>';
+    return;
+  }
+  let html=''; let lastGroup='';
+  items.forEach(t=>{
+    if(t.date!==lastGroup){
+      html += `<div class="tx-group-label">${t.date}</div>`;
+      lastGroup = t.date;
+    }
+    const c = catById(t.category);
+    const acc = state.accounts.find(a=>a.id===t.account);
+    const installBadge = (t.installmentTotal>1) ? `<span class="badge">分期 ${t.installmentIndex}/${t.installmentTotal}</span>` : '';
+    const tagsHtml = (t.tags||[]).map(tag=>`<span class="tag">#${tag}</span>`).join('');
+    html += `<div class="tx-item" onclick='openTxModal(${JSON.stringify(t).replace(/'/g,"&#39;")})'>
+      <div class="ic" style="background:${c.color}22;">${c.icon}</div>
+      <div class="mid">
+        <div class="item-name">${t.item} ${installBadge}</div>
+        <div class="meta">${c.name} · ${acc?acc.name:''} ${tagsHtml}</div>
+      </div>
+      <div class="amt ${t.type}">${t.type==='income'?'+':'-'}$${fmt(t.amount)}</div>
+    </div>`;
+  });
+  area.innerHTML = html;
+}
+
+/* ==================================================================
+   TOOL 1: LIFE COST
+   ================================================================== */
+function calcLifeCost(){
+  const age = parseFloat(document.getElementById('lifeAge').value)||0;
+  const expect = parseFloat(document.getElementById('lifeExpect').value)||0;
+  const monthly = parseFloat(document.getElementById('lifeMonthly').value)||0;
+  const big = parseFloat(document.getElementById('lifeBig').value)||0;
+  const years = Math.max(0, expect-age);
+  const total = monthly*12*years + big;
+  const netWorth = computeNetWorth();
+  const gap = total - netWorth;
+  const resArea = document.getElementById('lifeResult');
+  resArea.innerHTML = `
+    <div class="result-hero">
+      <div class="t">一生預估總花費</div>
+      <div class="v">NT$ ${fmt(total)}</div>
+      <div class="d">以剩餘 ${years} 年 × 每月 $${fmt(monthly)} 計算</div>
+    </div>
+    <div class="card">
+      <div class="rowline"><div class="l">現階段淨資產</div><div class="r">NT$ ${fmt(netWorth)}</div></div>
+      <div class="rowline"><div class="l">${gap>0?'尚有缺口':'已超前準備'}</div><div class="r" style="color:${gap>0?'var(--pink)':'var(--sage)'}">NT$ ${fmt(Math.abs(gap))}</div></div>
+    </div>
+    <div class="alert-card"><div class="ic">💡</div><div class="txt">${gap>0? '建議提早規劃儲蓄與保障，逐步縮小缺口。' : '目前準備狀況良好，持續保持！'}</div></div>
+  `;
+}
+function computeNetWorth(){
+  const a = (state.balanceSheet.assets||[]).reduce((s,x)=>s+x.amount,0);
+  const l = (state.balanceSheet.liabilities||[]).reduce((s,x)=>s+x.amount,0);
+  const inv = computeInvestmentTotal();
+  return a-l+inv;
+}
+function computeInvestmentTotal(){
+  return (state.investments||[]).reduce((s,x)=> s + (x.quantity*x.currentPrice), 0);
+}
+function avgMonthlyExpense3mo(){
+  const months = lastNMonthKeys(3);
+  const total = months.reduce((s,m)=> s + monthIncomeExpense(m).exp, 0);
+  return total/3;
+}
+function updateEmergencyFund(){
+  const months = parseFloat(document.getElementById('efTargetMonths').value)||0;
+  const current = parseFloat(document.getElementById('efCurrentAmount').value)||0;
+  state.emergencyFund = { targetMonths: months, currentAmount: current };
+  saveState();
+  const avgExp = avgMonthlyExpense3mo();
+  const targetAmount = avgExp*months;
+  document.getElementById('efTargetAmount').textContent = 'NT$ '+fmt(targetAmount);
+  document.getElementById('efBar').style.width = targetAmount>0 ? Math.min(100, current/targetAmount*100)+'%' : '0%';
+}
+
+/* ==================================================================
+   TOOL 2: FREEDOM CALCULATOR
+   ================================================================== */
+function calcFreedom(){
+  const current = parseFloat(document.getElementById('frCurrent').value)||0;
+  const monthly = parseFloat(document.getElementById('frMonthly').value)||0;
+  const rate = (parseFloat(document.getElementById('frRate').value)||0)/100;
+  const target = parseFloat(document.getElementById('frTarget').value)||0;
+  const targetAsset = target*12/0.04; // 4% withdrawal rule
+
+  const monthlyRate = rate/12;
+  let value = current; let years=0;
+  const maxYears=60;
+  while(value < targetAsset && years < maxYears){
+    for(let m=0;m<12;m++){ value = value*(1+monthlyRate) + monthly; }
+    years++;
+  }
+  const resArea = document.getElementById('freedomResult');
+  resArea.innerHTML = `
+    <div class="result-hero">
+      <div class="t">達成財務自由所需時間</div>
+      <div class="v">${years>=maxYears?'60年以上':years+' 年'}</div>
+      <div class="d">目標資產 NT$ ${fmt(targetAsset)}（依 4% 提領率估算）</div>
+    </div>
+    <div class="card">
+      <div class="rowline"><div class="l">目前投入資金</div><div class="r">NT$ ${fmt(current)}</div></div>
+      <div class="rowline"><div class="l">每月投入</div><div class="r">NT$ ${fmt(monthly)}</div></div>
+      <div class="rowline"><div class="l">預期年化報酬率</div><div class="r">${(rate*100).toFixed(1)}%</div></div>
+    </div>
+  `;
+}
+
+/* ==================================================================
+   TOOL 3: BALANCE SHEET
+   ================================================================== */
+function renderBalanceSheet(){
+  const assetsWrap = document.getElementById('assetRows');
+  const liabWrap = document.getElementById('liabRows');
+  assetsWrap.innerHTML=''; liabWrap.innerHTML='';
+  (state.balanceSheet.assets||[]).forEach((a,i)=>{
+    assetsWrap.innerHTML += `<div class="mini-list-row"><div class="l">${a.name}</div><div style="display:flex; align-items:center; gap:8px;"><div class="r">NT$ ${fmt(a.amount)}</div><div class="x-btn" onclick="removeBalanceRow('assets',${i})">✕</div></div></div>`;
+  });
+  (state.balanceSheet.liabilities||[]).forEach((a,i)=>{
+    liabWrap.innerHTML += `<div class="mini-list-row"><div class="l">${a.name}</div><div style="display:flex; align-items:center; gap:8px;"><div class="r">NT$ ${fmt(a.amount)}</div><div class="x-btn" onclick="removeBalanceRow('liabilities',${i})">✕</div></div></div>`;
+  });
+  if((state.balanceSheet.assets||[]).length===0) assetsWrap.innerHTML='<div class="empty-state" style="padding:14px 0;"><div class="t">尚未新增資產</div></div>';
+  if((state.balanceSheet.liabilities||[]).length===0) liabWrap.innerHTML='<div class="empty-state" style="padding:14px 0;"><div class="t">尚未新增負債</div></div>';
+
+  const netWorth = computeNetWorth();
+  document.getElementById('netWorthVal').textContent = 'NT$ '+fmt(netWorth);
+
+  const totalA = (state.balanceSheet.assets||[]).reduce((s,x)=>s+x.amount,0);
+  const totalL = (state.balanceSheet.liabilities||[]).reduce((s,x)=>s+x.amount,0);
+  const donut = document.getElementById('balDonut');
+  const legend = document.getElementById('balLegend');
+  const total = totalA+totalL;
+  legend.innerHTML='';
+  if(total===0){
+    donut.style.background='var(--light-pink)';
+    legend.innerHTML='<div class="legend-item">尚無資料</div>';
+  } else {
+    const pctA = totalA/total*100;
+    donut.style.background = `conic-gradient(var(--sage) 0% ${pctA}%, var(--pink) ${pctA}% 100%)`;
+    legend.innerHTML = `<div class="legend-item"><span class="legend-dot" style="background:var(--sage);"></span>資產 NT$ ${fmt(totalA)}</div>
+      <div class="legend-item"><span class="legend-dot" style="background:var(--pink);"></span>負債 NT$ ${fmt(totalL)}</div>`;
+  }
+
+  if(renderLockGate('efLockGate','efContent','pro')){
+    document.getElementById('efTargetMonths').value = state.emergencyFund.targetMonths;
+    document.getElementById('efCurrentAmount').value = state.emergencyFund.currentAmount;
+    updateEmergencyFund();
+  }
+}
+let balanceRowPendingKey = null;
+function addBalanceRow(key){
+  balanceRowPendingKey = key;
+  document.getElementById('balanceRowModalTitle').textContent = key==='assets' ? '新增資產項目' : '新增負債項目';
+  document.getElementById('balanceRowName').value='';
+  document.getElementById('balanceRowAmount').value='';
+  document.getElementById('balanceRowName').placeholder = key==='assets' ? '例如：定存、股票、房產' : '例如：房貸、信貸';
+  document.getElementById('balanceRowModalOverlay').classList.add('open');
+}
+function saveBalanceRow(){
+  const name = document.getElementById('balanceRowName').value.trim();
+  const amount = parseFloat(document.getElementById('balanceRowAmount').value);
+  if(!name || !amount){ toast('請完整輸入項目名稱與金額'); return; }
+  const key = balanceRowPendingKey;
+  state.balanceSheet[key] = state.balanceSheet[key]||[];
+  state.balanceSheet[key].push({name, amount});
+  saveState();
+  closeModal('balanceRowModalOverlay');
+  renderBalanceSheet();
+  toast('已新增 ✓');
+}
+function removeBalanceRow(key, idx){
+  state.balanceSheet[key].splice(idx,1);
+  saveState();
+  renderBalanceSheet();
+}
+
+/* ==================================================================
+   TOOL 4: INCOME/EXPENSE SUMMARY
+   ================================================================== */
+function renderIncomeSummary(){
+  const picker = document.getElementById('incMonthPicker');
+  if(!picker.value) picker.value = new Date().toISOString().slice(0,7);
+  picker.onchange = renderIncomeSummary;
+  const ym = picker.value;
+  const tx = monthRange(ym).filter(t=>t.type==='expense');
+  let essential=0, nonEssential=0;
+  const catTotals={};
+  tx.forEach(t=>{
+    catTotals[t.category]=(catTotals[t.category]||0)+t.amount;
+    const c = catById(t.category);
+    if(c.essential) essential+=t.amount; else nonEssential+=t.amount;
+  });
+  const total = essential+nonEssential || 1;
+  document.getElementById('essentialTotal').textContent = 'NT$ '+fmt(essential);
+  document.getElementById('nonEssentialTotal').textContent = 'NT$ '+fmt(nonEssential);
+  document.getElementById('essentialBar').style.width = (essential/total*100)+'%';
+  document.getElementById('nonEssentialBar').style.width = (nonEssential/total*100)+'%';
+
+  const wrap = document.getElementById('incomeSummaryRows');
+  wrap.innerHTML='';
+  state.categories.forEach(c=>{
+    const val = catTotals[c.id]||0;
+    if(val===0) return;
+    wrap.innerHTML += `<div class="rowline"><div class="l">${c.icon} ${c.name} ${c.essential?'（必要）':'（非必要）'}</div><div class="r">NT$ ${fmt(val)}</div></div>`;
+  });
+  if(tx.length===0) wrap.innerHTML = '<div class="empty-state" style="padding:14px 0;"><div class="t">這個月沒有支出紀錄</div></div>';
+}
+
+/* ==================================================================
+   TOOL 5: POLICY REVIEW
+   ================================================================== */
+function renderPolicies(){
+  const totalPremium = state.policies.reduce((s,p)=>s+(p.premium||0),0);
+  document.getElementById('policyTotalPremium').textContent = 'NT$ '+fmt(totalPremium);
+
+  const checklistWrap = document.getElementById('coverageChecklist');
+  checklistWrap.innerHTML='';
+  COVERAGE_TYPES.forEach(ct=>{
+    const covered = state.policies.some(p=>p.type===ct.id) || state.coverage[ct.id];
+    checklistWrap.innerHTML += `<label class="check-item"><input type="checkbox" ${covered?'checked':''} onchange="toggleCoverage('${ct.id}', this.checked)"><span class="l">${ct.name}</span></label>`;
+  });
+
+  const listArea = document.getElementById('policyListArea');
+  listArea.innerHTML='';
+  if(state.policies.length===0){
+    listArea.innerHTML = '<div class="empty-state"><div class="ic">📭</div><div class="t">尚未新增保障項目</div></div>';
+    return;
+  }
+  const typeNames = {life:'人身保障', medical:'醫療保障', accident:'意外保障', critical:'重大疾病保障', disability:'失能保障', other:'其他'};
+  state.policies.forEach(p=>{
+    listArea.innerHTML += `<div class="policy-card">
+      <div class="top">
+        <div><div class="name">${p.name}</div><div class="co">${p.company||''}</div></div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span class="tag2">${typeNames[p.type]||'其他'}</span>
+          <div class="x-btn" onclick="removePolicy('${p.id}')">✕</div>
+        </div>
+      </div>
+      <div class="policy-grid">
+        <div><div class="k">保障額度</div><div class="v">NT$ ${fmt(p.amount||0)}</div></div>
+        <div><div class="k">年度費用</div><div class="v">NT$ ${fmt(p.premium||0)}</div></div>
+        <div><div class="k">繳費方式</div><div class="v">${p.payWay||'—'}</div></div>
+      </div>
+      ${p.note?`<div style="margin-top:8px; font-size:12px; color:var(--gray);">📝 ${p.note}</div>`:''}
+    </div>`;
+  });
+}
+function toggleCoverage(id, checked){
+  state.coverage[id]=checked;
+  saveState();
+}
+function openPolicyModal(){
+  ['polName','polCompany','polAmount','polPremium','polPayWay','polNote'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('policyModalOverlay').classList.add('open');
+}
+function savePolicy(){
+  const name = document.getElementById('polName').value.trim();
+  if(!name){ toast('請輸入項目名稱'); return; }
+  state.policies.push({
+    id: uid('pol'),
+    name, company: document.getElementById('polCompany').value.trim(),
+    type: document.getElementById('polType').value,
+    amount: parseFloat(document.getElementById('polAmount').value)||0,
+    premium: parseFloat(document.getElementById('polPremium').value)||0,
+    payWay: document.getElementById('polPayWay').value.trim(),
+    note: document.getElementById('polNote').value.trim(),
+  });
+  saveState();
+  closeModal('policyModalOverlay');
+  renderPolicies();
+  toast('已新增保障項目 ✓');
+}
+function removePolicy(id){
+  state.policies = state.policies.filter(p=>p.id!==id);
+  saveState();
+  renderPolicies();
+}
+
+/* ==================================================================
+   REPORT: professional financial health report
+   ================================================================== */
+function statusBadge(level){
+  const map = {good:['status-good','良好'], mid:['status-mid','注意'], bad:['status-bad','待改善']};
+  const [cls,txt] = map[level];
+  return `<span class="status-badge ${cls}">${txt}</span>`;
+}
+function lastNMonthKeys(n){
+  const arr=[]; const now=new Date();
+  for(let i=n-1;i>=0;i--){ const d=new Date(now.getFullYear(), now.getMonth()-i, 1); arr.push(d.toISOString().slice(0,7)); }
+  return arr;
+}
+function monthIncomeExpense(ym){
+  const tx = monthRange(ym);
+  const inc = tx.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+  const exp = tx.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+  return {inc, exp};
+}
+let reportPeriod = 'month';
+function lastNDayKeys(n){
+  const arr=[]; const now=new Date();
+  for(let i=n-1;i>=0;i--){ const d=new Date(now); d.setDate(now.getDate()-i); arr.push(d.toISOString().slice(0,10)); }
+  return arr;
+}
+function dayIncomeExpense(dateStr){
+  const tx = state.transactions.filter(t=>t.date===dateStr);
+  const inc = tx.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+  const exp = tx.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+  return {inc, exp};
+}
+function yearIncomeExpense(year){
+  const tx = state.transactions.filter(t=>t.date.slice(0,4)===String(year));
+  const inc = tx.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+  const exp = tx.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+  return {inc, exp};
+}
+document.getElementById('reportPeriodTabs').addEventListener('click', (e)=>{
+  const chip = e.target.closest('.chip');
+  if(!chip) return;
+  document.querySelectorAll('#reportPeriodTabs .chip').forEach(c=>c.classList.remove('active'));
+  chip.classList.add('active');
+  renderReport(chip.dataset.period);
+});
+function renderReport(period){
+  reportPeriod = period || reportPeriod || 'month';
+  if(!renderLockGate('reportLockGate','reportContent','pro')) return;
+  const now = new Date();
+  document.getElementById('reportDate').textContent = now.toLocaleDateString('zh-Hant-TW',{year:'numeric',month:'long',day:'numeric'});
+  const name = (state.settings && state.settings.clientName) ? state.settings.clientName.trim() : '';
+  document.getElementById('reportClientTitle').textContent = name ? `${name} 的財務健診報告` : '您的財務健診報告';
+
+  let avgIncome, avgExpense, trendTitle, trendData;
+  if(reportPeriod==='week'){
+    const days = lastNDayKeys(7);
+    trendData = days.map(d=>{ const v=dayIncomeExpense(d); return {label:d.slice(8)+'日', inc:v.inc, exp:v.exp}; });
+    avgIncome = trendData.reduce((s,d)=>s+d.inc,0);
+    avgExpense = trendData.reduce((s,d)=>s+d.exp,0);
+    trendTitle = '📈 近 7 天收支';
+  } else if(reportPeriod==='year'){
+    const yr = yearIncomeExpense(now.getFullYear());
+    avgIncome = yr.inc; avgExpense = yr.exp;
+    const months12 = lastNMonthKeys(12);
+    trendData = months12.map(m=>{ const v=monthIncomeExpense(m); return {label:m.slice(5)+'月', inc:v.inc, exp:v.exp}; });
+    trendTitle = '📈 近 12 個月收支趨勢';
+  } else {
+    const months3 = lastNMonthKeys(3);
+    const monthData3 = months3.map(m=>monthIncomeExpense(m));
+    avgIncome = monthData3.reduce((s,m)=>s+m.inc,0)/3;
+    avgExpense = monthData3.reduce((s,m)=>s+m.exp,0)/3;
+    trendData = months3.map((m,i)=>({label:m.slice(5)+'月', inc:monthData3[i].inc, exp:monthData3[i].exp}));
+    trendTitle = '📈 近三個月收支趨勢';
+  }
+  document.getElementById('reportTrendTitle').textContent = trendTitle;
+
+  // 1. savings rate (based on selected period)
+  const savingsRate = avgIncome>0 ? ((avgIncome-avgExpense)/avgIncome*100) : 0;
+  document.getElementById('mSavingsRate').textContent = avgIncome>0 ? savingsRate.toFixed(0)+'%' : '尚無收入資料';
+  const srLevel = savingsRate>=20?'good':(savingsRate>=10?'mid':'bad');
+  document.getElementById('mSavingsStatus').innerHTML = avgIncome>0 ? statusBadge(srLevel) : '';
+
+  // 2. emergency fund months — always based on trailing 3-month average expense (period-independent)
+  const avgExpense3 = avgMonthlyExpense3mo();
+  const totalAssets = (state.balanceSheet.assets||[]).reduce((s,x)=>s+x.amount,0);
+  const efAmount = (state.emergencyFund && state.emergencyFund.currentAmount) || 0;
+  const emergencyMonths = avgExpense3>0 ? (efAmount/avgExpense3) : 0;
+  document.getElementById('mEmergency').textContent = avgExpense3>0 ? emergencyMonths.toFixed(1)+' 個月' : '尚無支出資料';
+  const emLevel = emergencyMonths>=6?'good':(emergencyMonths>=3?'mid':'bad');
+  document.getElementById('mEmergencyStatus').innerHTML = avgExpense3>0 ? statusBadge(emLevel) : '';
+
+  // 3. debt ratio
+  const totalLiab = (state.balanceSheet.liabilities||[]).reduce((s,x)=>s+x.amount,0);
+  const debtRatio = totalAssets>0 ? (totalLiab/totalAssets*100) : (totalLiab>0?100:0);
+  document.getElementById('mDebtRatio').textContent = (totalAssets+totalLiab)>0 ? debtRatio.toFixed(0)+'%' : '尚無資料';
+  const drLevel = debtRatio<30?'good':(debtRatio<=50?'mid':'bad');
+  document.getElementById('mDebtStatus').innerHTML = (totalAssets+totalLiab)>0 ? statusBadge(drLevel) : '';
+
+  // 4. coverage rate
+  const coveredCount = COVERAGE_TYPES.filter(ct=> state.policies.some(p=>p.type===ct.id) || state.coverage[ct.id]).length;
+  const coverageRate = coveredCount/COVERAGE_TYPES.length*100;
+  document.getElementById('mCoverage').textContent = coverageRate.toFixed(0)+'%';
+  const cvLevel = coverageRate>=80?'good':(coverageRate>=50?'mid':'bad');
+  document.getElementById('mCoverageStatus').innerHTML = statusBadge(cvLevel);
+
+  // trend chart
+  const trendWrap = document.getElementById('reportTrendChart');
+  const maxVal = Math.max(1, ...trendData.map(d=>Math.max(d.inc,d.exp)));
+  trendWrap.innerHTML='';
+  trendData.forEach(d=>{
+    trendWrap.innerHTML += `<div class="col">
+      <div style="display:flex; gap:3px; align-items:flex-end; height:70px; width:100%;">
+        <div class="bar" style="height:${(d.inc/maxVal*100)}%; background:var(--sage); flex:1;"></div>
+        <div class="bar" style="height:${(d.exp/maxVal*100)}%; background:var(--pink); flex:1;"></div>
+      </div>
+      <div class="lbl">${d.label}</div>
+    </div>`;
+  });
+
+  // balance sheet summary
+  const investTotal = computeInvestmentTotal();
+  document.getElementById('rAssets').textContent = 'NT$ '+fmt(totalAssets+investTotal);
+  document.getElementById('rLiab').textContent = 'NT$ '+fmt(totalLiab);
+  document.getElementById('rNet').textContent = 'NT$ '+fmt(totalAssets+investTotal-totalLiab);
+
+  // coverage gap list
+  const covWrap = document.getElementById('reportCoverageList');
+  covWrap.innerHTML='';
+  COVERAGE_TYPES.forEach(ct=>{
+    const covered = state.policies.some(p=>p.type===ct.id) || state.coverage[ct.id];
+    covWrap.innerHTML += `<div class="rowline"><div class="l">${ct.name}</div><div class="r">${covered?statusBadge('good'):statusBadge('bad')}</div></div>`;
+  });
+
+  // advisor advice (auto-generated from the numbers above)
+  const advice = [];
+  if(avgIncome>0 && savingsRate<10) advice.push('儲蓄率偏低，建議檢視非必要支出（購物、娛樂），設定每月自動轉存目標。');
+  else if(avgIncome>0 && savingsRate>=20) advice.push('儲蓄率表現良好，可考慮將多餘資金配置於長期投資或保障型商品。');
+  if(avgExpense3>0 && emergencyMonths<3) advice.push('緊急預備金不足 3 個月支出，建議優先累積至 3～6 個月生活費，以應對突發狀況。');
+  if(debtRatio>50) advice.push('負債比率偏高，建議優先檢視高利率負債的償還順序，避免影響長期資產累積。');
+  if(coverageRate<80){
+    const missing = COVERAGE_TYPES.filter(ct=> !(state.policies.some(p=>p.type===ct.id) || state.coverage[ct.id])).map(ct=>ct.name);
+    advice.push('保障尚有缺口，尤其是「'+missing.join('、')+'」，建議進一步討論補強方案。');
+  }
+  if(advice.length===0) advice.push('目前財務體質整體穩健，建議持續記帳追蹤，並每季回顧一次資產配置與保障內容。');
+  const adviceWrap = document.getElementById('reportAdvice');
+  adviceWrap.innerHTML = advice.map(a=>`<div class="advice-item"><div class="dot"></div><div class="txt">${a}</div></div>`).join('');
+}
+
+/* ==================================================================
+   TOOL 6: CHART ANALYSIS
+   ================================================================== */
+function renderAnalysis(){
+  const picker = document.getElementById('analysisMonthPicker');
+  if(!picker.value) picker.value = new Date().toISOString().slice(0,7);
+  picker.onchange = renderAnalysis;
+  const ym = picker.value;
+  const catTotals = {};
+  monthRange(ym).filter(t=>t.type==='expense').forEach(t=>{ catTotals[t.category]=(catTotals[t.category]||0)+t.amount; });
+  renderDonut('analysisDonut', 'analysisLegend', catTotals);
+
+  const rowsWrap = document.getElementById('analysisCatRows');
+  const maxCat = Math.max(1, ...Object.values(catTotals));
+  rowsWrap.innerHTML='';
+  state.categories.forEach(c=>{
+    const val = catTotals[c.id]||0;
+    if(val===0) return;
+    rowsWrap.innerHTML += `<div class="cat-row">
+      <div class="ic" style="background:${c.color}22;">${c.icon}</div>
+      <div class="info"><div class="name">${c.name}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${(val/maxCat*100)}%; background:${c.color};"></div></div>
+      </div>
+      <div class="amt">$${fmt(val)}</div>
+    </div>`;
+  });
+  if(Object.keys(catTotals).length===0) rowsWrap.innerHTML='<div class="empty-state" style="padding:14px 0;"><div class="t">這個月沒有支出紀錄</div></div>';
+
+  const months6 = lastNMonthKeys(6);
+  const data6 = months6.map(m=>monthIncomeExpense(m));
+  const maxVal = Math.max(1, ...data6.map(d=>Math.max(d.inc,d.exp)));
+  const barWrap = document.getElementById('analysisBarChart');
+  barWrap.innerHTML='';
+  months6.forEach((m,i)=>{
+    const d = data6[i];
+    barWrap.innerHTML += `<div class="col">
+      <div style="display:flex; gap:3px; align-items:flex-end; height:90px; width:100%;">
+        <div class="bar" style="height:${(d.inc/maxVal*100)}%; background:var(--sage); flex:1;"></div>
+        <div class="bar" style="height:${(d.exp/maxVal*100)}%; background:var(--pink); flex:1;"></div>
+      </div>
+      <div class="lbl">${m.slice(5)}月</div>
+    </div>`;
+  });
+}
+
+/* ==================================================================
+   TOOL 7: INVESTMENTS
+   ================================================================== */
+function renderInvestments(){
+  if(!renderLockGate('investLockGate','investContent','pro')) return;
+  const total = computeInvestmentTotal();
+  const cost = (state.investments||[]).reduce((s,x)=>s+x.quantity*x.avgCost,0);
+  const gain = total-cost;
+  document.getElementById('investTotalVal').textContent = 'NT$ '+fmt(total);
+  document.getElementById('investGainVal').textContent = cost>0 ? `${gain>=0?'+':''}NT$ ${fmt(gain)}（${(gain/cost*100).toFixed(1)}%）` : '';
+  const listArea = document.getElementById('investListArea');
+  listArea.innerHTML='';
+  if((state.investments||[]).length===0){
+    listArea.innerHTML='<div class="empty-state"><div class="ic">📭</div><div class="t">尚未新增持有部位</div></div>';
+    return;
+  }
+  state.investments.forEach(inv=>{
+    const val = inv.quantity*inv.currentPrice;
+    const c = inv.quantity*inv.avgCost;
+    const g = val-c;
+    const gp = c>0 ? (g/c*100) : 0;
+    listArea.innerHTML += `<div class="invest-card">
+      <div class="top">
+        <div><div class="name">${inv.name}</div><div class="market">${inv.market}</div></div>
+        <div class="x-btn" onclick="removeInvestment('${inv.id}')">✕</div>
+      </div>
+      <div class="invest-grid">
+        <div><div class="k">持有數量</div><div class="v">${inv.quantity}</div></div>
+        <div><div class="k">平均成本</div><div class="v">${inv.avgCost}</div></div>
+        <div><div class="k">目前市價</div><div class="v">${inv.currentPrice}</div></div>
+        <div><div class="k">損益</div><div class="v ${g>=0?'gain-pos':'gain-neg'}">${g>=0?'+':''}${fmt(g)}（${gp.toFixed(1)}%）</div></div>
+      </div>
+      <button class="btn btn-ghost btn-sm" style="margin-top:8px;" onclick="updateInvestPrice('${inv.id}')">更新市價</button>
+    </div>`;
+  });
+}
+function addInvestment(){
+  document.getElementById('invName').value='';
+  document.getElementById('invMarket').value='台股';
+  document.getElementById('invQuantity').value='';
+  document.getElementById('invAvgCost').value='';
+  document.getElementById('invCurrentPrice').value='';
+  document.getElementById('investModalOverlay').classList.add('open');
+}
+function saveInvestment(){
+  const name = document.getElementById('invName').value.trim();
+  const market = document.getElementById('invMarket').value;
+  const quantity = parseFloat(document.getElementById('invQuantity').value);
+  const avgCost = parseFloat(document.getElementById('invAvgCost').value);
+  const currentPrice = parseFloat(document.getElementById('invCurrentPrice').value);
+  if(!name || !quantity || isNaN(avgCost) || isNaN(currentPrice)){ toast('請完整輸入資料'); return; }
+  state.investments.push({id:uid('inv'), name, market, quantity, avgCost, currentPrice});
+  saveState();
+  closeModal('investModalOverlay');
+  renderInvestments();
+  toast('已新增 ✓');
+}
+let investPricePendingId = null;
+function updateInvestPrice(id){
+  investPricePendingId = id;
+  const inv = state.investments.find(i=>i.id===id);
+  document.getElementById('invNewPrice').value = inv.currentPrice;
+  document.getElementById('investPriceModalOverlay').classList.add('open');
+}
+function saveInvestPrice(){
+  const p = parseFloat(document.getElementById('invNewPrice').value);
+  if(isNaN(p)){ toast('請輸入市價'); return; }
+  const inv = state.investments.find(i=>i.id===investPricePendingId);
+  inv.currentPrice = p;
+  saveState();
+  closeModal('investPriceModalOverlay');
+  renderInvestments();
+  toast('已更新 ✓');
+}
+function removeInvestment(id){
+  state.investments = state.investments.filter(i=>i.id!==id);
+  saveState();
+  renderInvestments();
+}
+
+/* ==================================================================
+   TOOL 8: SAVINGS GOALS (piggy bank + house building gamification)
+   ================================================================== */
+const GOAL_COLORS = ['var(--pink)','var(--blue)','var(--sage)','var(--gold)'];
+function houseSVG(pct, color){
+  pct = Math.max(0, Math.min(100, pct));
+  // stages revealed progressively as pct increases: foundation -> walls -> roof -> door/windows -> flag
+  const showFoundation = pct>=1;
+  const showWalls = pct>=25;
+  const showRoof = pct>=50;
+  const showDetails = pct>=75;
+  const showFlag = pct>=100;
+  return `<svg viewBox="0 0 70 70" width="70" height="70">
+    <rect x="8" y="52" width="54" height="8" rx="2" fill="${showFoundation?color:'var(--light-pink)'}" opacity="${showFoundation?1:0.35}"/>
+    <rect x="14" y="30" width="42" height="24" fill="${showWalls?color:'var(--light-pink)'}" opacity="${showWalls?0.85:0.25}"/>
+    <polygon points="35,10 12,32 58,32" fill="${showRoof?color:'var(--light-pink)'}" opacity="${showRoof?1:0.25}"/>
+    ${showDetails?`<rect x="30" y="40" width="10" height="14" fill="#fff" opacity="0.9"/><rect x="19" y="38" width="8" height="8" fill="#fff" opacity="0.85"/><rect x="43" y="38" width="8" height="8" fill="#fff" opacity="0.85"/>`:''}
+    ${showFlag?`<line x1="35" y1="10" x2="35" y2="2" stroke="${color}" stroke-width="1.5"/><polygon points="35,2 35,6 41,4" fill="var(--gold)"/>`:''}
+  </svg>`;
+}
+function goalStreak(goal){
+  const deposits = (goal.deposits||[]).map(d=>d.date).sort().reverse();
+  if(deposits.length===0) return 0;
+  const uniqueDates = [...new Set(deposits)];
+  let streak=0; let cursor = new Date();
+  for(let i=0;i<uniqueDates.length;i++){
+    const ds = cursor.toISOString().slice(0,10);
+    if(uniqueDates.includes(ds)){ streak++; cursor.setDate(cursor.getDate()-1); }
+    else if(i===0 && ds!==uniqueDates[0]){ break; }
+    else break;
+  }
+  return streak;
+}
+function renderGoals(){
+  if(!renderLockGate('goalsLockGate','goalsContent','pro')) return;
+  const wrap = document.getElementById('goalsListArea');
+  wrap.innerHTML='';
+  if((state.goals||[]).length===0){
+    wrap.innerHTML='<div class="empty-state"><div class="ic">🏗️</div><div class="t">還沒有願望目標，新增一個開始存錢吧</div></div>';
+    return;
+  }
+  state.goals.forEach((g,i)=>{
+    const pct = g.targetAmount>0 ? Math.min(100, g.currentAmount/g.targetAmount*100) : 0;
+    const color = GOAL_COLORS[i%GOAL_COLORS.length];
+    const streak = goalStreak(g);
+    wrap.innerHTML += `<div class="goal-card">
+      <div class="top">
+        <div><div class="name">${g.icon} ${g.name}</div><div class="amounts">NT$ ${fmt(g.currentAmount)} / ${fmt(g.targetAmount)}</div>
+        ${streak>0?`<div class="streak">🔥 連續存 ${streak} 天</div>`:''}</div>
+        <div class="x-btn" onclick="removeGoal('${g.id}')">✕</div>
+      </div>
+      <div class="goal-body">
+        <div class="goal-house">${houseSVG(pct, color)}</div>
+        <div class="goal-progress-wrap">
+          <div class="goal-pct" style="color:${color};">${pct.toFixed(0)}%</div>
+          <div class="progress-track"><div class="progress-fill" style="width:${pct}%; background:${color};"></div></div>
+        </div>
+      </div>
+      <div class="goal-actions">
+        <button class="btn btn-primary btn-sm" style="flex:1;" onclick="depositGoal('${g.id}')">💰 今天存一筆</button>
+      </div>
+    </div>`;
+  });
+}
+const GOAL_ICON_OPTIONS = ['👟','📱','🏠','🚗','✈️','🎮','💍','🎓','📷','🎸','☕','🎯'];
+let goalSelectedIcon = '🎯';
+function addGoal(){
+  document.getElementById('goalName').value='';
+  document.getElementById('goalTarget').value='';
+  goalSelectedIcon = '🎯';
+  const wrap = document.getElementById('goalIconPicker');
+  wrap.innerHTML='';
+  GOAL_ICON_OPTIONS.forEach(ic=>{
+    const el = document.createElement('div');
+    el.className = 'cat-pick' + (ic===goalSelectedIcon?' active':'');
+    el.innerHTML = `<span class="ic">${ic}</span>`;
+    el.onclick = ()=>{ goalSelectedIcon = ic; wrap.querySelectorAll('.cat-pick').forEach(e=>e.classList.remove('active')); el.classList.add('active'); };
+    wrap.appendChild(el);
+  });
+  document.getElementById('goalModalOverlay').classList.add('open');
+}
+function saveGoal(){
+  const name = document.getElementById('goalName').value.trim();
+  const targetAmount = parseFloat(document.getElementById('goalTarget').value);
+  if(!name || !targetAmount){ toast('請完整輸入願望名稱與目標金額'); return; }
+  state.goals.push({id:uid('goal'), name, icon:goalSelectedIcon, targetAmount, currentAmount:0, deposits:[]});
+  saveState();
+  closeModal('goalModalOverlay');
+  renderGoals();
+  toast('已新增願望 ✓');
+}
+let goalDepositPendingId = null;
+function depositGoal(id){
+  goalDepositPendingId = id;
+  document.getElementById('goalDepositAmount').value='';
+  document.getElementById('goalDepositModalOverlay').classList.add('open');
+}
+function saveGoalDeposit(){
+  const amount = parseFloat(document.getElementById('goalDepositAmount').value);
+  if(!amount || amount<=0){ toast('請輸入金額'); return; }
+  const g = state.goals.find(x=>x.id===goalDepositPendingId);
+  g.currentAmount += amount;
+  g.deposits = g.deposits||[];
+  g.deposits.push({date: todayStr(), amount});
+  saveState();
+  closeModal('goalDepositModalOverlay');
+  renderGoals();
+  toast(g.currentAmount>=g.targetAmount ? '🎉 恭喜達成目標！' : '已存入 ✓');
+}
+function removeGoal(id){
+  state.goals = state.goals.filter(g=>g.id!==id);
+  saveState();
+  renderGoals();
+}
+
+/* ==================================================================
+   TOOL 9: MULTI-PERSON SPLIT
+   ================================================================== */
+function renderSplit(){
+  if(!renderLockGate('splitLockGate','splitContent','family')) return;
+  const memberWrap = document.getElementById('memberListArea');
+  memberWrap.innerHTML='';
+  (state.members||[]).forEach((m,i)=>{
+    memberWrap.innerHTML += `<div class="mini-list-row"><div class="l">${m}</div><div class="x-btn" onclick="removeMember(${i})">✕</div></div>`;
+  });
+  if((state.members||[]).length===0) memberWrap.innerHTML='<div class="empty-state" style="padding:14px 0;"><div class="t">尚未新增成員</div></div>';
+
+  const sharedTx = state.transactions.filter(t=>t.splitMembers && t.splitMembers.length>0);
+  const balances = {};
+  (state.members||[]).forEach(m=>balances[m]=0);
+  sharedTx.forEach(t=>{
+    const people = t.splitMembers;
+    const share = t.amount/people.length;
+    people.forEach(p=>{ balances[p] = (balances[p]||0) - share; });
+    if(t.paidBy){ balances[t.paidBy] = (balances[t.paidBy]||0) + t.amount; }
+  });
+  const balArea = document.getElementById('splitBalanceArea');
+  balArea.innerHTML='';
+  if(sharedTx.length===0){
+    balArea.innerHTML='<div class="empty-state" style="padding:14px 0;"><div class="t">還沒有共同記帳紀錄</div></div>';
+  } else {
+    Object.entries(balances).forEach(([m,v])=>{
+      const positive = v>=0;
+      balArea.innerHTML += `<div class="rowline"><div class="l">${m}</div><div class="r" style="color:${positive?'var(--sage)':'var(--pink)'};">${positive?'應收':'應付'} NT$ ${fmt(Math.abs(v))}</div></div>`;
+    });
+  }
+
+  const txWrap = document.getElementById('splitTxListArea');
+  txWrap.innerHTML='';
+  if(sharedTx.length===0){
+    txWrap.innerHTML='<div class="empty-state" style="padding:14px 0;"><div class="t">在記帳時勾選「與他人分攤」即可紀錄在這裡</div></div>';
+  } else {
+    sharedTx.sort((a,b)=>b.date.localeCompare(a.date)).forEach(t=>{
+      txWrap.innerHTML += `<div class="tx-item"><div class="ic" style="background:var(--light-blue);">🤝</div><div class="mid"><div class="item-name">${t.item}</div><div class="meta">${t.date} · 付款人：${t.paidBy||'—'} · 分攤：${(t.splitMembers||[]).join('、')}</div></div><div class="amt expense">$${fmt(t.amount)}</div></div>`;
+    });
+  }
+}
+function addMember(){
+  document.getElementById('memberName').value='';
+  document.getElementById('memberModalOverlay').classList.add('open');
+}
+function saveMember(){
+  const name = document.getElementById('memberName').value.trim();
+  if(!name){ toast('請輸入姓名'); return; }
+  state.members = state.members||[];
+  state.members.push(name);
+  saveState();
+  closeModal('memberModalOverlay');
+  renderSplit();
+  toast('已新增成員 ✓');
+}
+function removeMember(i){
+  state.members.splice(i,1);
+  saveState();
+  renderSplit();
+}
+
+/* ==================================================================
+   SETTINGS: fixed expenses / accounts / backup
+   ================================================================== */
+function updateClientName(val){
+  state.settings = state.settings || {clientName:''};
+  state.settings.clientName = val;
+  saveState();
+  renderGreeting();
+}
+function renderSettings(){
+  const tierNames = {free:'免費版 Free', pro:'專業版 PRO', family:'家庭 / 團隊版 Family'};
+  document.getElementById('licenseTierDisplay').textContent = tierNames[state.license.tier] || tierNames.free;
+  document.getElementById('licenseKeyDisplay').textContent = state.license.key ? `授權碼：${state.license.key}` : '尚未輸入授權碼，僅能使用免費功能。';
+  document.getElementById('clientNameInput').value = (state.settings && state.settings.clientName) || '';
+  const fixedWrap = document.getElementById('fixedListArea');
+  fixedWrap.innerHTML='';
+  if(state.fixedExpenses.length===0){
+    fixedWrap.innerHTML='<div class="empty-state" style="padding:14px 0;"><div class="t">尚未設定固定支出</div></div>';
+  }
+  state.fixedExpenses.forEach(fx=>{
+    const acc = state.accounts.find(a=>a.id===fx.account);
+    fixedWrap.innerHTML += `<div class="settings-item"><div><div class="l">${fx.item}</div><div class="r">每月 ${fx.day} 號・NT$ ${fmt(fx.amount)}・${acc?acc.name:''}</div></div><div class="x-btn" onclick="removeFixed('${fx.id}')">✕</div></div>`;
+  });
+
+  const accWrap = document.getElementById('accountListArea');
+  accWrap.innerHTML='';
+  const typeNames={bank:'銀行帳戶', credit:'信用卡', cash:'現金', linepay:'LINE Pay', jkopay:'街口支付', applepay:'Apple Pay', paypal:'PayPal', pxpay:'全支付', easycard:'悠遊卡', ipass:'一卡通', icash:'iCash', invoicecarrier:'手機發票條碼', other:'其他'};
+  state.accounts.forEach(a=>{
+    accWrap.innerHTML += `<div class="settings-item"><div class="l">${a.name}</div><div class="r">${typeNames[a.type]} <span class="x-btn" onclick="removeAccount('${a.id}')">✕</span></div></div>`;
+  });
+
+  document.getElementById('budgetOverall').value = state.budget.overall || '';
+  const budgetCatWrap = document.getElementById('budgetCatRows');
+  budgetCatWrap.innerHTML='';
+  state.categories.forEach(c=>{
+    const val = state.budget.byCategory[c.id] || '';
+    budgetCatWrap.innerHTML += `<div class="field-row" style="align-items:center; margin-bottom:8px;">
+      <div style="width:70px; font-size:12.5px; font-weight:700;">${c.icon} ${c.name}</div>
+      <input type="number" style="flex:1; padding:8px 10px; border-radius:8px; border:1.5px solid var(--light-pink);" value="${val}" placeholder="不設限" oninput="updateBudgetCategory('${c.id}', this.value)">
+    </div>`;
+  });
+
+  const rateWrap = document.getElementById('exchangeRateRows');
+  rateWrap.innerHTML='';
+  Object.entries(state.exchangeRates).forEach(([cur,rate])=>{
+    rateWrap.innerHTML += `<div class="field-row" style="align-items:center; margin-bottom:8px;">
+      <div style="width:60px; font-size:12.5px; font-weight:700;">${cur} → NT$</div>
+      <input type="number" step="0.01" style="flex:1; padding:8px 10px; border-radius:8px; border:1.5px solid var(--light-pink);" value="${rate}" oninput="updateExchangeRate('${cur}', this.value)">
+    </div>`;
+  });
+}
+function updateBudgetOverall(val){
+  state.budget.overall = parseFloat(val)||0;
+  saveState();
+}
+function updateBudgetCategory(catId, val){
+  const n = parseFloat(val);
+  if(!val || isNaN(n)) delete state.budget.byCategory[catId];
+  else state.budget.byCategory[catId] = n;
+  saveState();
+}
+function updateExchangeRate(cur, val){
+  state.exchangeRates[cur] = parseFloat(val)||0;
+  saveState();
+}
+function openFixedModal(){
+  document.getElementById('fixedItem').value='';
+  document.getElementById('fixedAmount').value='';
+  document.getElementById('fixedDay').value='';
+  populateSelects();
+  fixedSelectedCat='life';
+  buildCatPicker('fixedCatPicker', (id,wrap)=>{ fixedSelectedCat=id; selectCatUI(wrap,id); });
+  selectCatUI(document.getElementById('fixedCatPicker'), fixedSelectedCat);
+  document.getElementById('fixedModalOverlay').classList.add('open');
+}
+let fixedSelectedCat='life';
+function saveFixed(){
+  const item = document.getElementById('fixedItem').value.trim();
+  const amount = parseFloat(document.getElementById('fixedAmount').value);
+  const day = parseInt(document.getElementById('fixedDay').value)||1;
+  const account = document.getElementById('fixedAccount').value;
+  if(!item || !amount){ toast('請填寫完整資訊'); return; }
+  state.fixedExpenses.push({id:uid('fx'), item, amount, category:fixedSelectedCat, day, account, generatedMonths:[]});
+  saveState();
+  closeModal('fixedModalOverlay');
+  renderSettings();
+  toast('已新增固定支出 ✓');
+}
+function removeFixed(id){
+  state.fixedExpenses = state.fixedExpenses.filter(f=>f.id!==id);
+  saveState();
+  renderSettings();
+}
+function openAccountModal(){
+  document.getElementById('accName').value='';
+  document.getElementById('accountModalOverlay').classList.add('open');
+}
+function saveAccount(){
+  const name = document.getElementById('accName').value.trim();
+  const type = document.getElementById('accType').value;
+  if(!name){ toast('請輸入名稱'); return; }
+  state.accounts.push({id:uid('acc'), name, type});
+  saveState();
+  closeModal('accountModalOverlay');
+  renderSettings();
+  toast('已新增帳戶 ✓');
+}
+function removeAccount(id){
+  state.accounts = state.accounts.filter(a=>a.id!==id);
+  saveState();
+  renderSettings();
+}
+function exportBackup(){
+  const blob = new Blob([JSON.stringify(state,null,2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href=url; a.download = 'duzhi_備份_'+todayStr()+'.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('備份已匯出 ✓');
+}
+document.getElementById('importFile').addEventListener('change', (e)=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (evt)=>{
+    try{
+      const data = JSON.parse(evt.target.result);
+      state = Object.assign(defaultState(), data);
+      saveState();
+      toast('備份已匯入 ✓');
+      refreshCurrentPage();
+    }catch(err){ toast('檔案格式錯誤'); }
+  };
+  reader.readAsText(file);
+  e.target.value='';
+});
+function showConfirm(title, msg, onConfirm){
+  document.getElementById('confirmModalTitle').textContent = title;
+  document.getElementById('confirmModalMsg').textContent = msg;
+  const btn = document.getElementById('confirmModalOkBtn');
+  const newBtn = btn.cloneNode(true);
+  btn.parentNode.replaceChild(newBtn, btn);
+  newBtn.addEventListener('click', ()=>{ closeModal('confirmModalOverlay'); onConfirm(); });
+  document.getElementById('confirmModalOverlay').classList.add('open');
+}
+function clearAllData(){
+  showConfirm('清除所有資料', '確定要清除所有資料嗎？此動作無法復原。', ()=>{
+    state = defaultState();
+    saveState();
+    toast('資料已清除');
+    refreshCurrentPage();
+  });
+}
+
+/* ==================================================================
+   INIT
+   ================================================================== */
+function init(){
+  generateFixedExpensesForThisMonth();
+  populateSelects();
+  renderGreeting();
+  renderDashboard();
+}
+init();
+
+/* ==================================================================
+   LANDING PAGE <-> APP TOGGLE
+   ================================================================== */
+function enterApp(){
+  document.getElementById('landingPage').style.display='none';
+  document.getElementById('appShell').style.display='flex';
+  document.body.style.paddingBottom='';
+  window.scrollTo(0,0);
+  goPage('dashboard');
+}
+function backToIntro(){
+  document.getElementById('appShell').style.display='none';
+  document.getElementById('landingPage').style.display='block';
+  window.scrollTo(0,0);
+}
+const lpRevealEls = document.querySelectorAll('.lp-reveal');
+const lpIO = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('show'); lpIO.unobserve(e.target); } });
+}, {threshold:0.15});
+lpRevealEls.forEach(el=>lpIO.observe(el));
+
+/* ==================================================================
+   PREVIEW-FRAME HEIGHT FIX
+   Some in-app browsers/preview panels size their frame to the page's
+   height only once on load. Since this is a single-page app that
+   swaps content via JS (no real page navigation), we actively notify
+   any parent frame whenever the content height changes, so switching
+   to a taller page (e.g. Tools) never gets clipped at the old height.
+   This has no effect when the file is opened directly in a normal
+   browser tab — normal scrolling always works there regardless.
+   ================================================================== */
+function notifyHeightChange(){
+  requestAnimationFrame(()=>{
+    const h = document.documentElement.scrollHeight;
+    window.dispatchEvent(new Event('resize'));
+    try{ window.parent.postMessage({type:'resize', height:h, frameHeight:h}, '*'); }catch(e){}
+  });
+}
+window.addEventListener('load', notifyHeightChange);
+const heightObserver = new MutationObserver(()=> notifyHeightChange());
+heightObserver.observe(document.body, {childList:true, subtree:true, attributes:true, attributeFilter:['style','class']});
+</script>
+</body>
+</html>
