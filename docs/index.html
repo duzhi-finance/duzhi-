@@ -1932,7 +1932,7 @@ function renderGreeting(){
   const hr = now.getHours();
   const timeWord = (hr<12?'早安 ☀️': hr<18?'午安 🌤️':'晚安 🌙');
   const name = (state.settings && state.settings.clientName) ? state.settings.clientName.trim() : '';
-  document.getElementById('greetingText').textContent = name ? `${name}，${timeWord}` : `哈囉 👋 ${timeWord}`;
+  document.getElementById('greetingText').textContent = name ? `${name}，${timeWord}` : `duzhi`;
 }
 function renderDashboard(){
   renderGreeting();
@@ -1968,7 +1968,7 @@ function renderDashboard(){
     </div>`;
   });
   if(Object.keys(catTotals).length===0){
-    rowsWrap.innerHTML = '<div class="empty-state" style="padding:24px 0;"><div class="ic">🌱</div><div class="t">這個月還沒有支出紀錄</div></div>';
+    rowsWrap.innerHTML = '<div class="empty-state" style="padding:24px 0;"><div class="ic">🌱</div><div class="t">No expenses recorded this month</div></div>';
   }
 
   // donut
