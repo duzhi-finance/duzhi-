@@ -474,6 +474,30 @@ select.mpc-input{
 .report-cta .arrow{font-size:18px; opacity:.7;}
 .report-cta-doodle{position:absolute; right:-6px; bottom:-16px; font-size:52px; opacity:.12; transform:rotate(8deg);}
 
+/* ---------- Quick add ---------- */
+.quickadd-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:8px;}
+.quickadd-btn{display:flex; flex-direction:column; align-items:center; gap:4px; padding:12px 6px; border-radius:var(--radius-md); background:var(--cream); border:1.5px solid transparent; transition:.15s;}
+.quickadd-btn:active{transform:scale(.94); background:var(--light-pink); border-color:var(--pink);}
+.quickadd-btn .ic{font-size:20px;}
+.quickadd-btn .lbl{font-size:11.5px; font-weight:700; color:var(--dark);}
+.quickadd-btn .amt{font-size:10.5px; color:var(--gray); font-weight:700;}
+
+/* ---------- Privacy entry ---------- */
+.privacy-entry{
+  display:flex; align-items:center; gap:12px; border-radius:var(--radius-lg); padding:14px 16px;
+  background:var(--light-sage); margin-bottom:16px; cursor:pointer;
+}
+.privacy-entry .ic{font-size:20px; flex-shrink:0;}
+.privacy-entry .t{flex:1;}
+.privacy-entry .t .title{font-size:13px; font-weight:900; color:#3f5641;}
+.privacy-entry .t .sub{font-size:11px; color:#5a6f5c; margin-top:2px;}
+.privacy-entry .arrow{font-size:16px; color:#5a6f5c; opacity:.7;}
+
+/* ---------- Onboarding ---------- */
+.onboard-dots{display:flex; justify-content:center; gap:6px; margin:22px 0 18px;}
+.onboard-dot{width:7px; height:7px; border-radius:50%; background:var(--light-pink); transition:.2s;}
+.onboard-dot.active{background:var(--pink); width:20px; border-radius:100px;}
+
 .status-badge{display:inline-block; padding:3px 10px; border-radius:100px; font-size:11px; font-weight:700;}
 .status-good{background:var(--light-sage); color:#4f6b52;}
 .status-mid{background:var(--light-gold); color:#8a6d2f;}
@@ -974,6 +998,12 @@ select.mpc-input{
           </div>
         </div>
 
+        <div class="privacy-entry" onclick="openPrivacyModal()">
+          <div class="ic">🔒</div>
+          <div class="t"><div class="title">資料保護說明</div><div class="sub">你的財務資料只存在這台裝置，不會被誰看到</div></div>
+          <div class="arrow">›</div>
+        </div>
+
         <div id="anomalyArea"></div>
 
         <div class="card">
@@ -1002,6 +1032,11 @@ select.mpc-input{
       <!-- ================= LIST ================= -->
       <section class="page" id="page-list">
         <div class="filter-row" id="filterRow"></div>
+
+        <div class="card">
+          <div class="card-title">⚡ 快速記帳</div>
+          <div class="quickadd-grid" id="quickAddGrid"></div>
+        </div>
 
         <div class="card" id="txInlineForm">
           <div class="card-title" id="txFormTitle">✏️ 新增記帳</div>
@@ -1390,6 +1425,7 @@ select.mpc-input{
         <div class="settings-item" onclick="exportBackup()"><div class="l">📤 匯出備份（JSON）</div><div class="r">›</div></div>
         <div class="settings-item" onclick="document.getElementById('importFile').click()"><div class="l">📥 匯入備份</div><div class="r">›</div></div>
         <input type="file" id="importFile" accept="application/json" style="display:none;">
+        <div class="settings-item" onclick="openPrivacyModal()"><div class="l">🔒 資料保護說明</div><div class="r">›</div></div>
 
         <div class="section-label">危險區域</div>
         <div class="settings-item" onclick="clearAllData()"><div class="l" style="color:var(--pink);">🗑️ 清除所有資料</div><div class="r">›</div></div>
@@ -1535,7 +1571,30 @@ select.mpc-input{
   </div>
 </div>
 
-<!-- ============ License Modal ============ -->
+<!-- ============ Privacy Modal ============ -->
+<div class="modal-overlay" id="privacyModalOverlay">
+  <div class="modal-sheet">
+    <div class="modal-header"><h3>🔒 資料保護說明</h3><div class="modal-close" onclick="closeModal('privacyModalOverlay')">✕</div></div>
+    <div class="field hint" style="font-size:13.5px; line-height:1.9; margin-top:-4px;">
+      <p style="margin:0 0 12px;"><b>你的財務資料不會被誰看到。</b>duzhi 沒有帳號系統、沒有後端伺服器，所有記帳、資產、保障等資料都只儲存在你目前使用的裝置與瀏覽器裡（技術上稱為 localStorage）。</p>
+      <p style="margin:0 0 12px;">這代表：<br>・資料不會上傳到任何雲端或第三方<br>・我們（開發者）看不到你的任何一筆紀錄<br>・換一台裝置、清除瀏覽器資料或重灌手機，資料會消失，並不是被誰讀取走了</p>
+      <p style="margin:0 0 12px;">如果你是理財顧問，想在客戶面前示範這個系統，這一點也適用於客戶：資料只留在操作當下的那台裝置上。</p>
+      <p style="margin:0;">建議定期使用設定頁的「匯出備份」功能保存一份 JSON 檔，換裝置時再「匯入備份」還原即可。</p>
+    </div>
+    <button class="btn btn-primary btn-block" style="margin-top:16px;" onclick="closeModal('privacyModalOverlay')">知道了</button>
+  </div>
+</div>
+
+<!-- ============ Onboarding Overlay ============ -->
+<div class="modal-overlay" id="onboardOverlay">
+  <div class="modal-sheet" style="max-width:400px; text-align:center;">
+    <div style="text-align:right; margin-bottom:-6px;"><span style="font-size:12px; color:var(--gray); font-weight:700; cursor:pointer;" onclick="closeOnboarding()">略過 Skip</span></div>
+    <div id="onboardCardBody" style="padding:14px 6px 0;"></div>
+    <div class="onboard-dots" id="onboardDots"></div>
+    <button class="btn btn-primary btn-block" id="onboardNextBtn" onclick="onboardNext()">下一步</button>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -1824,6 +1883,33 @@ function updateInstallmentAvailability(){
     toggleInstallmentUI();
   }
 }
+const QUICK_ADD_PRESETS = [
+  {icon:'🍳', label:'早餐', category:'food', amount:60},
+  {icon:'🍱', label:'午餐', category:'food', amount:100},
+  {icon:'☕', label:'咖啡', category:'food', amount:50},
+  {icon:'🚌', label:'交通', category:'transport', amount:30},
+  {icon:'🛒', label:'買菜', category:'life', amount:300},
+  {icon:'🎬', label:'娛樂', category:'fun', amount:200},
+];
+function renderQuickAdd(){
+  const wrap = document.getElementById('quickAddGrid');
+  if(!wrap) return;
+  wrap.innerHTML = QUICK_ADD_PRESETS.map((p,i)=>
+    `<div class="quickadd-btn" onclick="quickAddTx(${i})"><div class="ic">${p.icon}</div><div class="lbl">${p.label}</div><div class="amt">$${p.amount}</div></div>`
+  ).join('');
+}
+function quickAddTx(i){
+  const p = QUICK_ADD_PRESETS[i];
+  const account = (state.accounts[0] && state.accounts[0].id) || 'acc_cash';
+  state.transactions.push({
+    id: uid('tx'), type:'expense', amount:p.amount, originalAmount:p.amount, currency:'TWD',
+    category:p.category, item:p.label, date: todayStr(), payMethod:account, account,
+    note:'', tags:[], installmentTotal:1, installmentIndex:1, installmentGroup:null,
+  });
+  saveState();
+  toast(`已記一筆「${p.label}」✓`);
+  refreshCurrentPage();
+}
 function openTxModal(existingTx){
   populateSelects();
   document.getElementById('txDeleteBtn').style.display='none';
@@ -1866,6 +1952,7 @@ function openTxModal(existingTx){
 }
 function closeTxModal(){ openTxModal(); }
 function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+function openPrivacyModal(){ document.getElementById('privacyModalOverlay').classList.add('open'); }
 
 function saveTx(){
   const rawAmount = parseFloat(document.getElementById('txAmount').value);
@@ -2980,6 +3067,7 @@ function init(){
   generateFixedExpensesForThisMonth();
   populateSelects();
   openTxModal();
+  renderQuickAdd();
   renderGreeting();
   renderDashboard();
 }
@@ -2994,11 +3082,47 @@ function enterApp(){
   document.body.style.paddingBottom='';
   window.scrollTo(0,0);
   goPage('dashboard');
+  maybeShowOnboarding();
 }
 function backToIntro(){
   document.getElementById('appShell').style.display='none';
   document.getElementById('landingPage').style.display='block';
   window.scrollTo(0,0);
+}
+
+/* ==================================================================
+   FIRST-TIME ONBOARDING
+   ================================================================== */
+const ONBOARD_KEY = 'duzhi_onboarded_v1';
+const ONBOARD_STEPS = [
+  {icon:'👋', title:'歡迎使用 duzhi', desc:'不用下載、不用註冊。所有資料只存在你自己的裝置裡，別人看不到。'},
+  {icon:'✏️', title:'先從記一筆開始', desc:'到「記帳」頁，用快速記帳按鈕一鍵記常見支出，或自己選分類、輸入金額儲存。'},
+  {icon:'📊', title:'定期回來看報告', desc:'首頁會自動整理收支與花費分佈，工具頁還有更多財務健診功能，幫你看懂自己的財務狀況。'},
+];
+let onboardStep = 0;
+function maybeShowOnboarding(){
+  if(localStorage.getItem(ONBOARD_KEY)) return;
+  onboardStep = 0;
+  renderOnboardStep();
+  document.getElementById('onboardOverlay').classList.add('open');
+}
+function renderOnboardStep(){
+  const s = ONBOARD_STEPS[onboardStep];
+  document.getElementById('onboardCardBody').innerHTML =
+    `<div style="font-size:44px;">${s.icon}</div>
+     <div style="font-size:17px; font-weight:900; margin-top:14px;">${s.title}</div>
+     <div style="font-size:13px; color:var(--medium); line-height:1.8; margin-top:10px;">${s.desc}</div>`;
+  document.getElementById('onboardDots').innerHTML = ONBOARD_STEPS.map((_,i)=>
+    `<span class="onboard-dot ${i===onboardStep?'active':''}"></span>`).join('');
+  document.getElementById('onboardNextBtn').textContent = onboardStep===ONBOARD_STEPS.length-1 ? '開始使用 →' : '下一步';
+}
+function onboardNext(){
+  if(onboardStep < ONBOARD_STEPS.length-1){ onboardStep++; renderOnboardStep(); }
+  else { closeOnboarding(); }
+}
+function closeOnboarding(){
+  localStorage.setItem(ONBOARD_KEY, '1');
+  document.getElementById('onboardOverlay').classList.remove('open');
 }
 const lpRevealEls = document.querySelectorAll('.lp-reveal');
 const lpIO = new IntersectionObserver((entries)=>{
