@@ -1354,7 +1354,6 @@ select.mpc-input{
         <div class="section-label">授權方案 · Plan</div>
         <div class="card">
           <div class="rowline"><div class="l">目前方案</div><div class="r" id="licenseTierDisplay">免費版 Free</div></div>
-          <div class="field hint" id="licenseKeyDisplay" style="margin-top:6px;"></div>
           <div class="soon-badge" style="margin-top:10px; text-align:center; width:100%;">🚧 PRO 版即將推出，敬請期待</div>
         </div>
 
@@ -2811,7 +2810,6 @@ function currentMonthCatTotals(){
 function renderSettings(){
   const tierNames = {free:'免費版 Free', pro:'專業版 PRO', family:'家庭 / 團隊版 Family'};
   document.getElementById('licenseTierDisplay').textContent = tierNames[state.license.tier] || tierNames.free;
-  document.getElementById('licenseKeyDisplay').textContent = state.license.key ? `授權碼：${state.license.key}` : '尚未輸入授權碼，僅能使用免費功能。';
   const fixedWrap = document.getElementById('fixedListArea');
   fixedWrap.innerHTML='';
   if(state.fixedExpenses.length===0){
