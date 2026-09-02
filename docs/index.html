@@ -383,11 +383,23 @@ main{max-width:720px; margin:0 auto; padding:8px 20px 20px;}
 .invest-grid .v{font-weight:900; margin-top:1px;}
 .gain-pos{color:var(--sage);} .gain-neg{color:var(--pink);}
 
+/* Plain list-style preset picker (no boxes) */
+.preset-list{display:flex; flex-direction:column;}
+.preset-list-item{display:flex; align-items:center; gap:10px; padding:11px 2px; border-bottom:1px solid var(--light-pink); font-size:12.5px; font-weight:700; color:var(--dark);}
+.preset-list-item:last-child{border-bottom:none;}
+.preset-list-item .arrow{margin-left:auto; color:var(--gray); font-size:14px;}
+.preset-list-item.active{color:var(--pink);}
+.preset-list-item.active .arrow{color:var(--pink);}
+
 /* Cute month picker card */
 .month-picker-card{display:flex; align-items:center; gap:12px; background:linear-gradient(135deg, var(--light-blue), var(--light-pink)); border-radius:var(--radius-lg); padding:14px 16px; margin-bottom:14px;}
 .mpc-ic{width:38px; height:38px; border-radius:50%; background:rgba(255,255,255,.65); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;}
 .mpc-label{flex:1; font-size:12.5px; font-weight:700; color:var(--dark);}
-.mpc-input{border:none; background:rgba(255,255,255,.8); border-radius:100px; padding:9px 16px; font-size:12px; font-weight:700; color:var(--dark); outline:none; -webkit-appearance:none;}
+.mpc-input{border:none; background:rgba(255,255,255,.8); border-radius:100px; padding:9px 16px; font-size:12px; font-weight:700; color:var(--dark); outline:none; -webkit-appearance:none; appearance:none; max-width:52%;}
+select.mpc-input{
+  background-image:url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235A5248' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right 12px center; background-size:14px; padding-right:32px;
+}
 
 /* Cute calculator form card (life cost / financial freedom) */
 .cute-form-card{background:linear-gradient(135deg, var(--cream), var(--light-gold)); border-radius:var(--radius-lg); padding:20px;}
@@ -1009,9 +1021,15 @@ main{max-width:720px; margin:0 auto; padding:8px 20px 20px;}
           </div>
 
           <div class="modal-section-label">💳 日期與付款 · Date & Payment</div>
-          <div class="field-row">
-            <div class="field"><label>日期 Date</label><input type="date" id="txDate"></div>
-            <div class="field"><label>帳戶 Account</label><select id="txAccount"></select></div>
+          <div class="month-picker-card" style="margin-bottom:10px;">
+            <div class="mpc-ic">📅</div>
+            <div class="mpc-label">日期<span class="en-label" style="display:block;">Date</span></div>
+            <input type="date" id="txDate" class="mpc-input">
+          </div>
+          <div class="month-picker-card">
+            <div class="mpc-ic">💳</div>
+            <div class="mpc-label">帳戶<span class="en-label" style="display:block;">Account</span></div>
+            <select id="txAccount" class="mpc-input"></select>
           </div>
 
           <div class="modal-section-label">⚙️ 進階選項 · More Options</div>
@@ -1161,17 +1179,28 @@ main{max-width:720px; margin:0 auto; padding:8px 20px 20px;}
       <!-- ===== Tool 5: Policy review ===== -->
       <section class="page" id="page-tool-policy">
         <div class="tool-page-head"><div class="back" onclick="goPage('tools')">←</div><div><h2>保障配置檢視 <span class="en-h2">Coverage Review</span></h2><div class="sub">盤點所有保障項目，補足缺口</div></div></div>
-        <div class="result-hero">
-          <div class="t">年度保障費用總計</div>
-          <div class="v" id="policyTotalPremium">NT$ 0</div>
-        </div>
         <div class="card">
           <div class="card-title">🛡️ 保障類別盤點</div>
           <div class="checklist-grid" id="coverageChecklist"></div>
         </div>
+
+        <div class="card">
+          <div class="card-title">➕ 新增保障項目</div>
+          <div class="field"><label>項目名稱</label><input type="text" id="polName" placeholder="例如：長期照護保障"></div>
+          <div class="modal-section-label">🛡️ 保障類型 · Type</div>
+          <div class="preset-list" id="polTypeList"></div>
+          <div class="field" style="margin-top:12px; margin-bottom:0;"><label>提供機構</label><input type="text" id="polCompany" placeholder="例如：OO機構"></div>
+
+          <div class="modal-section-label">💰 費用與額度 · Cost</div>
+          <div class="field" style="margin-bottom:0;"><label>保障額度（元）</label><input type="number" id="polAmount" placeholder="0"></div>
+          <div class="field" style="margin-top:12px;"><label>繳費方式</label><input type="text" id="polPayWay" placeholder="例如：年繳、信用卡自動扣款"></div>
+
+          <div class="field" style="margin-top:12px;"><label>備註</label><textarea id="polNote" rows="2"></textarea></div>
+          <button class="btn btn-primary btn-block" style="margin-top:6px;" onclick="savePolicy()">儲存</button>
+        </div>
+
         <div class="card-title" style="margin:18px 4px 8px;">📄 我的保障項目</div>
         <div id="policyListArea"></div>
-        <button class="btn btn-soft btn-block" onclick="openPolicyModal()">＋ 新增保障項目</button>
       </section>
 
       <!-- ===== Tool 6: Chart Analysis ===== -->
@@ -1418,28 +1447,6 @@ main{max-width:720px; margin:0 auto; padding:8px 20px 20px;}
 </div>
 
 <!-- ============ Policy Modal ============ -->
-<div class="modal-overlay" id="policyModalOverlay">
-  <div class="modal-sheet">
-    <div class="modal-header"><h3>新增保障項目 🛡️</h3><div class="modal-close" onclick="closeModal('policyModalOverlay')">✕</div></div>
-    <div class="modal-section-label">📝 基本資訊 · Basic Info</div>
-    <div class="field"><label>項目名稱</label><input type="text" id="polName" placeholder="例如：長期照護保障"></div>
-    <div class="field"><label>保障類型</label>
-      <select id="polType"><option value="life">人身保障</option><option value="medical">醫療保障</option><option value="accident">意外保障</option><option value="critical">重大疾病保障</option><option value="disability">失能保障</option><option value="other">其他</option></select>
-    </div>
-    <div class="field" style="margin-bottom:0;"><label>提供機構</label><input type="text" id="polCompany" placeholder="例如：OO機構"></div>
-
-    <div class="modal-section-label">💰 費用與額度 · Cost</div>
-    <div class="field-row">
-      <div class="field"><label>保障額度（元）</label><input type="number" id="polAmount" placeholder="0"></div>
-      <div class="field"><label>年度費用（元）</label><input type="number" id="polPremium" placeholder="0"></div>
-    </div>
-    <div class="field" style="margin-bottom:0;"><label>繳費方式</label><input type="text" id="polPayWay" placeholder="例如：年繳、信用卡自動扣款"></div>
-
-    <div class="field" style="margin-top:16px;"><label>備註</label><textarea id="polNote" rows="2"></textarea></div>
-    <button class="btn btn-primary btn-block" style="margin-top:6px;" onclick="savePolicy()">儲存</button>
-  </div>
-</div>
-
 <!-- ============ Balance Row Modal ============ -->
 <div class="modal-overlay" id="balanceRowModalOverlay">
   <div class="modal-sheet">
@@ -1447,8 +1454,9 @@ main{max-width:720px; margin:0 auto; padding:8px 20px 20px;}
     <div class="amount-hero" id="balanceRowAmountHero">
       <input type="number" id="balanceRowAmount" placeholder="0" inputmode="decimal">
     </div>
-    <div class="modal-section-label">📝 基本資訊 · Basic Info</div>
-    <div class="field" style="margin-bottom:0;"><label>項目名稱</label><input type="text" id="balanceRowName" placeholder="例如：定存、股票、房貸"></div>
+    <div class="modal-section-label">📝 常用項目 · Quick Pick</div>
+    <div class="preset-list" id="balanceRowPresetList"></div>
+    <div class="field" style="margin-top:12px; margin-bottom:0;"><label>項目名稱</label><input type="text" id="balanceRowName" placeholder="例如：定存、股票、房貸"></div>
     <button class="btn btn-primary btn-block" style="margin-top:16px;" onclick="saveBalanceRow()">儲存</button>
   </div>
 </div>
@@ -1571,6 +1579,7 @@ const COVERAGE_TYPES = [
   {id:'life', name:'人身保障', icon:'🛟'}, {id:'medical', name:'醫療保障', icon:'🏥'}, {id:'accident', name:'意外保障', icon:'🩹'},
   {id:'critical', name:'重大疾病保障', icon:'💊'}, {id:'disability', name:'失能保障', icon:'🦽'},
 ];
+const POLICY_TYPES = [...COVERAGE_TYPES, {id:'other', name:'其他', icon:'📄'}];
 
 function defaultState(){
   return {
@@ -2213,6 +2222,11 @@ function renderBalanceSheet(){
   }
 }
 let balanceRowPendingKey = null;
+const ASSET_PRESETS = ['定存','股票','房產','現金','基金','其他'];
+const LIABILITY_PRESETS = ['房貸','信貸','卡循','其他'];
+function pickBalanceRowPreset(name){
+  document.getElementById('balanceRowName').value = name;
+}
 function addBalanceRow(key){
   balanceRowPendingKey = key;
   const isAsset = key==='assets';
@@ -2223,6 +2237,10 @@ function addBalanceRow(key){
   document.getElementById('balanceRowAmountHero').style.background = isAsset
     ? 'linear-gradient(135deg, var(--light-sage), var(--light-blue))'
     : 'linear-gradient(135deg, var(--light-pink), var(--soft-pink))';
+  const presets = isAsset ? ASSET_PRESETS : LIABILITY_PRESETS;
+  document.getElementById('balanceRowPresetList').innerHTML = presets.map(p=>
+    `<div class="preset-list-item" onclick="pickBalanceRowPreset('${p}')">${p}<span class="arrow">›</span></div>`
+  ).join('');
   document.getElementById('balanceRowModalOverlay').classList.add('open');
 }
 function saveBalanceRow(){
@@ -2278,16 +2296,31 @@ function renderIncomeSummary(){
 /* ==================================================================
    TOOL 5: POLICY REVIEW
    ================================================================== */
+let polSelectedType = 'life';
+function renderPolicyTypeList(){
+  const wrap = document.getElementById('polTypeList');
+  if(!wrap) return;
+  wrap.innerHTML = POLICY_TYPES.map(t=>
+    `<div class="preset-list-item ${t.id===polSelectedType?'active':''}" onclick="selectPolicyType('${t.id}')">${t.icon} ${t.name}<span class="arrow">${t.id===polSelectedType?'✓':'›'}</span></div>`
+  ).join('');
+}
+function selectPolicyType(id){
+  polSelectedType = id;
+  renderPolicyTypeList();
+}
+function resetPolicyForm(){
+  ['polName','polCompany','polAmount','polPayWay','polNote'].forEach(id=>document.getElementById(id).value='');
+  polSelectedType = 'life';
+  renderPolicyTypeList();
+}
 function renderPolicies(){
-  const totalPremium = state.policies.reduce((s,p)=>s+(p.premium||0),0);
-  document.getElementById('policyTotalPremium').textContent = 'NT$ '+fmt(totalPremium);
-
   const checklistWrap = document.getElementById('coverageChecklist');
   checklistWrap.innerHTML='';
   COVERAGE_TYPES.forEach(ct=>{
     const covered = state.policies.some(p=>p.type===ct.id) || state.coverage[ct.id];
     checklistWrap.innerHTML += `<label class="check-item ${covered?'covered':''}"><span class="check-item-ic">${ct.icon}</span><span class="l">${ct.name}</span><input type="checkbox" ${covered?'checked':''} onchange="toggleCoverage('${ct.id}', this.checked)"></label>`;
   });
+  renderPolicyTypeList();
 
   const listArea = document.getElementById('policyListArea');
   listArea.innerHTML='';
@@ -2295,7 +2328,7 @@ function renderPolicies(){
     listArea.innerHTML = '<div class="empty-state"><div class="ic">📭</div><div class="t">尚未新增保障項目</div></div>';
     return;
   }
-  const typeNames = {life:'人身保障', medical:'醫療保障', accident:'意外保障', critical:'重大疾病保障', disability:'失能保障', other:'其他'};
+  const typeNames = Object.fromEntries(POLICY_TYPES.map(t=>[t.id, t.name]));
   state.policies.forEach(p=>{
     listArea.innerHTML += `<div class="policy-card">
       <div class="top">
@@ -2307,7 +2340,6 @@ function renderPolicies(){
       </div>
       <div class="policy-grid">
         <div><div class="k">保障額度</div><div class="v">NT$ ${fmt(p.amount||0)}</div></div>
-        <div><div class="k">年度費用</div><div class="v">NT$ ${fmt(p.premium||0)}</div></div>
         <div><div class="k">繳費方式</div><div class="v">${p.payWay||'—'}</div></div>
       </div>
       ${p.note?`<div style="margin-top:8px; font-size:12px; color:var(--gray);">📝 ${p.note}</div>`:''}
@@ -2318,24 +2350,19 @@ function toggleCoverage(id, checked){
   state.coverage[id]=checked;
   saveState();
 }
-function openPolicyModal(){
-  ['polName','polCompany','polAmount','polPremium','polPayWay','polNote'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('policyModalOverlay').classList.add('open');
-}
 function savePolicy(){
   const name = document.getElementById('polName').value.trim();
   if(!name){ toast('請輸入項目名稱'); return; }
   state.policies.push({
     id: uid('pol'),
     name, company: document.getElementById('polCompany').value.trim(),
-    type: document.getElementById('polType').value,
+    type: polSelectedType,
     amount: parseFloat(document.getElementById('polAmount').value)||0,
-    premium: parseFloat(document.getElementById('polPremium').value)||0,
     payWay: document.getElementById('polPayWay').value.trim(),
     note: document.getElementById('polNote').value.trim(),
   });
   saveState();
-  closeModal('policyModalOverlay');
+  resetPolicyForm();
   renderPolicies();
   toast('已新增保障項目 ✓');
 }
