@@ -408,6 +408,8 @@ main{max-width:720px; margin:0 auto; padding:8px 20px 20px;}
 
 /* Investment / split rows */
 .invest-card{background:#fff; border-radius:var(--radius-md); padding:15px; box-shadow:var(--shadow); margin-bottom:10px;}
+.example-card{border:1.5px dashed rgba(55,53,47,0.18); position:relative; opacity:.9; box-shadow:none;}
+.example-badge{position:absolute; top:14px; right:14px; background:var(--light-gold); color:#8a6d2f; font-size:9.5px; font-weight:900; padding:3px 9px; border-radius:100px; letter-spacing:.04em;}
 .invest-card .top{display:flex; justify-content:space-between; align-items:flex-start;}
 .invest-card .name{font-size:13px; font-weight:900;}
 .invest-card .market{font-size:11px; color:var(--gray); margin-top:2px;}
@@ -1020,11 +1022,15 @@ select.mpc-input{
           <div class="arrow">›</div>
         </div>
 
-        <div class="report-cta" onclick="goPage('tool-report')">
-          <div class="report-cta-doodle">🐷</div>
-          <div class="ic">📊</div>
-          <div class="t"><div class="title">財務健診報告</div><div class="sub">專屬顧問視角，一頁看懂財務體質 <span class="en">· Financial Report</span></div></div>
-          <div class="arrow">›</div>
+        <div class="card">
+          <div class="card-title">📊 財務健診報告 <span class="en" style="font-size:10px; color:var(--gray); font-weight:700;">· Financial Report</span></div>
+          <div class="metric-grid">
+            <div class="metric-card"><div class="ic">🐷</div><div class="t">儲蓄率</div><div class="v" id="dashMSavingsRate">—</div><div class="stat" id="dashMSavingsStatus"></div></div>
+            <div class="metric-card"><div class="ic">🛟</div><div class="t">緊急預備金</div><div class="v" id="dashMEmergency">—</div><div class="stat" id="dashMEmergencyStatus"></div></div>
+            <div class="metric-card"><div class="ic">💳</div><div class="t">負債比率</div><div class="v" id="dashMDebtRatio">—</div><div class="stat" id="dashMDebtStatus"></div></div>
+            <div class="metric-card"><div class="ic">🛡️</div><div class="t">保障覆蓋率</div><div class="v" id="dashMCoverage">—</div><div class="stat" id="dashMCoverageStatus"></div></div>
+          </div>
+          <button class="btn btn-ghost btn-block" style="margin-top:12px;" onclick="goPage('tool-report')">查看完整報告 →</button>
         </div>
 
         <div class="hand-divider">✎ 記得每天記一筆，才不會亂花錢喔</div>
@@ -2070,6 +2076,34 @@ function renderDashboard(){
       anomalyArea.innerHTML += `<div class="alert-card"><div class="ic">⚠️</div><div class="txt">本月「${c.name}」花費 $${fmt(cur)}，比過去平均高出 ${Math.round((cur/avg-1)*100)}%，留意一下荷包～</div></div>`;
     }
   });
+
+  renderDashboardReport();
+}
+function renderDashboardReport(){
+  const months3 = lastNMonthKeys(3);
+  const monthData3 = months3.map(m=>monthIncomeExpense(m));
+  const avgIncome = monthData3.reduce((s,m)=>s+m.inc,0)/3;
+  const avgExpense = monthData3.reduce((s,m)=>s+m.exp,0)/3;
+  const savingsRate = avgIncome>0 ? ((avgIncome-avgExpense)/avgIncome*100) : 0;
+  document.getElementById('dashMSavingsRate').textContent = avgIncome>0 ? savingsRate.toFixed(0)+'%' : '—';
+  document.getElementById('dashMSavingsStatus').innerHTML = avgIncome>0 ? statusBadge(savingsRate>=20?'good':(savingsRate>=10?'mid':'bad')) : '';
+
+  const avgExpense3 = avgMonthlyExpense3mo();
+  const totalAssets = (state.balanceSheet.assets||[]).reduce((s,x)=>s+x.amount,0);
+  const efAmount = (state.emergencyFund && state.emergencyFund.currentAmount) || 0;
+  const emergencyMonths = avgExpense3>0 ? (efAmount/avgExpense3) : 0;
+  document.getElementById('dashMEmergency').textContent = avgExpense3>0 ? emergencyMonths.toFixed(1)+' 個月' : '—';
+  document.getElementById('dashMEmergencyStatus').innerHTML = avgExpense3>0 ? statusBadge(emergencyMonths>=6?'good':(emergencyMonths>=3?'mid':'bad')) : '';
+
+  const totalLiab = (state.balanceSheet.liabilities||[]).reduce((s,x)=>s+x.amount,0);
+  const debtRatio = totalAssets>0 ? (totalLiab/totalAssets*100) : (totalLiab>0?100:0);
+  document.getElementById('dashMDebtRatio').textContent = (totalAssets+totalLiab)>0 ? debtRatio.toFixed(0)+'%' : '—';
+  document.getElementById('dashMDebtStatus').innerHTML = (totalAssets+totalLiab)>0 ? statusBadge(debtRatio<30?'good':(debtRatio<=50?'mid':'bad')) : '';
+
+  const coveredCount = COVERAGE_TYPES.filter(ct=> state.policies.some(p=>p.type===ct.id) || state.coverage[ct.id]).length;
+  const coverageRate = coveredCount/COVERAGE_TYPES.length*100;
+  document.getElementById('dashMCoverage').textContent = coverageRate.toFixed(0)+'%';
+  document.getElementById('dashMCoverageStatus').innerHTML = statusBadge(coverageRate>=80?'good':(coverageRate>=50?'mid':'bad'));
 }
 function renderDonut(circleId, legendId, catTotals){
   const donut = document.getElementById(circleId);
@@ -2612,7 +2646,19 @@ function renderInvestments(){
   const listArea = document.getElementById('investListArea');
   listArea.innerHTML='';
   if((state.investments||[]).length===0){
-    listArea.innerHTML='<div class="empty-state"><div class="ic">📭</div><div class="t">尚未新增持有部位</div></div>';
+    listArea.innerHTML = `<div class="invest-card example-card">
+      <div class="example-badge">範例 EXAMPLE</div>
+      <div class="top">
+        <div><div class="name">台積電</div><div class="market">台股</div></div>
+      </div>
+      <div class="invest-grid">
+        <div><div class="k">持有數量</div><div class="v">10</div></div>
+        <div><div class="k">平均成本</div><div class="v">600</div></div>
+        <div><div class="k">目前市價</div><div class="v">980</div></div>
+        <div><div class="k">損益</div><div class="v gain-pos">+3,800（63.3%）</div></div>
+      </div>
+    </div>
+    <div class="backup-note" style="text-align:center;">以上為範例畫面，不會計入你的實際資產。新增你的第一筆持有部位開始追蹤 👇</div>`;
     return;
   }
   state.investments.forEach(inv=>{
@@ -2716,7 +2762,20 @@ function renderGoals(){
   const wrap = document.getElementById('goalsListArea');
   wrap.innerHTML='';
   if((state.goals||[]).length===0){
-    wrap.innerHTML='<div class="empty-state"><div class="ic">🏗️</div><div class="t">還沒有願望目標，新增一個開始存錢吧</div></div>';
+    wrap.innerHTML = `<div class="goal-card example-card">
+      <div class="example-badge">範例 EXAMPLE</div>
+      <div class="top">
+        <div><div class="name">👟 新款球鞋</div><div class="amounts">NT$ 2,800 / 4,500</div></div>
+      </div>
+      <div class="goal-body">
+        <div class="goal-house">${houseSVG(62, 'var(--pink)')}</div>
+        <div class="goal-progress-wrap">
+          <div class="goal-pct" style="color:var(--pink);">62%</div>
+          <div class="progress-track"><div class="progress-fill" style="width:62%; background:var(--pink);"></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="backup-note" style="text-align:center;">以上為範例畫面，不會計入你的實際資產。新增你的第一個願望目標開始存錢 👇</div>`;
     return;
   }
   state.goals.forEach((g,i)=>{
