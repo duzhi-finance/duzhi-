@@ -25,7 +25,7 @@ body{
   background:var(--bg);
   color:var(--dark);
   -webkit-font-smoothing:antialiased;
-  padding-bottom:170px;
+  padding-bottom:calc(170px + env(safe-area-inset-bottom));
 }
 button, input, select, textarea{font-family:inherit; font-size:inherit; color:inherit;}
 button{cursor:pointer; border:none; background:none;}
