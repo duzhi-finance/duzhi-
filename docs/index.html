@@ -351,9 +351,11 @@ main{max-width:720px; margin:0 auto; padding:8px 20px 20px;}
 
 .checklist-grid{display:grid; grid-template-columns:1fr 1fr; gap:8px;}
 .check-item{
-  display:flex; align-items:center; gap:8px; background:#fff; border-radius:var(--radius-sm); padding:12px; box-shadow:var(--shadow);
+  display:flex; align-items:center; gap:8px; background:var(--cream); border-radius:var(--radius-md); padding:10px 12px; transition:.15s;
 }
-.check-item input{width:18px; height:18px; accent-color:var(--sage);}
+.check-item.covered{background:var(--light-sage);}
+.check-item-ic{font-size:17px; flex-shrink:0;}
+.check-item input{width:18px; height:18px; accent-color:var(--sage); flex-shrink:0;}
 .check-item .l{font-size:12px; font-weight:700; flex:1;}
 
 /* Goals / piggy bank */
@@ -377,6 +379,12 @@ main{max-width:720px; margin:0 auto; padding:8px 20px 20px;}
 .invest-grid .k{color:var(--gray); font-weight:700;}
 .invest-grid .v{font-weight:900; margin-top:1px;}
 .gain-pos{color:var(--sage);} .gain-neg{color:var(--pink);}
+
+/* Cute month picker card */
+.month-picker-card{display:flex; align-items:center; gap:12px; background:linear-gradient(135deg, var(--light-blue), var(--light-pink)); border-radius:var(--radius-lg); padding:14px 16px; margin-bottom:14px;}
+.mpc-ic{width:38px; height:38px; border-radius:50%; background:rgba(255,255,255,.65); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;}
+.mpc-label{flex:1; font-size:12.5px; font-weight:700; color:var(--dark);}
+.mpc-input{border:none; background:rgba(255,255,255,.8); border-radius:100px; padding:9px 16px; font-size:12px; font-weight:700; color:var(--dark); outline:none; -webkit-appearance:none;}
 
 /* Cute calculator form card (life cost / financial freedom) */
 .cute-form-card{background:linear-gradient(135deg, var(--light-pink), var(--light-blue)); border-radius:var(--radius-lg); padding:20px;}
@@ -1084,8 +1092,10 @@ main{max-width:720px; margin:0 auto; padding:8px 20px 20px;}
       <!-- ===== Tool 4: Income/Expense summary ===== -->
       <section class="page" id="page-tool-income">
         <div class="tool-page-head"><div class="back" onclick="goPage('tools')">←</div><div><h2>收入支出總表 <span class="en-h2">Income &amp; Expense</span></h2><div class="sub">檢視每月必須及非必須開銷</div></div></div>
-        <div class="card">
-          <div class="field" style="margin-bottom:0;"><label>選擇月份</label><input type="month" id="incMonthPicker"></div>
+        <div class="month-picker-card">
+          <div class="mpc-ic">🗓️</div>
+          <div class="mpc-label">選擇月份<span class="en-label" style="display:block;">Select Month</span></div>
+          <input type="month" id="incMonthPicker" class="mpc-input">
         </div>
         <div class="card">
           <div class="card-title">⚖️ 必要 V.S 非必要</div>
@@ -1119,8 +1129,10 @@ main{max-width:720px; margin:0 auto; padding:8px 20px 20px;}
       <!-- ===== Tool 6: Chart Analysis ===== -->
       <section class="page" id="page-tool-analysis">
         <div class="tool-page-head"><div class="back" onclick="goPage('tools')">←</div><div><h2>圖表分析 <span class="en-h2">Chart Analysis</span></h2><div class="sub">收支趨勢、類別占比一次看</div></div></div>
-        <div class="card">
-          <div class="field" style="margin-bottom:0;"><label>選擇月份</label><input type="month" id="analysisMonthPicker"></div>
+        <div class="month-picker-card">
+          <div class="mpc-ic">📊</div>
+          <div class="mpc-label">選擇月份<span class="en-label" style="display:block;">Select Month</span></div>
+          <input type="month" id="analysisMonthPicker" class="mpc-input">
         </div>
         <div class="card">
           <div class="card-title">🥧 類別占比（圓餅圖）</div>
@@ -1408,19 +1420,23 @@ main{max-width:720px; margin:0 auto; padding:8px 20px 20px;}
 <!-- ============ Policy Modal ============ -->
 <div class="modal-overlay" id="policyModalOverlay">
   <div class="modal-sheet">
-    <div class="modal-header"><h3>新增保障項目</h3><div class="modal-close" onclick="closeModal('policyModalOverlay')">✕</div></div>
+    <div class="modal-header"><h3>新增保障項目 🛡️</h3><div class="modal-close" onclick="closeModal('policyModalOverlay')">✕</div></div>
+    <div class="modal-section-label">📝 基本資訊 · Basic Info</div>
     <div class="field"><label>項目名稱</label><input type="text" id="polName" placeholder="例如：長期照護保障"></div>
-    <div class="field"><label>提供機構</label><input type="text" id="polCompany" placeholder="例如：OO機構"></div>
     <div class="field"><label>保障類型</label>
       <select id="polType"><option value="life">人身保障</option><option value="medical">醫療保障</option><option value="accident">意外保障</option><option value="critical">重大疾病保障</option><option value="disability">失能保障</option><option value="other">其他</option></select>
     </div>
+    <div class="field" style="margin-bottom:0;"><label>提供機構</label><input type="text" id="polCompany" placeholder="例如：OO機構"></div>
+
+    <div class="modal-section-label">💰 費用與額度 · Cost</div>
     <div class="field-row">
       <div class="field"><label>保障額度（元）</label><input type="number" id="polAmount" placeholder="0"></div>
       <div class="field"><label>年度費用（元）</label><input type="number" id="polPremium" placeholder="0"></div>
     </div>
-    <div class="field"><label>繳費方式</label><input type="text" id="polPayWay" placeholder="例如：年繳、信用卡自動扣款"></div>
-    <div class="field"><label>備註</label><textarea id="polNote" rows="2"></textarea></div>
-    <button class="btn btn-primary btn-block" onclick="savePolicy()">儲存</button>
+    <div class="field" style="margin-bottom:0;"><label>繳費方式</label><input type="text" id="polPayWay" placeholder="例如：年繳、信用卡自動扣款"></div>
+
+    <div class="field" style="margin-top:16px;"><label>備註</label><textarea id="polNote" rows="2"></textarea></div>
+    <button class="btn btn-primary btn-block" style="margin-top:6px;" onclick="savePolicy()">儲存</button>
   </div>
 </div>
 
@@ -1428,9 +1444,12 @@ main{max-width:720px; margin:0 auto; padding:8px 20px 20px;}
 <div class="modal-overlay" id="balanceRowModalOverlay">
   <div class="modal-sheet">
     <div class="modal-header"><h3 id="balanceRowModalTitle">新增項目</h3><div class="modal-close" onclick="closeModal('balanceRowModalOverlay')">✕</div></div>
-    <div class="field"><label>項目名稱</label><input type="text" id="balanceRowName" placeholder="例如：定存、股票、房貸"></div>
-    <div class="field"><label>金額（元）</label><input type="number" id="balanceRowAmount" placeholder="0"></div>
-    <button class="btn btn-primary btn-block" onclick="saveBalanceRow()">儲存</button>
+    <div class="amount-hero" id="balanceRowAmountHero">
+      <input type="number" id="balanceRowAmount" placeholder="0" inputmode="decimal">
+    </div>
+    <div class="modal-section-label">📝 基本資訊 · Basic Info</div>
+    <div class="field" style="margin-bottom:0;"><label>項目名稱</label><input type="text" id="balanceRowName" placeholder="例如：定存、股票、房貸"></div>
+    <button class="btn btn-primary btn-block" style="margin-top:16px;" onclick="saveBalanceRow()">儲存</button>
   </div>
 </div>
 
@@ -1543,8 +1562,8 @@ const ACCOUNT_TYPES = [
   {id:'other', name:'其他'},
 ];
 const COVERAGE_TYPES = [
-  {id:'life', name:'人身保障'}, {id:'medical', name:'醫療保障'}, {id:'accident', name:'意外保障'},
-  {id:'critical', name:'重大疾病保障'}, {id:'disability', name:'失能保障'},
+  {id:'life', name:'人身保障', icon:'🛟'}, {id:'medical', name:'醫療保障', icon:'🏥'}, {id:'accident', name:'意外保障', icon:'🩹'},
+  {id:'critical', name:'重大疾病保障', icon:'💊'}, {id:'disability', name:'失能保障', icon:'🦽'},
 ];
 
 function defaultState(){
@@ -2179,10 +2198,14 @@ function renderBalanceSheet(){
 let balanceRowPendingKey = null;
 function addBalanceRow(key){
   balanceRowPendingKey = key;
-  document.getElementById('balanceRowModalTitle').textContent = key==='assets' ? '新增資產項目' : '新增負債項目';
+  const isAsset = key==='assets';
+  document.getElementById('balanceRowModalTitle').textContent = isAsset ? '新增資產項目 🌱' : '新增負債項目';
   document.getElementById('balanceRowName').value='';
   document.getElementById('balanceRowAmount').value='';
-  document.getElementById('balanceRowName').placeholder = key==='assets' ? '例如：定存、股票、房產' : '例如：房貸、信貸';
+  document.getElementById('balanceRowName').placeholder = isAsset ? '例如：定存、股票、房產' : '例如：房貸、信貸';
+  document.getElementById('balanceRowAmountHero').style.background = isAsset
+    ? 'linear-gradient(135deg, var(--light-sage), var(--light-blue))'
+    : 'linear-gradient(135deg, var(--light-pink), var(--soft-pink))';
   document.getElementById('balanceRowModalOverlay').classList.add('open');
 }
 function saveBalanceRow(){
@@ -2246,7 +2269,7 @@ function renderPolicies(){
   checklistWrap.innerHTML='';
   COVERAGE_TYPES.forEach(ct=>{
     const covered = state.policies.some(p=>p.type===ct.id) || state.coverage[ct.id];
-    checklistWrap.innerHTML += `<label class="check-item"><input type="checkbox" ${covered?'checked':''} onchange="toggleCoverage('${ct.id}', this.checked)"><span class="l">${ct.name}</span></label>`;
+    checklistWrap.innerHTML += `<label class="check-item ${covered?'covered':''}"><span class="check-item-ic">${ct.icon}</span><span class="l">${ct.name}</span><input type="checkbox" ${covered?'checked':''} onchange="toggleCoverage('${ct.id}', this.checked)"></label>`;
   });
 
   const listArea = document.getElementById('policyListArea');
