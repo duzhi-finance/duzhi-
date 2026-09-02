@@ -13,7 +13,7 @@
   --blue:#7A9BAD; --soft-blue:#B8CFDA; --light-blue:#E3EDF3;
   --sage:#9AAE9B; --light-sage:#E8F0E8;
   --cream:#FAF3EE; --bg:#FAFAF8; --dark:#37352F; --medium:#5A5248; --gray:#9B9A97;
-  --gold:#C9A66B; --light-gold:#F3EBDB;
+  --gold:#8B6B47; --light-gold:#F0E2CC;
   --radius-lg:24px; --radius-md:16px; --radius-sm:10px;
   --shadow: 0 2px 12px rgba(55,53,47,0.06), 0 1px 2px rgba(55,53,47,0.04);
   --shadow-hover: 0 8px 24px rgba(55,53,47,0.1);
@@ -571,7 +571,7 @@ select.mpc-input{
 .lp-section-head .lp-h2{font-size:27px; margin-top:10px; line-height:1.45;}
 .lp-section-head p{color:var(--medium); font-size:14px; margin-top:12px; line-height:1.8;}
 
-.lp-philosophy{background:var(--dark); color:#fff;}
+.lp-philosophy{background:var(--dark); color:#fff; padding:88px 0;}
 .lp-philosophy .lp-wrap{display:grid; grid-template-columns:1fr; gap:34px;}
 @media(min-width:860px){ .lp-philosophy .lp-wrap{grid-template-columns:.8fr 1.2fr;} }
 .lp-philosophy .lp-eyebrow{color:var(--gold);}
@@ -1577,8 +1577,8 @@ function defaultState(){
     fixedExpenses: [],
     accounts: [
       {id:'acc_cash', name:'現金', type:'cash'},
-      {id:'acc_bank1', name:'玉山銀行', type:'bank'},
-      {id:'acc_credit1', name:'玉山信用卡', type:'credit'},
+      {id:'acc_bank1', name:'銀行帳戶', type:'bank'},
+      {id:'acc_credit1', name:'信用卡', type:'credit'},
       {id:'acc_linepay', name:'LINE Pay', type:'linepay'},
       {id:'acc_jkopay', name:'街口支付', type:'jkopay'},
       {id:'acc_pxpay', name:'全支付', type:'pxpay'},
