@@ -536,11 +536,12 @@ select.mpc-input{
 .report-header h2{font-size:18px; font-weight:900; margin-top:14px;}
 .report-header .p{font-size:12px; color:var(--medium); margin-top:4px;}
 
-.metric-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
-.metric-card{background:#fff; border-radius:var(--radius-md); padding:15px; box-shadow:var(--shadow);}
-.metric-card .t{font-size:11px; font-weight:700; color:var(--gray);}
-.metric-card .v{font-size:19px; font-weight:900; margin-top:5px;}
-.metric-card .stat{margin-top:7px;}
+.metric-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+.metric-card{background:#fff; border-radius:var(--radius-lg); padding:18px 16px; box-shadow:var(--shadow);}
+.metric-card .ic{font-size:19px; opacity:.85;}
+.metric-card .t{font-size:11.5px; font-weight:700; color:var(--gray); margin-top:8px;}
+.metric-card .v{font-family:'Noto Serif TC', serif; font-size:25px; font-weight:900; margin-top:4px;}
+.metric-card .stat{margin-top:9px;}
 
 .advice-item{display:flex; gap:10px; padding:11px 0; border-bottom:1px solid var(--light-pink); align-items:flex-start;}
 .advice-item:last-child{border-bottom:none;}
@@ -1019,7 +1020,12 @@ select.mpc-input{
           <div class="arrow">›</div>
         </div>
 
-        <div class="pro-report-link" onclick="goPage('tool-report')">📊 財務健診報告</div>
+        <div class="report-cta" onclick="goPage('tool-report')">
+          <div class="report-cta-doodle">🐷</div>
+          <div class="ic">📊</div>
+          <div class="t"><div class="title">財務健診報告</div><div class="sub">專屬顧問視角，一頁看懂財務體質 <span class="en">· Financial Report</span></div></div>
+          <div class="arrow">›</div>
+        </div>
 
         <div class="hand-divider">✎ 記得每天記一筆，才不會亂花錢喔</div>
       </section>
@@ -1109,11 +1115,8 @@ select.mpc-input{
           <div class="tool-card" onclick="goToBudgetSettings()" style="padding:20px 16px;"><div class="ic" style="font-size:26px;">🐷</div><div class="t"><div class="title" style="font-size:14.5px;">預算控制</div><div class="sub">設定每月與分類花費上限 <span class="en">· Budget Control</span></div></div><div class="arrow">›</div></div>
         </div>
 
-        <div class="settings-item" onclick="toggleAdvancedTools()" style="margin-top:22px; cursor:pointer;">
-          <div class="l">🗂️ 進階規劃 <span class="en" style="font-size:10px; color:var(--gray); margin-left:4px;">Advanced Planning</span></div>
-          <div class="r" id="advToolsArrow">›</div>
-        </div>
-        <div class="tool-list" id="advToolsList" style="display:none; margin-top:10px;">
+        <div class="section-label">進階規劃 Advanced Planning</div>
+        <div class="tool-list" id="advToolsList">
           <div class="tool-card" onclick="goPage('tool-life')"><div class="ic">🔍</div><div class="t"><div class="title">一生要花多少錢</div><div class="sub">理想生活 V.S 現階段財務 <span class="en">· Lifetime Cost</span></div></div><div class="arrow">›</div></div>
           <div class="tool-card" onclick="goPage('tool-freedom')"><div class="ic">🧮</div><div class="t"><div class="title">財務自由計算器</div><div class="sub">投入資金 V.S 報酬率 <span class="en">· Financial Freedom</span></div></div><div class="arrow">›</div></div>
           <div class="tool-card" onclick="goPage('tool-balance')"><div class="ic">💻</div><div class="t"><div class="title">資產負債表</div><div class="sub">釐清現階段的身價 <span class="en">· Balance Sheet</span></div></div><div class="arrow">›</div></div>
@@ -1187,7 +1190,7 @@ select.mpc-input{
             </div>
             <div class="rowline"><div class="l">建議準備金額</div><div class="r" id="efTargetAmount">NT$ 0</div></div>
             <div class="progress-track"><div class="progress-fill" id="efBar" style="width:0%; background:linear-gradient(90deg, var(--sage), var(--light-sage));"></div></div>
-            <div class="field hint" style="margin-top:8px;">依近 3 個月平均支出估算，建議準備 3～6 個月生活費作為緊急預備金。</div>
+            <div class="backup-note" style="margin-top:8px;">依近 3 個月平均支出估算，建議準備 3～6 個月生活費作為緊急預備金。</div>
           </div>
         </div>
       </section>
@@ -1274,7 +1277,7 @@ select.mpc-input{
           </div>
           <div id="investListArea"></div>
           <button class="btn btn-soft btn-block" onclick="addInvestment()">＋ 新增持有部位</button>
-          <div class="field hint" style="margin-top:10px;">目前市價需手動更新，即時股價／幣價自動同步為後續規劃功能。</div>
+          <div class="backup-note" style="margin-top:10px;">目前市價需手動更新，即時股價／幣價自動同步為後續規劃功能。</div>
         </div>
       </section>
 
@@ -1324,12 +1327,11 @@ select.mpc-input{
 
         <div class="section-label">財務體質總覽</div>
         <div class="metric-grid">
-          <div class="metric-card"><div class="t">儲蓄率</div><div class="v" id="mSavingsRate">—</div><div class="stat" id="mSavingsStatus"></div></div>
-          <div class="metric-card"><div class="t">緊急預備金</div><div class="v" id="mEmergency">—</div><div class="stat" id="mEmergencyStatus"></div></div>
-          <div class="metric-card"><div class="t">負債比率</div><div class="v" id="mDebtRatio">—</div><div class="stat" id="mDebtStatus"></div></div>
-          <div class="metric-card"><div class="t">保障覆蓋率</div><div class="v" id="mCoverage">—</div><div class="stat" id="mCoverageStatus"></div></div>
+          <div class="metric-card"><div class="ic">🐷</div><div class="t">儲蓄率</div><div class="v" id="mSavingsRate">—</div><div class="stat" id="mSavingsStatus"></div></div>
+          <div class="metric-card"><div class="ic">🛟</div><div class="t">緊急預備金</div><div class="v" id="mEmergency">—</div><div class="stat" id="mEmergencyStatus"></div></div>
+          <div class="metric-card"><div class="ic">💳</div><div class="t">負債比率</div><div class="v" id="mDebtRatio">—</div><div class="stat" id="mDebtStatus"></div></div>
+          <div class="metric-card"><div class="ic">🛡️</div><div class="t">保障覆蓋率</div><div class="v" id="mCoverage">—</div><div class="stat" id="mCoverageStatus"></div></div>
         </div>
-        <div class="field hint" style="margin:10px 2px 0;">儲蓄率 ≥20% 良好．10–20% 注意．&lt;10% 待改善　｜　緊急預備金 ≥6個月 良好．3–6個月 注意．&lt;3個月 待改善　｜　負債比率 &lt;30% 良好．30–50% 注意．&gt;50% 待改善　｜　保障覆蓋率 ≥80% 良好．50–80% 注意．&lt;50% 待改善</div>
 
         <div class="card" style="margin-top:14px;">
           <div class="card-title" id="reportTrendTitle">📈 近三個月收支趨勢</div>
@@ -1353,7 +1355,7 @@ select.mpc-input{
           <div id="reportAdvice"></div>
         </div>
 
-        <div class="field hint" style="margin:14px 2px 0; line-height:1.8;">⚠️ 本報告為系統依您輸入的資料自動生成，僅供財務規劃參考，不構成正式投資、保險或稅務建議；實際決策請諮詢專業顧問。</div>
+        <div class="backup-note" style="margin-top:14px;">本報告為系統依您輸入的資料自動生成，僅供財務規劃參考，不構成正式投資、保險或稅務建議；實際決策請諮詢專業顧問。</div>
 
         <button class="btn btn-outline btn-block report-print-hide" onclick="window.print()">🖨️ 列印／匯出 PDF</button>
         <div style="height:8px;"></div>
@@ -1551,12 +1553,12 @@ select.mpc-input{
 <div class="modal-overlay" id="privacyModalOverlay">
   <div class="modal-sheet">
     <div class="modal-header"><h3>🔒 資料保護說明</h3><div class="modal-close" onclick="closeModal('privacyModalOverlay')">✕</div></div>
-    <div class="field hint" style="font-size:13.5px; line-height:1.9; margin-top:-4px;">
-      <p style="margin:0 0 12px;"><b>你的財務資料不會被誰看到。</b>duzhi 沒有帳號系統、沒有後端伺服器，所有記帳、資產、保障等資料都只儲存在你目前使用的裝置與瀏覽器裡（技術上稱為 localStorage）。</p>
+    <div class="backup-note" style="margin-top:-4px;">
+      <p style="margin:0 0 12px;"><b style="color:var(--dark);">你的財務資料不會被誰看到。</b>duzhi 沒有帳號系統、沒有後端伺服器，所有記帳、資產、保障等資料都只儲存在你目前使用的裝置與瀏覽器裡（技術上稱為 localStorage）。</p>
       <p style="margin:0 0 12px;">這代表：<br>・資料不會上傳到任何雲端或第三方<br>・我們（開發者）看不到你的任何一筆紀錄<br>・換一台裝置、清除瀏覽器資料或重灌手機，資料會消失，並不是被誰讀取走了</p>
       <p style="margin:0 0 12px;">如果你是理財顧問，想在客戶面前示範這個系統，這一點也適用於客戶：資料只留在操作當下的那台裝置上。</p>
       <p style="margin:0 0 12px;">建議定期使用設定頁的「匯出備份」功能保存一份 JSON 檔，換裝置時再「匯入備份」還原即可。</p>
-      <p style="margin:0; padding-top:12px; border-top:1px solid rgba(55,53,47,0.08); color:var(--gray); font-size:12.5px;">我們使用不記名的流量統計工具（GoatCounter），僅用來了解每天大約多少人造訪、從哪裡進來，不會記錄任何記帳或財務資料，也不會識別特定使用者。</p>
+      <p style="margin:0; padding-top:12px; border-top:1px solid rgba(55,53,47,0.08);">我們使用不記名的流量統計工具（GoatCounter），僅用來了解每天大約多少人造訪、從哪裡進來，不會記錄任何記帳或財務資料，也不會識別特定使用者。</p>
     </div>
     <button class="btn btn-primary btn-block" style="margin-top:16px;" onclick="closeModal('privacyModalOverlay')">知道了</button>
   </div>
@@ -1938,12 +1940,6 @@ function setTxAdvancedOpen(open){
   document.getElementById('txAdvancedArrow').textContent = open ? '⌄' : '›';
 }
 function toggleTxAdvanced(){ setTxAdvancedOpen(!txAdvancedOpen); }
-let advToolsOpen = false;
-function toggleAdvancedTools(){
-  advToolsOpen = !advToolsOpen;
-  document.getElementById('advToolsList').style.display = advToolsOpen ? '' : 'none';
-  document.getElementById('advToolsArrow').textContent = advToolsOpen ? '⌄' : '›';
-}
 function goToBudgetSettings(){
   goPage('settings');
   setTimeout(()=>{
@@ -2460,7 +2456,7 @@ document.getElementById('reportPeriodTabs').addEventListener('click', (e)=>{
 function renderReport(period){
   reportPeriod = period || reportPeriod || 'month';
   const now = new Date();
-  document.getElementById('reportDate').textContent = now.toLocaleDateString('zh-Hant-TW',{year:'numeric',month:'long',day:'numeric'});
+  document.getElementById('reportDate').textContent = now.toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
   const name = (state.settings && state.settings.clientName) ? state.settings.clientName.trim() : '';
   document.getElementById('reportClientTitle').textContent = name ? `${name} 的財務健診報告` : '您的財務健診報告';
 
