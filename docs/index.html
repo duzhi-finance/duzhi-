@@ -1345,27 +1345,11 @@ main{max-width:720px; margin:0 auto; padding:8px 20px 20px;}
 <!-- ============ Account Modal ============ -->
 <div class="modal-overlay" id="accountModalOverlay">
   <div class="modal-sheet">
-    <div class="modal-header"><h3>新增帳戶</h3><div class="modal-close" onclick="closeModal('accountModalOverlay')">✕</div></div>
-    <div class="field"><label>名稱</label><input type="text" id="accName" placeholder="例如：玉山銀行"></div>
-    <div class="field"><label>類型</label>
-      <select id="accType">
-        <option value="bank">銀行帳戶</option>
-        <option value="credit">信用卡</option>
-        <option value="cash">現金</option>
-        <option value="linepay">LINE Pay</option>
-        <option value="jkopay">街口支付</option>
-        <option value="applepay">Apple Pay</option>
-        <option value="paypal">PayPal</option>
-        <option value="pxpay">全支付</option>
-        <option value="easycard">悠遊卡</option>
-        <option value="ipass">一卡通</option>
-        <option value="icash">iCash</option>
-        <option value="invoicecarrier">手機發票條碼</option>
-        <option value="other">其他</option>
-      </select>
-    </div>
-    <div class="field hint" style="margin-top:-6px;">💳 信用卡、電子支付與電子票證目前無法自動連接發卡機構，刷卡／感應後請手動輸入金額，這裡先幫你建好帳戶方便快速選取；銀行與載具自動同步為後續規劃功能。</div>
-    <button class="btn btn-primary btn-block" onclick="saveAccount()">儲存</button>
+    <div class="modal-header"><h3>新增帳戶 / 支付方式</h3><div class="modal-close" onclick="closeModal('accountModalOverlay')">✕</div></div>
+    <div class="field hint" style="margin-top:-6px; margin-bottom:14px;">勾選常用的支付方式，一次全部新增，不用一個個手動輸入。</div>
+    <div class="checklist-grid" id="accountTypeChecklist"></div>
+    <div class="field hint" style="margin-top:14px;">💳 信用卡、電子支付與電子票證目前無法自動連接發卡機構，刷卡／感應後請手動輸入金額，這裡先幫你建好帳戶方便快速選取；銀行與載具自動同步為後續規劃功能。</div>
+    <button class="btn btn-primary btn-block" style="margin-top:10px;" onclick="saveAccountsFromChecklist()">儲存</button>
   </div>
 </div>
 
@@ -1498,6 +1482,13 @@ const DEFAULT_CATEGORIES = [
   {id:'fun', name:'娛樂', icon:'🎬', color:'var(--soft-blue)', essential:false},
   {id:'protection', name:'保障', icon:'🛡️', color:'var(--medium)', essential:true},
   {id:'other', name:'其他', icon:'✨', color:'var(--gray)', essential:false},
+];
+const ACCOUNT_TYPES = [
+  {id:'cash', name:'現金'}, {id:'bank', name:'銀行帳戶'}, {id:'credit', name:'信用卡'},
+  {id:'linepay', name:'LINE Pay'}, {id:'jkopay', name:'街口支付'}, {id:'applepay', name:'Apple Pay'},
+  {id:'paypal', name:'PayPal'}, {id:'pxpay', name:'全支付'}, {id:'easycard', name:'悠遊卡'},
+  {id:'ipass', name:'一卡通'}, {id:'icash', name:'iCash'}, {id:'invoicecarrier', name:'手機發票條碼'},
+  {id:'other', name:'其他'},
 ];
 const COVERAGE_TYPES = [
   {id:'life', name:'人身保障'}, {id:'medical', name:'醫療保障'}, {id:'accident', name:'意外保障'},
@@ -2761,9 +2752,8 @@ function renderSettings(){
 
   const accWrap = document.getElementById('accountListArea');
   accWrap.innerHTML='';
-  const typeNames={bank:'銀行帳戶', credit:'信用卡', cash:'現金', linepay:'LINE Pay', jkopay:'街口支付', applepay:'Apple Pay', paypal:'PayPal', pxpay:'全支付', easycard:'悠遊卡', ipass:'一卡通', icash:'iCash', invoicecarrier:'手機發票條碼', other:'其他'};
   state.accounts.forEach(a=>{
-    accWrap.innerHTML += `<div class="settings-item"><div class="l">${a.name}</div><div class="r">${typeNames[a.type]} <span class="x-btn" onclick="removeAccount('${a.id}')">✕</span></div></div>`;
+    accWrap.innerHTML += `<div class="settings-item"><div class="l">${a.name}</div><div class="r">${accTypeName(a.type)} <span class="x-btn" onclick="removeAccount('${a.id}')">✕</span></div></div>`;
   });
 
   document.getElementById('budgetOverall').value = state.budget.overall || '';
@@ -2828,19 +2818,29 @@ function removeFixed(id){
   saveState();
   renderSettings();
 }
+function accTypeName(id){
+  const t = ACCOUNT_TYPES.find(x=>x.id===id);
+  return t ? t.name : id;
+}
 function openAccountModal(){
-  document.getElementById('accName').value='';
+  const wrap = document.getElementById('accountTypeChecklist');
+  wrap.innerHTML='';
+  ACCOUNT_TYPES.forEach(t=>{
+    wrap.innerHTML += `<label class="check-item"><input type="checkbox" value="${t.id}"><span class="l">${t.name}</span></label>`;
+  });
   document.getElementById('accountModalOverlay').classList.add('open');
 }
-function saveAccount(){
-  const name = document.getElementById('accName').value.trim();
-  const type = document.getElementById('accType').value;
-  if(!name){ toast('請輸入名稱'); return; }
-  state.accounts.push({id:uid('acc'), name, type});
+function saveAccountsFromChecklist(){
+  const checked = Array.from(document.querySelectorAll('#accountTypeChecklist input:checked'));
+  if(checked.length===0){ toast('請至少勾選一個'); return; }
+  checked.forEach(cb=>{
+    const t = ACCOUNT_TYPES.find(x=>x.id===cb.value);
+    state.accounts.push({id:uid('acc'), name:t.name, type:t.id});
+  });
   saveState();
   closeModal('accountModalOverlay');
   renderSettings();
-  toast('已新增帳戶 ✓');
+  toast(`已新增 ${checked.length} 個帳戶 ✓`);
 }
 function removeAccount(id){
   state.accounts = state.accounts.filter(a=>a.id!==id);
