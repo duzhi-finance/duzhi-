@@ -3052,12 +3052,14 @@ function clearAllData(){
 /* ==================================================================
    INIT
    ================================================================== */
+const ENTERED_KEY = 'duzhi_entered_before_v1';
 function init(){
   generateFixedExpensesForThisMonth();
   populateSelects();
   openTxModal();
   renderGreeting();
   renderDashboard();
+  if(localStorage.getItem(ENTERED_KEY)) enterApp();
 }
 init();
 
@@ -3065,6 +3067,7 @@ init();
    LANDING PAGE <-> APP TOGGLE
    ================================================================== */
 function enterApp(){
+  localStorage.setItem(ENTERED_KEY, '1');
   document.getElementById('landingPage').style.display='none';
   document.getElementById('appShell').style.display='flex';
   document.body.style.paddingBottom='';
