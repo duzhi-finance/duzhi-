@@ -145,12 +145,6 @@ main{max-width:720px; margin:0 auto; padding:8px 20px 20px;}
 }
 .alert-card .ic{font-size:18px;}
 .alert-card .txt{font-size:13px; font-weight:700; color:var(--medium); line-height:1.5;}
-.reminder-card{
-  background:var(--light-blue); border-radius:var(--radius-md); padding:14px 16px;
-  display:flex; gap:10px; align-items:flex-start; margin-bottom:10px;
-}
-.reminder-card .ic{font-size:18px;}
-.reminder-card .txt{font-size:13px; font-weight:700; color:var(--medium); line-height:1.5;}
 
 /* Buttons */
 .btn{
@@ -342,6 +336,15 @@ main{max-width:720px; margin:0 auto; padding:8px 20px 20px;}
 .result-hero .v{font-size:30px; font-weight:900; margin-top:6px;}
 .result-hero .d{font-size:11px; color:var(--medium); margin-top:6px;}
 
+.plan-mini-row{display:flex; justify-content:space-between; align-items:center; padding:2px 2px 4px; font-size:12px; font-weight:700; color:var(--gray);}
+.plan-mini-row span:first-child{color:var(--medium);}
+.account-scroll-row{display:flex; gap:8px; overflow-x:auto; padding-bottom:6px; scrollbar-width:none;}
+.account-scroll-row::-webkit-scrollbar{display:none;}
+.account-chip{flex-shrink:0; min-width:104px; background:#fff; border-radius:var(--radius-md); padding:12px 14px 10px; box-shadow:var(--shadow); position:relative;}
+.account-chip .l{font-size:12.5px; font-weight:700; color:var(--dark); padding-right:14px; white-space:nowrap;}
+.account-chip .r{font-size:10.5px; color:var(--gray); margin-top:4px; white-space:nowrap;}
+.account-chip .x-btn{position:absolute; top:6px; right:8px; font-size:11px; padding:2px 4px;}
+.backup-note{font-size:11.5px; color:var(--gray); line-height:1.8; font-weight:500; letter-spacing:.01em; margin:0 2px 8px;}
 .rowline{display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--light-pink);}
 .rowline:last-child{border-bottom:none;}
 .rowline .l{font-size:12px; color:var(--medium); font-weight:700;}
@@ -480,14 +483,6 @@ select.mpc-input{
 .report-cta .arrow{font-size:18px; opacity:.7;}
 .report-cta-doodle{position:absolute; right:-6px; bottom:-16px; font-size:52px; opacity:.12; transform:rotate(8deg);}
 .pro-report-link{text-align:center; font-size:12px; color:var(--gray); font-weight:700; padding:8px 0 4px; cursor:pointer;}
-
-/* ---------- Quick add ---------- */
-.quickadd-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:8px;}
-.quickadd-btn{display:flex; flex-direction:column; align-items:center; gap:4px; padding:12px 6px; border-radius:var(--radius-md); background:var(--cream); border:1.5px solid transparent; transition:.15s;}
-.quickadd-btn:active{transform:scale(.94); background:var(--light-pink); border-color:var(--pink);}
-.quickadd-btn .ic{font-size:20px;}
-.quickadd-btn .lbl{font-size:11.5px; font-weight:700; color:var(--dark);}
-.quickadd-btn .amt{font-size:10.5px; color:var(--gray); font-weight:700;}
 
 /* ---------- Privacy entry ---------- */
 .privacy-entry{
@@ -1005,11 +1000,6 @@ select.mpc-input{
           </div>
         </div>
 
-        <div class="card">
-          <div class="card-title">⚡ 快速記帳</div>
-          <div class="quickadd-grid" id="dashQuickAddGrid"></div>
-        </div>
-
         <div id="anomalyArea"></div>
 
         <div class="card">
@@ -1397,10 +1387,9 @@ select.mpc-input{
 
       <!-- ================= SETTINGS ================= -->
       <section class="page" id="page-settings">
-        <div class="section-label">授權方案 · Plan</div>
-        <div class="card">
-          <div class="rowline"><div class="l">目前方案</div><div class="r" id="licenseTierDisplay">免費版 Free</div></div>
-          <div class="soon-badge" style="margin-top:10px; text-align:center; width:100%;">🚧 PRO 版即將推出，敬請期待</div>
+        <div class="plan-mini-row">
+          <span>授權方案</span>
+          <span><span id="licenseTierDisplay">免費版 Free</span> · PRO 即將推出</span>
         </div>
 
         <div class="section-label">固定支出</div>
@@ -1408,7 +1397,7 @@ select.mpc-input{
         <button class="btn btn-soft btn-block" onclick="openFixedModal()">＋ 新增固定支出</button>
 
         <div class="section-label">帳戶 / 支付方式</div>
-        <div id="accountListArea"></div>
+        <div class="account-scroll-row" id="accountListArea"></div>
         <button class="btn btn-soft btn-block" onclick="openAccountModal()">＋ 新增帳戶</button>
 
         <div class="section-label" id="settingsBudgetSection">預算控制</div>
@@ -1433,7 +1422,7 @@ select.mpc-input{
         </div>
 
         <div class="section-label">資料備份</div>
-        <div class="field hint" style="margin:0 2px 8px;">資料僅存在此裝置的瀏覽器中，換裝置、清除瀏覽器資料時會遺失，建議定期匯出備份，換裝置時再匯入即可還原。</div>
+        <div class="backup-note">資料僅存在此裝置的瀏覽器中，換裝置、清除瀏覽器資料時會遺失，建議定期匯出備份，換裝置時再匯入即可還原。</div>
         <div class="settings-item" onclick="exportBackup()"><div class="l">📤 匯出備份（JSON）</div><div class="r">›</div></div>
         <div class="settings-item" onclick="document.getElementById('importFile').click()"><div class="l">📥 匯入備份</div><div class="r">›</div></div>
         <input type="file" id="importFile" accept="application/json" style="display:none;">
@@ -1895,33 +1884,6 @@ function updateInstallmentAvailability(){
     toggleInstallmentUI();
   }
 }
-const QUICK_ADD_PRESETS = [
-  {icon:'🍳', label:'早餐', category:'food', amount:60},
-  {icon:'🍱', label:'午餐', category:'food', amount:100},
-  {icon:'☕', label:'咖啡', category:'food', amount:50},
-  {icon:'🚌', label:'交通', category:'transport', amount:30},
-  {icon:'🛒', label:'買菜', category:'life', amount:300},
-  {icon:'🎬', label:'娛樂', category:'fun', amount:200},
-];
-function renderQuickAdd(){
-  const wrap = document.getElementById('dashQuickAddGrid');
-  if(!wrap) return;
-  wrap.innerHTML = QUICK_ADD_PRESETS.map((p,i)=>
-    `<div class="quickadd-btn" onclick="quickAddTx(${i})"><div class="ic">${p.icon}</div><div class="lbl">${p.label}</div><div class="amt">$${p.amount}</div></div>`
-  ).join('');
-}
-function quickAddTx(i){
-  const p = QUICK_ADD_PRESETS[i];
-  const account = (state.accounts[0] && state.accounts[0].id) || 'acc_cash';
-  state.transactions.push({
-    id: uid('tx'), type:'expense', amount:p.amount, originalAmount:p.amount, currency:'TWD',
-    category:p.category, item:p.label, date: todayStr(), payMethod:account, account,
-    note:'', tags:[], installmentTotal:1, installmentIndex:1, installmentGroup:null,
-  });
-  saveState();
-  toast(`已記一筆「${p.label}」✓`);
-  refreshCurrentPage();
-}
 function openTxModal(existingTx){
   populateSelects();
   document.getElementById('txDeleteBtn').style.display='none';
@@ -2080,12 +2042,6 @@ function renderDashboard(){
   // anomaly detection: compare to average of previous 3 months
   const anomalyArea = document.getElementById('anomalyArea');
   anomalyArea.innerHTML='';
-
-  // gentle reminder if nothing logged today yet
-  const hasLoggedToday = state.transactions.some(t=>t.date===todayStr());
-  if(!hasLoggedToday){
-    anomalyArea.innerHTML += `<div class="reminder-card"><div class="ic">📝</div><div class="txt">今天還沒記帳喔，花一分鐘記一筆，養成習慣更容易存到錢！</div></div>`;
-  }
 
   // budget control alerts
   if(state.budget.overall>0 && me>state.budget.overall){
@@ -2930,7 +2886,7 @@ function renderSettings(){
   const accWrap = document.getElementById('accountListArea');
   accWrap.innerHTML='';
   state.accounts.forEach(a=>{
-    accWrap.innerHTML += `<div class="settings-item"><div class="l">${a.name}</div><div class="r">${accTypeName(a.type)} <span class="x-btn" onclick="removeAccount('${a.id}')">✕</span></div></div>`;
+    accWrap.innerHTML += `<div class="account-chip"><span class="x-btn" onclick="removeAccount('${a.id}')">✕</span><div class="l">${a.name}</div><div class="r">${accTypeName(a.type)}</div></div>`;
   });
 
   document.getElementById('budgetOverall').value = state.budget.overall || '';
@@ -3089,7 +3045,6 @@ function init(){
   generateFixedExpensesForThisMonth();
   populateSelects();
   openTxModal();
-  renderQuickAdd();
   renderGreeting();
   renderDashboard();
 }
