@@ -928,10 +928,6 @@ main{max-width:720px; margin:0 auto; padding:8px 20px 20px;}
 
       <!-- ================= LIST ================= -->
       <section class="page" id="page-list">
-        <div class="search-bar">
-          <span>🔍</span>
-          <input type="text" id="searchInput" placeholder="搜尋項目、備註、標籤…">
-        </div>
         <div class="filter-row" id="filterRow"></div>
         <div id="txListArea"></div>
       </section>
@@ -1301,9 +1297,8 @@ main{max-width:720px; margin:0 auto; padding:8px 20px 20px;}
     <div class="modal-section-label">💳 日期與付款 · Date & Payment</div>
     <div class="field-row">
       <div class="field"><label>日期 Date</label><input type="date" id="txDate"></div>
-      <div class="field"><label>支付方式 Method</label><select id="txPayMethod"></select></div>
+      <div class="field"><label>帳戶 Account</label><select id="txAccount"></select></div>
     </div>
-    <div class="field" style="margin-bottom:0;"><label>帳戶 Account</label><select id="txAccount"></select></div>
 
     <div class="modal-section-label">⚙️ 進階選項 · More Options</div>
 
@@ -1325,10 +1320,6 @@ main{max-width:720px; margin:0 auto; padding:8px 20px 20px;}
     </div>
 
     <div class="field" style="margin-top:16px;">
-      <label>標籤 Tags（用逗號分隔）</label>
-      <input type="text" id="txTags" placeholder="例如：聚餐,朋友">
-    </div>
-    <div class="field">
       <label>備註 Note</label>
       <textarea id="txNote" rows="2" placeholder="選填"></textarea>
     </div>
@@ -1701,14 +1692,11 @@ let txEditingId = null;
 let txCurrentType = 'expense';
 
 function populateSelects(){
-  const pay = document.getElementById('txPayMethod');
   const acc = document.getElementById('txAccount');
   const fxAcc = document.getElementById('fixedAccount');
   const paidBy = document.getElementById('txPaidBy');
-  [pay, acc, fxAcc].forEach(sel=>{ if(sel) sel.innerHTML=''; });
+  [acc, fxAcc].forEach(sel=>{ if(sel) sel.innerHTML=''; });
   state.accounts.forEach(a=>{
-    const opt1 = document.createElement('option'); opt1.value=a.id; opt1.textContent=a.name;
-    pay.appendChild(opt1);
     const opt2 = document.createElement('option'); opt2.value=a.id; opt2.textContent=a.name;
     acc.appendChild(opt2);
     const opt3 = document.createElement('option'); opt3.value=a.id; opt3.textContent=a.name;
@@ -1821,9 +1809,7 @@ function openTxModal(existingTx){
     txSelectedCurrency = existingTx.currency || 'TWD';
     document.getElementById('txItem').value = existingTx.item;
     document.getElementById('txDate').value = existingTx.date;
-    document.getElementById('txPayMethod').value = existingTx.payMethod;
     document.getElementById('txAccount').value = existingTx.account;
-    document.getElementById('txTags').value = (existingTx.tags||[]).join(',');
     document.getElementById('txNote').value = existingTx.note||'';
     const hasInstallment = (existingTx.installmentTotal||1)>1;
     document.getElementById('txInstallmentToggle').checked = hasInstallment;
@@ -1842,7 +1828,6 @@ function openTxModal(existingTx){
     txSelectedCurrency='TWD';
     document.getElementById('txItem').value='';
     document.getElementById('txDate').value = todayStr();
-    document.getElementById('txTags').value='';
     document.getElementById('txNote').value='';
     document.getElementById('txInstallmentToggle').checked=false;
     txInstallmentPeriod = 3;
@@ -1872,9 +1857,9 @@ function saveTx(){
   if(!item){ toast('請輸入項目'); return; }
   if(!date){ toast('請選擇日期'); return; }
   const amount = currency==='TWD' ? rawAmount : Math.round(rawAmount * (state.exchangeRates[currency]||1) * 100)/100;
-  const payMethod = document.getElementById('txPayMethod').value;
   const account = document.getElementById('txAccount').value;
-  const tags = document.getElementById('txTags').value.split(',').map(s=>s.trim()).filter(Boolean);
+  const payMethod = account;
+  const tags = [];
   const note = document.getElementById('txNote').value.trim();
   const installmentTotal = document.getElementById('txInstallmentToggle').checked ? txInstallmentPeriod : 1;
   const isSplit = document.getElementById('txSplitToggle').checked;
@@ -2034,7 +2019,6 @@ function renderDonut(circleId, legendId, catTotals){
    LIST PAGE
    ================================================================== */
 let listFilterCat = 'all';
-let listSearchTerm = '';
 function renderFilterChips(){
   const wrap = document.getElementById('filterRow');
   wrap.innerHTML = `<div class="chip ${listFilterCat==='all'?'active':''}" data-cat="all">全部</div>`;
@@ -2045,22 +2029,11 @@ function renderFilterChips(){
     chip.onclick = ()=>{ listFilterCat = chip.dataset.cat; renderList(); };
   });
 }
-document.getElementById('searchInput').addEventListener('input', (e)=>{
-  listSearchTerm = e.target.value.trim().toLowerCase();
-  renderList();
-});
 function renderList(){
   renderFilterChips();
   const area = document.getElementById('txListArea');
   let items = [...state.transactions].sort((a,b)=> b.date.localeCompare(a.date));
   if(listFilterCat!=='all') items = items.filter(t=>t.category===listFilterCat);
-  if(listSearchTerm){
-    items = items.filter(t =>
-      t.item.toLowerCase().includes(listSearchTerm) ||
-      (t.note||'').toLowerCase().includes(listSearchTerm) ||
-      (t.tags||[]).some(tag=>tag.toLowerCase().includes(listSearchTerm))
-    );
-  }
   if(items.length===0){
     area.innerHTML = '<div class="empty-state"><div class="ic">🗒️</div><div class="t">沒有符合的紀錄</div></div>';
     return;
