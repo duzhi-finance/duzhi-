@@ -27,6 +27,7 @@ body{
   color:var(--dark);
   -webkit-font-smoothing:antialiased;
   padding-bottom:calc(110px + env(safe-area-inset-bottom));
+  scroll-snap-type:y proximity;
 }
 button, input, select, textarea{font-family:inherit; font-size:inherit; color:inherit;}
 button{cursor:pointer; border:none; background:none;}
@@ -92,6 +93,7 @@ main{max-width:720px; margin:0 auto; padding:8px 20px 20px;}
   border-radius:var(--radius-lg);
   padding:26px 22px;
   margin-bottom:16px;
+  scroll-snap-align:start;
   position:relative;
   overflow:hidden;
 }
@@ -448,7 +450,7 @@ main{max-width:720px; margin:0 auto; padding:8px 20px 20px;}
 .report-cta{
   display:flex; align-items:center; gap:14px; border-radius:var(--radius-lg); padding:18px;
   background:linear-gradient(135deg, var(--dark) 0%, #4a453c 100%); color:#fff; margin-bottom:16px;
-  box-shadow:var(--shadow-hover); position:relative; overflow:hidden;
+  box-shadow:var(--shadow-hover); position:relative; overflow:hidden; scroll-snap-align:start;
 }
 .report-cta .ic{font-size:26px; flex-shrink:0;}
 .report-cta .t{flex:1;}
@@ -986,6 +988,50 @@ main{max-width:720px; margin:0 auto; padding:8px 20px 20px;}
       <!-- ================= LIST ================= -->
       <section class="page" id="page-list">
         <div class="filter-row" id="filterRow"></div>
+
+        <div class="card" id="txInlineForm">
+          <div class="card-title" id="txFormTitle">✏️ 新增記帳</div>
+          <div class="type-toggle">
+            <button type="button" class="expense" id="typeExpenseBtn" onclick="setTxType('expense')">支出 Expense</button>
+            <button type="button" class="income" id="typeIncomeBtn" onclick="setTxType('income')">收入 Income</button>
+          </div>
+
+          <div class="amount-hero">
+            <input type="number" id="txAmount" placeholder="0" inputmode="decimal">
+            <div class="currency-chip-row" id="currencyChipRow"></div>
+          </div>
+          <div class="hint" id="currencyHint" style="display:none; text-align:center; margin-top:-10px; margin-bottom:14px;"></div>
+
+          <div class="modal-section-label">📝 基本資訊 · Basic Info</div>
+          <div class="field" style="margin-bottom:0;">
+            <label>分類 Category</label>
+            <div class="cat-picker" id="catPicker"></div>
+          </div>
+
+          <div class="modal-section-label">💳 日期與付款 · Date & Payment</div>
+          <div class="field-row">
+            <div class="field"><label>日期 Date</label><input type="date" id="txDate"></div>
+            <div class="field"><label>帳戶 Account</label><select id="txAccount"></select></div>
+          </div>
+
+          <div class="modal-section-label">⚙️ 進階選項 · More Options</div>
+          <div class="switch-row" id="installmentSwitchRow" style="display:none;">
+            <div class="lbl">分期付款 Installment</div>
+            <label class="switch"><input type="checkbox" id="txInstallmentToggle" onchange="toggleInstallmentUI()"><span class="slider"></span></label>
+          </div>
+          <div class="switch-panel" id="installmentPanel" style="display:none;">
+            <div class="period-chip-row" id="installmentChipRow"></div>
+          </div>
+
+          <div class="field" style="margin-top:16px;">
+            <label>備註 Note</label>
+            <textarea id="txNote" rows="2" placeholder="選填"></textarea>
+          </div>
+          <button class="btn btn-primary btn-block" onclick="saveTx()">儲存 Save</button>
+          <button class="btn btn-ghost btn-block" id="txDeleteBtn" style="display:none; margin-top:6px;" onclick="deleteTxFromModal()">刪除這筆紀錄 Delete</button>
+          <button class="btn btn-ghost btn-block" id="txCancelEditBtn" style="display:none; margin-top:6px;" onclick="closeTxModal()">取消編輯</button>
+        </div>
+
         <div id="txListArea"></div>
       </section>
 
@@ -1326,60 +1372,12 @@ main{max-width:720px; margin:0 auto; padding:8px 20px 20px;}
     </main>
   </div>
 
-  <button class="fab" onclick="openTxModal()">＋</button>
-
   <nav class="bottomnav">
     <div class="nav-item active" data-page="dashboard"><span class="ic">🏠</span>首頁<span class="en">Home</span></div>
     <div class="nav-item" data-page="list"><span class="ic">🧾</span>記帳<span class="en">Ledger</span></div>
     <div class="nav-item" data-page="tools"><span class="ic">🧭</span>工具<span class="en">Tools</span></div>
     <div class="nav-item" data-page="settings"><span class="ic">⚙️</span>設定<span class="en">Settings</span></div>
   </nav>
-</div>
-
-<!-- ============ Transaction Modal ============ -->
-<div class="modal-overlay" id="txModalOverlay">
-  <div class="modal-sheet">
-    <div class="modal-header"><h3 id="txModalTitle">新增記帳 <span style="font-size:10px; color:var(--gray); font-weight:700;">Add Entry</span></h3><div class="modal-close" onclick="closeTxModal()">✕</div></div>
-    <div class="type-toggle">
-      <button type="button" class="expense" id="typeExpenseBtn" onclick="setTxType('expense')">支出 Expense</button>
-      <button type="button" class="income" id="typeIncomeBtn" onclick="setTxType('income')">收入 Income</button>
-    </div>
-
-    <div class="amount-hero">
-      <input type="number" id="txAmount" placeholder="0" inputmode="decimal">
-      <div class="currency-chip-row" id="currencyChipRow"></div>
-    </div>
-    <div class="hint" id="currencyHint" style="display:none; text-align:center; margin-top:-10px; margin-bottom:14px;"></div>
-
-    <div class="modal-section-label">📝 基本資訊 · Basic Info</div>
-    <div class="field" style="margin-bottom:0;">
-      <label>分類 Category</label>
-      <div class="cat-picker" id="catPicker"></div>
-    </div>
-
-    <div class="modal-section-label">💳 日期與付款 · Date & Payment</div>
-    <div class="field-row">
-      <div class="field"><label>日期 Date</label><input type="date" id="txDate"></div>
-      <div class="field"><label>帳戶 Account</label><select id="txAccount"></select></div>
-    </div>
-
-    <div class="modal-section-label">⚙️ 進階選項 · More Options</div>
-
-    <div class="switch-row" id="installmentSwitchRow" style="display:none;">
-      <div class="lbl">分期付款 Installment</div>
-      <label class="switch"><input type="checkbox" id="txInstallmentToggle" onchange="toggleInstallmentUI()"><span class="slider"></span></label>
-    </div>
-    <div class="switch-panel" id="installmentPanel" style="display:none;">
-      <div class="period-chip-row" id="installmentChipRow"></div>
-    </div>
-
-    <div class="field" style="margin-top:16px;">
-      <label>備註 Note</label>
-      <textarea id="txNote" rows="2" placeholder="選填"></textarea>
-    </div>
-    <button class="btn btn-primary btn-block" onclick="saveTx()">儲存 Save</button>
-    <button class="btn btn-ghost btn-block" id="txDeleteBtn" style="display:none; margin-top:6px;" onclick="deleteTxFromModal()">刪除這筆紀錄 Delete</button>
-  </div>
 </div>
 
 <!-- ============ Fixed Expense Modal ============ -->
@@ -1842,10 +1840,11 @@ function updateInstallmentAvailability(){
 function openTxModal(existingTx){
   populateSelects();
   document.getElementById('txDeleteBtn').style.display='none';
+  document.getElementById('txCancelEditBtn').style.display='none';
   txEditingId = null;
   if(existingTx){
     txEditingId = existingTx.id;
-    document.getElementById('txModalTitle').textContent='編輯記帳 Edit Entry';
+    document.getElementById('txFormTitle').textContent='✏️ 編輯記帳 Edit Entry';
     document.getElementById('txAmount').value = existingTx.originalAmount || existingTx.amount;
     txSelectedCurrency = existingTx.currency || 'TWD';
     document.getElementById('txDate').value = existingTx.date;
@@ -1858,8 +1857,9 @@ function openTxModal(existingTx){
     txSelectedCat = existingTx.category;
     setTxType(existingTx.type);
     document.getElementById('txDeleteBtn').style.display='block';
+    document.getElementById('txCancelEditBtn').style.display='block';
   } else {
-    document.getElementById('txModalTitle').textContent='新增記帳 Add Entry';
+    document.getElementById('txFormTitle').textContent='✏️ 新增記帳 Add Entry';
     document.getElementById('txAmount').value='';
     txSelectedCurrency='TWD';
     document.getElementById('txDate').value = todayStr();
@@ -1873,9 +1873,11 @@ function openTxModal(existingTx){
   buildCurrencyChips();
   buildInstallmentChips();
   updateCurrencyHint();
-  document.getElementById('txModalOverlay').classList.add('open');
+  if(existingTx){
+    document.getElementById('txInlineForm').scrollIntoView({behavior:'smooth', block:'start'});
+  }
 }
-function closeTxModal(){ document.getElementById('txModalOverlay').classList.remove('open'); }
+function closeTxModal(){ openTxModal(); }
 function closeModal(id){ document.getElementById(id).classList.remove('open'); }
 
 function saveTx(){
@@ -2976,6 +2978,7 @@ function clearAllData(){
 function init(){
   generateFixedExpensesForThisMonth();
   populateSelects();
+  openTxModal();
   renderGreeting();
   renderDashboard();
 }
