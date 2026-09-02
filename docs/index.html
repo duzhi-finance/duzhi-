@@ -19,10 +19,11 @@
   --shadow-hover: 0 8px 24px rgba(55,53,47,0.1);
 }
 *{box-sizing:border-box; margin:0; padding:0;}
-html,body{height:100%;}
+html{background:var(--bg); min-height:100%;}
 body{
   font-family:'Noto Sans TC', sans-serif;
   background:var(--bg);
+  min-height:100%;
   color:var(--dark);
   -webkit-font-smoothing:antialiased;
   padding-bottom:calc(170px + env(safe-area-inset-bottom));
