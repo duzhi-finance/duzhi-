@@ -890,46 +890,25 @@ select.mpc-input{
       <div class="lp-eyebrow">方案價格</div>
       <h2 class="lp-h2">把工具準備好，<br>讓下一次判斷更有底氣</h2>
     </div>
-    <div class="lp-pricing-grid lp-pricing-3 lp-reveal">
-      <div class="lp-price-card">
-        <div class="plan">免費版</div>
-        <div class="price">NT$0</div>
-        <div class="unit">永久免費・單一裝置</div>
+    <div class="lp-reveal" style="max-width:440px; margin:0 auto;">
+      <div class="lp-price-card featured">
+        <div class="badge-top">搶先體驗價</div>
+        <div class="plan">完整版．一次買斷</div>
+        <div class="price">NT$599</div>
+        <div class="unit">付一次，永久使用・未來更新全部免費升級</div>
         <ul>
           <li>✓ 記帳、預算控制、圖表分析</li>
-          <li>✓ 五大規劃工具（基本額度）</li>
-          <li>✓ 匯出／匯入備份</li>
-          <li>✕ 財務健診報告</li>
-          <li>✕ 存錢罐、投資理財、多人分帳</li>
-        </ul>
-        <button class="lp-btn lp-btn-outline" onclick="enterApp()">立即免費使用</button>
-      </div>
-      <div class="lp-price-card featured">
-        <div class="badge-top">最多人選擇</div>
-        <div class="plan">專業版</div>
-        <div class="price">NT$149<span style="font-size:14px; font-weight:700;">／月</span></div>
-        <div class="unit">或 NT$1,290／年（省 28%）</div>
-        <ul>
-          <li>✓ 免費版所有功能</li>
-          <li>✓ 財務健診報告無限生成（週／月／年報）</li>
-          <li>✓ 存錢罐、投資理財、緊急預備金追蹤</li>
-          <li>✓ 優先客服支援</li>
-        </ul>
-        <div class="lp-btn lp-btn-outline" style="cursor:default; justify-content:center;">🚧 PRO 即將推出，敬請期待</div>
-      </div>
-      <div class="lp-price-card">
-        <div class="plan">家庭 / 團隊版</div>
-        <div class="price">NT$349<span style="font-size:14px; font-weight:700;">／月起</span></div>
-        <div class="unit">依成員／席位數彈性報價</div>
-        <ul>
-          <li>✓ 專業版所有功能</li>
+          <li>✓ 五大財務規劃工具</li>
+          <li>✓ 財務健診報告（週／月／年報）</li>
+          <li>✓ 投資理財、存錢罐、緊急預備金追蹤</li>
           <li>✓ 多人分帳與共同記帳</li>
-          <li>✓ 品牌客製（Logo／配色）</li>
-          <li>✓ 專屬導入教學與教材</li>
+          <li>✓ 匯出／匯入備份</li>
         </ul>
-        <button class="lp-btn lp-btn-outline" onclick="openContactModal()">預約導入諮詢</button>
+        <button class="lp-btn lp-btn-dark" onclick="openContactModal()">立即購買 →</button>
+        <div style="text-align:center; margin-top:14px;"><span style="font-size:12px; color:var(--gray); font-weight:700; cursor:pointer; text-decoration:underline;" onclick="openUnlockModal()">已經購買了？輸入序號解鎖</span></div>
       </div>
     </div>
+    <div class="field hint" style="max-width:440px; margin:20px auto 0; text-align:center; line-height:1.8;">介面持續優化中，未來你會持續收到更好用的更新，不會再額外收費。團隊導入或品牌客製需求，也歡迎透過「立即購買」的聯絡方式跟我們聊聊。</div>
   </div>
 </section>
 
@@ -958,11 +937,11 @@ select.mpc-input{
       </details>
       <details class="lp-faq-item">
         <summary>多人分帳的資料是即時同步的嗎？</summary>
-        <p>多人分帳是家庭 / 團隊版即將推出的功能，規劃中會自動計算每人分攤金額與應收應付結餘；多裝置即時同步也在後續規劃中，屆時可先透過匯出／匯入備份手動同步。</p>
+        <p>多人分帳功能已經可以使用，會自動計算每人分攤金額與應收應付結餘；但因為資料僅存在單一裝置上，目前還沒有多人即時雲端同步，建議由一人統一輸入記錄，或透過匯出／匯入備份手動同步給其他成員。</p>
       </details>
       <details class="lp-faq-item">
-        <summary>家庭 / 團隊版可以客製化品牌嗎？</summary>
-        <p>可以，家庭 / 團隊版提供 Logo、主色調客製，讓系統成為你專屬的品牌延伸。</p>
+        <summary>需要品牌客製化（Logo、主色調）嗎？</summary>
+        <p>可以，如果你是顧問／團隊想用自己的品牌形象導入 duzhi，歡迎透過購買頁的聯絡方式跟我們討論客製需求。</p>
       </details>
     </div>
   </div>
@@ -1040,7 +1019,7 @@ select.mpc-input{
           <div class="arrow">›</div>
         </div>
 
-        <div class="pro-report-link" onclick="goPage('tool-report')">📊 財務健診報告 <span class="pro-badge">PRO</span></div>
+        <div class="pro-report-link" onclick="goPage('tool-report')">📊 財務健診報告</div>
 
         <div class="hand-divider">✎ 記得每天記一筆，才不會亂花錢喔</div>
       </section>
@@ -1112,7 +1091,7 @@ select.mpc-input{
         <div class="report-cta" onclick="goPage('tool-report')">
           <div class="report-cta-doodle">🐷</div>
           <div class="ic">📊</div>
-          <div class="t"><div class="title">財務健診報告 <span class="pro-badge">PRO</span></div><div class="sub">彙整五大工具，生成專業總覽 <span class="en">· Financial Report</span></div></div>
+          <div class="t"><div class="title">財務健診報告</div><div class="sub">彙整五大工具，生成專業總覽 <span class="en">· Financial Report</span></div></div>
           <div class="arrow">›</div>
         </div>
         <div class="tool-pie-wrap">
@@ -1140,9 +1119,9 @@ select.mpc-input{
           <div class="tool-card" onclick="goPage('tool-balance')"><div class="ic">💻</div><div class="t"><div class="title">資產負債表</div><div class="sub">釐清現階段的身價 <span class="en">· Balance Sheet</span></div></div><div class="arrow">›</div></div>
           <div class="tool-card" onclick="goPage('tool-income')"><div class="ic">📋</div><div class="t"><div class="title">收入支出總表</div><div class="sub">檢視每月必須及非必須開銷 <span class="en">· Income & Expense</span></div></div><div class="arrow">›</div></div>
           <div class="tool-card" onclick="goPage('tool-policy')"><div class="ic">🛡️</div><div class="t"><div class="title">保障配置檢視</div><div class="sub">盤點所有保障項目，補足缺口 <span class="en">· Coverage Review</span></div></div><div class="arrow">›</div></div>
-          <div class="tool-card" onclick="goPage('tool-invest')"><div class="ic">📊</div><div class="t"><div class="title">投資理財 <span class="pro-badge">PRO</span></div><div class="sub">追蹤股票、加密貨幣等資產 <span class="en">· Investments</span></div></div><div class="arrow">›</div></div>
-          <div class="tool-card" onclick="goPage('tool-goals')"><div class="ic">🏠</div><div class="t"><div class="title">存錢罐 <span class="pro-badge">PRO</span></div><div class="sub">許願、存錢、蓋一棟屬於自己的房子 <span class="en">· Savings Goals</span></div></div><div class="arrow">›</div></div>
-          <div class="tool-card" onclick="goPage('tool-split')"><div class="ic">🤝</div><div class="t"><div class="title">多人分帳 <span class="family-badge">FAMILY</span></div><div class="sub">家庭或情侶共同記帳與分攤 <span class="en">· Split Expenses</span></div></div><div class="arrow">›</div></div>
+          <div class="tool-card" onclick="goPage('tool-invest')"><div class="ic">📊</div><div class="t"><div class="title">投資理財</div><div class="sub">追蹤股票、加密貨幣等資產 <span class="en">· Investments</span></div></div><div class="arrow">›</div></div>
+          <div class="tool-card" onclick="goPage('tool-goals')"><div class="ic">🏠</div><div class="t"><div class="title">存錢罐</div><div class="sub">許願、存錢、蓋一棟屬於自己的房子 <span class="en">· Savings Goals</span></div></div><div class="arrow">›</div></div>
+          <div class="tool-card" onclick="goPage('tool-split')"><div class="ic">🤝</div><div class="t"><div class="title">多人分帳</div><div class="sub">家庭或情侶共同記帳與分攤 <span class="en">· Split Expenses</span></div></div><div class="arrow">›</div></div>
         </div>
       </section>
 
@@ -1200,13 +1179,8 @@ select.mpc-input{
           <div class="add-row-btn" onclick="addBalanceRow('liabilities')">＋ 新增負債項目</div>
         </div>
         <div class="card">
-          <div class="card-title">🧯 緊急預備金 <span class="pro-badge" style="margin-left:4px;">PRO</span></div>
-          <div class="locked-state" id="efLockGate" style="padding:24px 10px;">
-            <div class="lock-ic" style="font-size:28px;">🔒</div>
-            <p style="margin-top:6px;">緊急預備金追蹤是 PRO 功能，即將推出。</p>
-            <div class="soon-badge">🚧 即將推出</div>
-          </div>
-          <div id="efContent" style="display:none;">
+          <div class="card-title">🧯 緊急預備金</div>
+          <div id="efContent">
             <div class="field-row">
               <div class="field"><label>目標月數</label><input type="number" id="efTargetMonths" min="1" max="24" oninput="updateEmergencyFund()"></div>
               <div class="field"><label>目前已存金額</label><input type="number" id="efCurrentAmount" min="0" oninput="updateEmergencyFund()"></div>
@@ -1292,13 +1266,7 @@ select.mpc-input{
       <!-- ===== Tool 7: Investments ===== -->
       <section class="page" id="page-tool-invest">
         <div class="tool-page-head"><div class="back" onclick="goPage('tools')">←</div><div><h2>投資理財 <span class="en-h2">Investments</span></h2><div class="sub">追蹤股票、加密貨幣等資產</div></div></div>
-        <div class="locked-state" id="investLockGate">
-          <div class="lock-ic">🔒</div>
-          <h3>投資理財是 PRO 功能</h3>
-          <p>追蹤台股、美股、加密貨幣資產漲跌，並自動併入你的淨資產計算。</p>
-          <div class="soon-badge">🚧 即將推出</div>
-        </div>
-        <div id="investContent" style="display:none;">
+        <div id="investContent">
           <div class="result-hero">
             <div class="t">投資總市值</div>
             <div class="v" id="investTotalVal">NT$ 0</div>
@@ -1313,13 +1281,7 @@ select.mpc-input{
       <!-- ===== Tool 8: Savings Goals (piggy bank) ===== -->
       <section class="page" id="page-tool-goals">
         <div class="tool-page-head"><div class="back" onclick="goPage('tools')">←</div><div><h2>存錢罐 <span class="en-h2">Savings Goals</span></h2><div class="sub">許願、存錢，蓋一棟屬於自己的房子</div></div></div>
-        <div class="locked-state" id="goalsLockGate">
-          <div class="lock-ic">🔒</div>
-          <h3>存錢罐是 PRO 功能</h3>
-          <p>許願想買的球鞋、3C 產品，甚至頭期款，每天存入一筆，看著小房子一磚一瓦蓋起來。</p>
-          <div class="soon-badge">🚧 即將推出</div>
-        </div>
-        <div id="goalsContent" style="display:none;">
+        <div id="goalsContent">
           <div id="goalsListArea" class="tool-list"></div>
           <button class="btn btn-soft btn-block" onclick="addGoal()">＋ 新增願望目標</button>
         </div>
@@ -1328,13 +1290,7 @@ select.mpc-input{
       <!-- ===== Tool 9: Multi-person split ===== -->
       <section class="page" id="page-tool-split">
         <div class="tool-page-head"><div class="back" onclick="goPage('tools')">←</div><div><h2>多人分帳 <span class="en-h2">Split Expenses</span></h2><div class="sub">家庭或情侶共同記帳與分攤</div></div></div>
-        <div class="locked-state" id="splitLockGate">
-          <div class="lock-ic">🔒</div>
-          <h3>多人分帳是家庭 / 團隊版功能</h3>
-          <p>支援家庭或情侶共同記帳，自動計算每人分攤金額與應收應付結餘。</p>
-          <div class="soon-badge">🚧 即將推出</div>
-        </div>
-        <div id="splitContent" style="display:none;">
+        <div id="splitContent">
           <div class="card">
             <div class="card-title">👥 成員管理</div>
             <div id="memberListArea"></div>
@@ -1351,14 +1307,7 @@ select.mpc-input{
       <section class="page" id="page-tool-report">
         <div class="tool-page-head report-print-hide"><div class="back" onclick="goPage('tools')">←</div><div><h2>財務健診報告 <span class="en-h2">Health Report</span></h2><div class="sub">顧問視角．一頁看懂財務體質</div></div></div>
 
-        <div class="locked-state" id="reportLockGate">
-          <div class="lock-ic">🔒</div>
-          <h3>財務健診報告是 PRO 功能</h3>
-          <p>彙整儲蓄率、緊急預備金、負債比率、保障覆蓋率等指標，自動生成一頁式專業報告。</p>
-          <div class="soon-badge">🚧 即將推出</div>
-        </div>
-
-        <div id="reportContent" style="display:none;">
+        <div id="reportContent">
         <div class="report-header">
           <div class="brand-row"><div class="logo">duzhi｜財務健診報告</div><div class="date" id="reportDate"></div></div>
           <h2 id="reportClientTitle">您的財務健診報告</h2>
@@ -1415,7 +1364,7 @@ select.mpc-input{
       <section class="page" id="page-settings">
         <div class="plan-mini-row">
           <span>授權方案</span>
-          <span><span id="licenseTierDisplay">免費版 Free</span> · PRO 即將推出</span>
+          <span>✓ 完整版已解鎖</span>
         </div>
 
         <div class="section-label">固定支出</div>
@@ -1626,10 +1575,23 @@ select.mpc-input{
 <!-- ============ Contact Modal ============ -->
 <div class="modal-overlay" id="contactModalOverlay">
   <div class="modal-sheet">
-    <div class="modal-header"><h3>預約導入諮詢</h3><div class="modal-close" onclick="closeModal('contactModalOverlay')">✕</div></div>
-    <div class="field hint" style="margin-top:-6px; margin-bottom:14px;">選一個你方便的方式聯絡我們，一起討論團隊導入的細節。</div>
+    <div class="modal-header"><h3>購買 duzhi 完整版</h3><div class="modal-close" onclick="closeModal('contactModalOverlay')">✕</div></div>
+    <div class="field hint" style="margin-top:-6px; margin-bottom:14px;">目前透過 LINE 或 Instagram 私訊完成購買：告訴我們你想要的付款方式，確認收到款項後會提供一組專屬解鎖序號給你。團隊導入或品牌客製需求，也歡迎透過這裡聯繫討論。</div>
     <a class="btn btn-primary btn-block" style="text-decoration:none;" href="https://line.me/ti/p/TupXYUrqMq" target="_blank" rel="noopener">💬 加 LINE 聊聊</a>
     <a class="btn btn-outline btn-block" style="margin-top:10px; text-decoration:none;" href="https://www.instagram.com/en_______i?igsi=OG9nYzdyZndpOXBt&utm_source=qr" target="_blank" rel="noopener">📷 私訊 Instagram</a>
+  </div>
+</div>
+
+<!-- ============ Unlock Code Modal ============ -->
+<div class="modal-overlay" id="unlockModalOverlay">
+  <div class="modal-sheet">
+    <div class="modal-header"><h3>🔓 輸入序號解鎖</h3><div class="modal-close" onclick="closeModal('unlockModalOverlay')">✕</div></div>
+    <div class="field hint" style="margin-top:-6px; margin-bottom:14px;">購買完成後，我們會透過 LINE／Instagram 提供給你一組序號，貼在下面即可解鎖完整版。</div>
+    <div class="field">
+      <label>解鎖序號</label>
+      <input type="text" id="unlockCodeInput" placeholder="DUZHI-XXXX-XXXXX-XXXX" style="text-transform:uppercase;">
+    </div>
+    <button class="btn btn-primary btn-block" onclick="unlockWithCode()">解鎖</button>
   </div>
 </div>
 
@@ -1735,7 +1697,6 @@ function validateLicenseKey(key){
   return tier==='PRO' ? 'pro' : 'family';
 }
 function isPro(){ return state.license && (state.license.tier==='pro' || state.license.tier==='family'); }
-function isFamily(){ return state.license && state.license.tier==='family'; }
 function applyLicenseKey(key){
   const tier = validateLicenseKey(key);
   if(!tier){ toast('授權碼無效，請確認後再試一次'); return false; }
@@ -1744,13 +1705,6 @@ function applyLicenseKey(key){
   toast(tier==='family' ? '🎉 已解鎖家庭 / 團隊版！' : '🎉 已解鎖專業版！');
   return true;
 }
-function renderLockGate(gateId, contentId, requiredTier){
-  const hasAccess = requiredTier==='family' ? isFamily() : isPro();
-  document.getElementById(gateId).style.display = hasAccess ? 'none' : 'block';
-  document.getElementById(contentId).style.display = hasAccess ? '' : 'none';
-  return hasAccess;
-}
-
 
 /* ==================================================================
    NAV
@@ -1966,6 +1920,17 @@ function closeTxModal(){ openTxModal(); }
 function closeModal(id){ document.getElementById(id).classList.remove('open'); }
 function openPrivacyModal(){ document.getElementById('privacyModalOverlay').classList.add('open'); }
 function openContactModal(){ document.getElementById('contactModalOverlay').classList.add('open'); }
+function openUnlockModal(){
+  document.getElementById('unlockCodeInput').value='';
+  document.getElementById('unlockModalOverlay').classList.add('open');
+}
+function unlockWithCode(){
+  const key = document.getElementById('unlockCodeInput').value;
+  if(applyLicenseKey(key)){
+    closeModal('unlockModalOverlay');
+    enterApp();
+  }
+}
 let txAdvancedOpen = false;
 function setTxAdvancedOpen(open){
   txAdvancedOpen = open;
@@ -2298,11 +2263,9 @@ function renderBalanceSheet(){
       <div class="legend-item"><span class="legend-dot" style="background:var(--pink);"></span>負債 NT$ ${fmt(totalL)}</div>`;
   }
 
-  if(renderLockGate('efLockGate','efContent','pro')){
-    document.getElementById('efTargetMonths').value = state.emergencyFund.targetMonths;
-    document.getElementById('efCurrentAmount').value = state.emergencyFund.currentAmount;
-    updateEmergencyFund();
-  }
+  document.getElementById('efTargetMonths').value = state.emergencyFund.targetMonths;
+  document.getElementById('efCurrentAmount').value = state.emergencyFund.currentAmount;
+  updateEmergencyFund();
 }
 let balanceRowPendingKey = null;
 const ASSET_PRESETS = ['定存','股票','房產','現金','基金','其他'];
@@ -2496,7 +2459,6 @@ document.getElementById('reportPeriodTabs').addEventListener('click', (e)=>{
 });
 function renderReport(period){
   reportPeriod = period || reportPeriod || 'month';
-  if(!renderLockGate('reportLockGate','reportContent','pro')) return;
   const now = new Date();
   document.getElementById('reportDate').textContent = now.toLocaleDateString('zh-Hant-TW',{year:'numeric',month:'long',day:'numeric'});
   const name = (state.settings && state.settings.clientName) ? state.settings.clientName.trim() : '';
@@ -2646,7 +2608,6 @@ function renderAnalysis(){
    TOOL 7: INVESTMENTS
    ================================================================== */
 function renderInvestments(){
-  if(!renderLockGate('investLockGate','investContent','pro')) return;
   const total = computeInvestmentTotal();
   const cost = (state.investments||[]).reduce((s,x)=>s+x.quantity*x.avgCost,0);
   const gain = total-cost;
@@ -2756,7 +2717,6 @@ function goalStreak(goal){
   return streak;
 }
 function renderGoals(){
-  if(!renderLockGate('goalsLockGate','goalsContent','pro')) return;
   const wrap = document.getElementById('goalsListArea');
   wrap.innerHTML='';
   if((state.goals||[]).length===0){
@@ -2841,7 +2801,6 @@ function removeGoal(id){
    TOOL 9: MULTI-PERSON SPLIT
    ================================================================== */
 function renderSplit(){
-  if(!renderLockGate('splitLockGate','splitContent','family')) return;
   const memberWrap = document.getElementById('memberListArea');
   memberWrap.innerHTML='';
   (state.members||[]).forEach((m,i)=>{
@@ -2909,8 +2868,6 @@ function currentMonthCatTotals(){
   return totals;
 }
 function renderSettings(){
-  const tierNames = {free:'免費版 Free', pro:'專業版 PRO', family:'家庭 / 團隊版 Family'};
-  document.getElementById('licenseTierDisplay').textContent = tierNames[state.license.tier] || tierNames.free;
   const fixedWrap = document.getElementById('fixedListArea');
   fixedWrap.innerHTML='';
   if(state.fixedExpenses.length===0){
@@ -3079,14 +3036,13 @@ function clearAllData(){
 /* ==================================================================
    INIT
    ================================================================== */
-const ENTERED_KEY = 'duzhi_entered_before_v1';
 function init(){
   generateFixedExpensesForThisMonth();
   populateSelects();
   openTxModal();
   renderGreeting();
   renderDashboard();
-  if(localStorage.getItem(ENTERED_KEY)){
+  if(isPro()){
     // Landing page is about to be hidden — mark its scroll-reveal sections as
     // already shown so they don't get stuck invisible (opacity:0) forever if
     // this happens before the IntersectionObserver below gets a chance to run.
@@ -3100,7 +3056,11 @@ init();
    LANDING PAGE <-> APP TOGGLE
    ================================================================== */
 function enterApp(){
-  localStorage.setItem(ENTERED_KEY, '1');
+  if(!isPro()){
+    document.getElementById('lp-pricing').scrollIntoView({behavior:'smooth', block:'start'});
+    toast('請先購買解鎖完整版 🔒');
+    return;
+  }
   document.getElementById('landingPage').style.display='none';
   document.getElementById('appShell').style.display='flex';
   document.body.style.paddingBottom='';
