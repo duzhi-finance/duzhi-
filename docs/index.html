@@ -899,7 +899,7 @@ select.mpc-input{
       </details>
       <details class="lp-faq-item">
         <summary>支援哪些支付方式與電子票證？</summary>
-        <p>記帳時可選擇銀行帳戶、現金、信用卡、LINE Pay、街口支付、Apple Pay、PayPal、全支付，以及悠遊卡、一卡通、iCash 等電子票證。銀行與載具的即時自動同步為後續規劃功能，目前刷卡／感應消費請手動輸入一筆，系統會自動協助分類與統計。</p>
+        <p>記帳時可選擇現金、信用卡、LINE Pay、街口支付、Apple Pay、PayPal、全支付，以及悠遊卡、一卡通、iCash 等電子票證。載具的即時自動同步為後續規劃功能，目前刷卡／感應消費請手動輸入一筆，系統會自動協助分類與統計。</p>
       </details>
       <details class="lp-faq-item">
         <summary>可以記錄外幣消費嗎？</summary>
@@ -1559,7 +1559,7 @@ const INCOME_CATEGORIES = [
   {id:'other_income', name:'其他收入', icon:'✨', color:'var(--blue)'},
 ];
 const ACCOUNT_TYPES = [
-  {id:'cash', name:'現金'}, {id:'bank', name:'銀行帳戶'}, {id:'credit', name:'信用卡'},
+  {id:'cash', name:'現金'}, {id:'credit', name:'信用卡'},
   {id:'linepay', name:'LINE Pay'}, {id:'jkopay', name:'街口支付'}, {id:'applepay', name:'Apple Pay'},
   {id:'paypal', name:'PayPal'}, {id:'pxpay', name:'全支付'}, {id:'easycard', name:'悠遊卡'},
   {id:'ipass', name:'一卡通'}, {id:'icash', name:'iCash'}, {id:'invoicecarrier', name:'手機發票條碼'},
@@ -1577,7 +1577,6 @@ function defaultState(){
     fixedExpenses: [],
     accounts: [
       {id:'acc_cash', name:'現金', type:'cash'},
-      {id:'acc_bank1', name:'銀行帳戶', type:'bank'},
       {id:'acc_credit1', name:'信用卡', type:'credit'},
       {id:'acc_linepay', name:'LINE Pay', type:'linepay'},
       {id:'acc_jkopay', name:'街口支付', type:'jkopay'},
