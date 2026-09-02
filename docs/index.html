@@ -479,6 +479,15 @@ select.mpc-input{
 .report-cta .t .sub{font-size:11.5px; opacity:.75; margin-top:2px;}
 .report-cta .arrow{font-size:18px; opacity:.7;}
 .report-cta-doodle{position:absolute; right:-6px; bottom:-16px; font-size:52px; opacity:.12; transform:rotate(8deg);}
+.pro-report-link{text-align:center; font-size:12px; color:var(--gray); font-weight:700; padding:8px 0 4px; cursor:pointer;}
+
+/* ---------- Quick add ---------- */
+.quickadd-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:8px;}
+.quickadd-btn{display:flex; flex-direction:column; align-items:center; gap:4px; padding:12px 6px; border-radius:var(--radius-md); background:var(--cream); border:1.5px solid transparent; transition:.15s;}
+.quickadd-btn:active{transform:scale(.94); background:var(--light-pink); border-color:var(--pink);}
+.quickadd-btn .ic{font-size:20px;}
+.quickadd-btn .lbl{font-size:11.5px; font-weight:700; color:var(--dark);}
+.quickadd-btn .amt{font-size:10.5px; color:var(--gray); font-weight:700;}
 
 /* ---------- Privacy entry ---------- */
 .privacy-entry{
@@ -996,10 +1005,9 @@ select.mpc-input{
           </div>
         </div>
 
-        <div class="privacy-entry" onclick="openPrivacyModal()">
-          <div class="ic">🔒</div>
-          <div class="t"><div class="title">資料保護說明</div><div class="sub">你的財務資料只存在這台裝置，不會被誰看到</div></div>
-          <div class="arrow">›</div>
+        <div class="card">
+          <div class="card-title">⚡ 快速記帳</div>
+          <div class="quickadd-grid" id="dashQuickAddGrid"></div>
         </div>
 
         <div id="anomalyArea"></div>
@@ -1012,17 +1020,13 @@ select.mpc-input{
           </div>
         </div>
 
-        <div class="card">
-          <div class="card-title">📂 分類明細</div>
-          <div id="dashCatRows"></div>
-        </div>
-
-        <div class="report-cta" onclick="goPage('tool-report')">
-          <div class="report-cta-doodle">🐷</div>
-          <div class="ic">📊</div>
-          <div class="t"><div class="title">查看我的財務健診報告 <span class="pro-badge">PRO</span></div><div class="sub">專屬顧問視角，一頁看懂財務體質 <span class="en">· Financial Report</span></div></div>
+        <div class="privacy-entry" onclick="openPrivacyModal()">
+          <div class="ic">🔒</div>
+          <div class="t"><div class="title">資料保護說明</div><div class="sub">你的財務資料只存在這台裝置，不會被誰看到</div></div>
           <div class="arrow">›</div>
         </div>
+
+        <div class="pro-report-link" onclick="goPage('tool-report')">📊 財務健診報告 <span class="pro-badge">PRO</span></div>
 
         <div class="hand-divider">✎ 記得每天記一筆，才不會亂花錢喔</div>
       </section>
@@ -1050,32 +1054,38 @@ select.mpc-input{
             <div class="cat-picker" id="catPicker"></div>
           </div>
 
-          <div class="modal-section-label">💳 日期與付款 · Date & Payment</div>
-          <div class="month-picker-card" style="margin-bottom:10px;">
-            <div class="mpc-ic">📅</div>
-            <div class="mpc-label">日期<span class="en-label" style="display:block;">Date</span></div>
-            <input type="date" id="txDate" class="mpc-input">
+          <div class="settings-item" onclick="toggleTxAdvanced()" style="margin-top:16px; cursor:pointer;">
+            <div class="l">⚙️ 更多選項（日期、帳戶、分期、備註）</div>
+            <div class="r" id="txAdvancedArrow">›</div>
           </div>
-          <div class="month-picker-card">
-            <div class="mpc-ic">💳</div>
-            <div class="mpc-label">帳戶<span class="en-label" style="display:block;">Account</span></div>
-            <select id="txAccount" class="mpc-input"></select>
-          </div>
+          <div id="txAdvancedPanel" style="display:none;">
+            <div class="modal-section-label">💳 日期與付款 · Date & Payment</div>
+            <div class="month-picker-card" style="margin-bottom:10px;">
+              <div class="mpc-ic">📅</div>
+              <div class="mpc-label">日期<span class="en-label" style="display:block;">Date</span></div>
+              <input type="date" id="txDate" class="mpc-input">
+            </div>
+            <div class="month-picker-card">
+              <div class="mpc-ic">💳</div>
+              <div class="mpc-label">帳戶<span class="en-label" style="display:block;">Account</span></div>
+              <select id="txAccount" class="mpc-input"></select>
+            </div>
 
-          <div class="modal-section-label">⚙️ 進階選項 · More Options</div>
-          <div class="switch-row" id="installmentSwitchRow" style="display:none;">
-            <div class="lbl">分期付款 Installment</div>
-            <label class="switch"><input type="checkbox" id="txInstallmentToggle" onchange="toggleInstallmentUI()"><span class="slider"></span></label>
-          </div>
-          <div class="switch-panel" id="installmentPanel" style="display:none;">
-            <div class="period-chip-row" id="installmentChipRow"></div>
-          </div>
+            <div class="modal-section-label">⚙️ 進階選項 · More Options</div>
+            <div class="switch-row" id="installmentSwitchRow" style="display:none;">
+              <div class="lbl">分期付款 Installment</div>
+              <label class="switch"><input type="checkbox" id="txInstallmentToggle" onchange="toggleInstallmentUI()"><span class="slider"></span></label>
+            </div>
+            <div class="switch-panel" id="installmentPanel" style="display:none;">
+              <div class="period-chip-row" id="installmentChipRow"></div>
+            </div>
 
-          <div class="field" style="margin-top:16px;">
-            <label>備註 Note</label>
-            <textarea id="txNote" rows="2" placeholder="選填"></textarea>
+            <div class="field" style="margin-top:16px;">
+              <label>備註 Note</label>
+              <textarea id="txNote" rows="2" placeholder="選填"></textarea>
+            </div>
           </div>
-          <button class="btn btn-primary btn-block" onclick="saveTx()">儲存 Save</button>
+          <button class="btn btn-primary btn-block" style="margin-top:16px;" onclick="saveTx()">儲存 Save</button>
           <button class="btn btn-ghost btn-block" id="txDeleteBtn" style="display:none; margin-top:6px;" onclick="deleteTxFromModal()">刪除這筆紀錄 Delete</button>
           <button class="btn btn-ghost btn-block" id="txCancelEditBtn" style="display:none; margin-top:6px;" onclick="closeTxModal()">取消編輯</button>
         </div>
@@ -1100,16 +1110,25 @@ select.mpc-input{
             <circle cx="75" cy="75" r="60" fill="none" stroke="var(--soft-pink)" stroke-width="30" stroke-dasharray="45.2 301.6" stroke-dashoffset="-256.3" transform="rotate(-90 75 75)"/>
           </svg>
         </div>
+        <div class="section-label" style="margin-top:6px;">常用 Frequently Used</div>
         <div class="tool-list">
-          <div class="tool-card" onclick="goPage('tool-life')"><div class="num">1</div><div class="ic">🔍</div><div class="t"><div class="title">一生要花多少錢</div><div class="sub">理想生活 V.S 現階段財務 <span class="en">· Lifetime Cost</span></div></div><div class="arrow">›</div></div>
-          <div class="tool-card" onclick="goPage('tool-freedom')"><div class="num">2</div><div class="ic">🧮</div><div class="t"><div class="title">財務自由計算器</div><div class="sub">投入資金 V.S 報酬率 <span class="en">· Financial Freedom</span></div></div><div class="arrow">›</div></div>
-          <div class="tool-card" onclick="goPage('tool-balance')"><div class="num">3</div><div class="ic">💻</div><div class="t"><div class="title">資產負債表</div><div class="sub">釐清現階段的身價 <span class="en">· Balance Sheet</span></div></div><div class="arrow">›</div></div>
-          <div class="tool-card" onclick="goPage('tool-income')"><div class="num">4</div><div class="ic">📋</div><div class="t"><div class="title">收入支出總表</div><div class="sub">檢視每月必須及非必須開銷 <span class="en">· Income & Expense</span></div></div><div class="arrow">›</div></div>
-          <div class="tool-card" onclick="goPage('tool-policy')"><div class="num">5</div><div class="ic">🛡️</div><div class="t"><div class="title">保障配置檢視</div><div class="sub">盤點所有保障項目，補足缺口 <span class="en">· Coverage Review</span></div></div><div class="arrow">›</div></div>
-          <div class="tool-card" onclick="goPage('tool-analysis')"><div class="num">6</div><div class="ic">📈</div><div class="t"><div class="title">圖表分析</div><div class="sub">收支趨勢、類別占比一次看 <span class="en">· Chart Analysis</span></div></div><div class="arrow">›</div></div>
-          <div class="tool-card" onclick="goPage('tool-invest')"><div class="num">7</div><div class="ic">📊</div><div class="t"><div class="title">投資理財 <span class="pro-badge">PRO</span></div><div class="sub">追蹤股票、加密貨幣等資產 <span class="en">· Investments</span></div></div><div class="arrow">›</div></div>
-          <div class="tool-card" onclick="goPage('tool-goals')"><div class="num">8</div><div class="ic">🏠</div><div class="t"><div class="title">存錢罐 <span class="pro-badge">PRO</span></div><div class="sub">許願、存錢、蓋一棟屬於自己的房子 <span class="en">· Savings Goals</span></div></div><div class="arrow">›</div></div>
-          <div class="tool-card" onclick="goPage('tool-split')"><div class="num">9</div><div class="ic">🤝</div><div class="t"><div class="title">多人分帳 <span class="family-badge">FAMILY</span></div><div class="sub">家庭或情侶共同記帳與分攤 <span class="en">· Split Expenses</span></div></div><div class="arrow">›</div></div>
+          <div class="tool-card" onclick="goPage('tool-analysis')" style="padding:20px 16px;"><div class="ic" style="font-size:26px;">📈</div><div class="t"><div class="title" style="font-size:14.5px;">圖表分析</div><div class="sub">收支趨勢、類別占比一次看 <span class="en">· Chart Analysis</span></div></div><div class="arrow">›</div></div>
+          <div class="tool-card" onclick="goToBudgetSettings()" style="padding:20px 16px;"><div class="ic" style="font-size:26px;">🐷</div><div class="t"><div class="title" style="font-size:14.5px;">預算控制</div><div class="sub">設定每月與分類花費上限 <span class="en">· Budget Control</span></div></div><div class="arrow">›</div></div>
+        </div>
+
+        <div class="settings-item" onclick="toggleAdvancedTools()" style="margin-top:22px; cursor:pointer;">
+          <div class="l">🗂️ 進階規劃 <span class="en" style="font-size:10px; color:var(--gray); margin-left:4px;">Advanced Planning</span></div>
+          <div class="r" id="advToolsArrow">›</div>
+        </div>
+        <div class="tool-list" id="advToolsList" style="display:none; margin-top:10px;">
+          <div class="tool-card" onclick="goPage('tool-life')"><div class="ic">🔍</div><div class="t"><div class="title">一生要花多少錢</div><div class="sub">理想生活 V.S 現階段財務 <span class="en">· Lifetime Cost</span></div></div><div class="arrow">›</div></div>
+          <div class="tool-card" onclick="goPage('tool-freedom')"><div class="ic">🧮</div><div class="t"><div class="title">財務自由計算器</div><div class="sub">投入資金 V.S 報酬率 <span class="en">· Financial Freedom</span></div></div><div class="arrow">›</div></div>
+          <div class="tool-card" onclick="goPage('tool-balance')"><div class="ic">💻</div><div class="t"><div class="title">資產負債表</div><div class="sub">釐清現階段的身價 <span class="en">· Balance Sheet</span></div></div><div class="arrow">›</div></div>
+          <div class="tool-card" onclick="goPage('tool-income')"><div class="ic">📋</div><div class="t"><div class="title">收入支出總表</div><div class="sub">檢視每月必須及非必須開銷 <span class="en">· Income & Expense</span></div></div><div class="arrow">›</div></div>
+          <div class="tool-card" onclick="goPage('tool-policy')"><div class="ic">🛡️</div><div class="t"><div class="title">保障配置檢視</div><div class="sub">盤點所有保障項目，補足缺口 <span class="en">· Coverage Review</span></div></div><div class="arrow">›</div></div>
+          <div class="tool-card" onclick="goPage('tool-invest')"><div class="ic">📊</div><div class="t"><div class="title">投資理財 <span class="pro-badge">PRO</span></div><div class="sub">追蹤股票、加密貨幣等資產 <span class="en">· Investments</span></div></div><div class="arrow">›</div></div>
+          <div class="tool-card" onclick="goPage('tool-goals')"><div class="ic">🏠</div><div class="t"><div class="title">存錢罐 <span class="pro-badge">PRO</span></div><div class="sub">許願、存錢、蓋一棟屬於自己的房子 <span class="en">· Savings Goals</span></div></div><div class="arrow">›</div></div>
+          <div class="tool-card" onclick="goPage('tool-split')"><div class="ic">🤝</div><div class="t"><div class="title">多人分帳 <span class="family-badge">FAMILY</span></div><div class="sub">家庭或情侶共同記帳與分攤 <span class="en">· Split Expenses</span></div></div><div class="arrow">›</div></div>
         </div>
       </section>
 
@@ -1392,7 +1411,7 @@ select.mpc-input{
         <div id="accountListArea"></div>
         <button class="btn btn-soft btn-block" onclick="openAccountModal()">＋ 新增帳戶</button>
 
-        <div class="section-label">預算控制</div>
+        <div class="section-label" id="settingsBudgetSection">預算控制</div>
         <div class="budget-hero">
           <div class="budget-hero-top">
             <div class="budget-hero-label">🐷 每月總預算</div>
@@ -1876,6 +1895,33 @@ function updateInstallmentAvailability(){
     toggleInstallmentUI();
   }
 }
+const QUICK_ADD_PRESETS = [
+  {icon:'🍳', label:'早餐', category:'food', amount:60},
+  {icon:'🍱', label:'午餐', category:'food', amount:100},
+  {icon:'☕', label:'咖啡', category:'food', amount:50},
+  {icon:'🚌', label:'交通', category:'transport', amount:30},
+  {icon:'🛒', label:'買菜', category:'life', amount:300},
+  {icon:'🎬', label:'娛樂', category:'fun', amount:200},
+];
+function renderQuickAdd(){
+  const wrap = document.getElementById('dashQuickAddGrid');
+  if(!wrap) return;
+  wrap.innerHTML = QUICK_ADD_PRESETS.map((p,i)=>
+    `<div class="quickadd-btn" onclick="quickAddTx(${i})"><div class="ic">${p.icon}</div><div class="lbl">${p.label}</div><div class="amt">$${p.amount}</div></div>`
+  ).join('');
+}
+function quickAddTx(i){
+  const p = QUICK_ADD_PRESETS[i];
+  const account = (state.accounts[0] && state.accounts[0].id) || 'acc_cash';
+  state.transactions.push({
+    id: uid('tx'), type:'expense', amount:p.amount, originalAmount:p.amount, currency:'TWD',
+    category:p.category, item:p.label, date: todayStr(), payMethod:account, account,
+    note:'', tags:[], installmentTotal:1, installmentIndex:1, installmentGroup:null,
+  });
+  saveState();
+  toast(`已記一筆「${p.label}」✓`);
+  refreshCurrentPage();
+}
 function openTxModal(existingTx){
   populateSelects();
   document.getElementById('txDeleteBtn').style.display='none';
@@ -1912,6 +1958,7 @@ function openTxModal(existingTx){
   buildCurrencyChips();
   buildInstallmentChips();
   updateCurrencyHint();
+  setTxAdvancedOpen(!!existingTx);
   if(existingTx){
     document.getElementById('txInlineForm').scrollIntoView({behavior:'smooth', block:'start'});
   }
@@ -1919,6 +1966,26 @@ function openTxModal(existingTx){
 function closeTxModal(){ openTxModal(); }
 function closeModal(id){ document.getElementById(id).classList.remove('open'); }
 function openPrivacyModal(){ document.getElementById('privacyModalOverlay').classList.add('open'); }
+let txAdvancedOpen = false;
+function setTxAdvancedOpen(open){
+  txAdvancedOpen = open;
+  document.getElementById('txAdvancedPanel').style.display = open ? '' : 'none';
+  document.getElementById('txAdvancedArrow').textContent = open ? '⌄' : '›';
+}
+function toggleTxAdvanced(){ setTxAdvancedOpen(!txAdvancedOpen); }
+let advToolsOpen = false;
+function toggleAdvancedTools(){
+  advToolsOpen = !advToolsOpen;
+  document.getElementById('advToolsList').style.display = advToolsOpen ? '' : 'none';
+  document.getElementById('advToolsArrow').textContent = advToolsOpen ? '⌄' : '›';
+}
+function goToBudgetSettings(){
+  goPage('settings');
+  setTimeout(()=>{
+    const el = document.getElementById('settingsBudgetSection');
+    if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+  }, 50);
+}
 
 function saveTx(){
   const rawAmount = parseFloat(document.getElementById('txAmount').value);
@@ -2006,23 +2073,6 @@ function renderDashboard(){
   // category breakdown this month
   const catTotals = {};
   monthTx.filter(t=>t.type==='expense').forEach(t=>{ catTotals[t.category]=(catTotals[t.category]||0)+t.amount; });
-  const maxCat = Math.max(1, ...Object.values(catTotals));
-  const rowsWrap = document.getElementById('dashCatRows');
-  rowsWrap.innerHTML='';
-  state.categories.forEach(c=>{
-    const val = catTotals[c.id]||0;
-    if(val===0) return;
-    rowsWrap.innerHTML += `<div class="cat-row">
-      <div class="ic" style="background:${c.color}22;">${c.icon}</div>
-      <div class="info"><div class="name">${c.name}</div>
-        <div class="bar-track"><div class="bar-fill" style="width:${(val/maxCat*100)}%; background:${c.color};"></div></div>
-      </div>
-      <div class="amt">$${fmt(val)}</div>
-    </div>`;
-  });
-  if(Object.keys(catTotals).length===0){
-    rowsWrap.innerHTML = '<div class="empty-state compact"><div class="ic">🌱</div><div class="t">No expenses recorded this month</div></div>';
-  }
 
   // donut
   renderDonut('dashDonut', 'dashLegend', catTotals);
@@ -3039,6 +3089,7 @@ function init(){
   generateFixedExpensesForThisMonth();
   populateSelects();
   openTxModal();
+  renderQuickAdd();
   renderGreeting();
   renderDashboard();
 }
