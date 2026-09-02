@@ -1284,11 +1284,6 @@ main{max-width:720px; margin:0 auto; padding:8px 20px 20px;}
     <div class="hint" id="currencyHint" style="display:none; text-align:center; margin-top:-10px; margin-bottom:14px;"></div>
 
     <div class="modal-section-label">📝 基本資訊 · Basic Info</div>
-    <div class="field">
-      <label>項目 Item</label>
-      <input type="text" id="txItem" placeholder="例如：午餐、火鍋、加油" oninput="autoSuggestCategory()">
-      <div class="hint" id="autoHint" style="display:none;"></div>
-    </div>
     <div class="field" style="margin-bottom:0;">
       <label>分類 Category</label>
       <div class="cat-picker" id="catPicker"></div>
@@ -1302,7 +1297,7 @@ main{max-width:720px; margin:0 auto; padding:8px 20px 20px;}
 
     <div class="modal-section-label">⚙️ 進階選項 · More Options</div>
 
-    <div class="switch-row">
+    <div class="switch-row" id="installmentSwitchRow" style="display:none;">
       <div class="lbl">分期付款 Installment</div>
       <label class="switch"><input type="checkbox" id="txInstallmentToggle" onchange="toggleInstallmentUI()"><span class="slider"></span></label>
     </div>
@@ -1502,14 +1497,6 @@ const DEFAULT_CATEGORIES = [
   {id:'protection', name:'保障', icon:'🛡️', color:'var(--medium)', essential:true},
   {id:'other', name:'其他', icon:'✨', color:'var(--gray)', essential:false},
 ];
-const KEYWORD_MAP = {
-  food:['午餐','晚餐','早餐','火鍋','便當','咖啡','飲料','小吃','餐廳','宵夜','麥當勞','星巴克','早餐店','聚餐','奶茶'],
-  shopping:['衣服','鞋子','網購','蝦皮','購物','包包','化妝品','momo','淘寶'],
-  transport:['捷運','公車','加油','停車','uber','計程車','高鐵','油錢','火車','機票','停車費'],
-  life:['房租','水電','電話費','網路費','日用品','家具','管理費','瓦斯','電費','水費'],
-  fun:['電影','唱歌','ktv','旅遊','遊戲','訂閱','netflix','演唱會','展覽'],
-  protection:['保障費用','保障項目','人身保障','醫療保障','意外保障'],
-};
 const COVERAGE_TYPES = [
   {id:'life', name:'人身保障'}, {id:'medical', name:'醫療保障'}, {id:'accident', name:'意外保障'},
   {id:'critical', name:'重大疾病保障'}, {id:'disability', name:'失能保障'},
@@ -1776,27 +1763,21 @@ function selectCatUI(wrap, catId){
   wrap.querySelectorAll('.cat-pick').forEach(el=>el.classList.toggle('active', el.dataset.cat===catId));
 }
 let txSelectedCat = 'food';
-buildCatPicker('catPicker', (id, wrap)=>{ txSelectedCat = id; selectCatUI(wrap, id); });
+buildCatPicker('catPicker', (id, wrap)=>{ txSelectedCat = id; selectCatUI(wrap, id); updateInstallmentAvailability(); });
 
 function setTxType(type){
   txCurrentType = type;
   document.getElementById('typeExpenseBtn').classList.toggle('active', type==='expense');
   document.getElementById('typeIncomeBtn').classList.toggle('active', type==='income');
 }
-function autoSuggestCategory(){
-  const item = document.getElementById('txItem').value.trim().toLowerCase();
-  const hint = document.getElementById('autoHint');
-  if(!item){ hint.style.display='none'; return; }
-  for(const [cat, words] of Object.entries(KEYWORD_MAP)){
-    if(words.some(w=> item.includes(w.toLowerCase()))){
-      txSelectedCat = cat;
-      selectCatUI(document.getElementById('catPicker'), cat);
-      hint.style.display='block';
-      hint.textContent = '✓ 已自動分類為「'+catById(cat).name+'」';
-      return;
-    }
+function updateInstallmentAvailability(){
+  const row = document.getElementById('installmentSwitchRow');
+  const allowed = txSelectedCat==='protection';
+  row.style.display = allowed ? '' : 'none';
+  if(!allowed){
+    document.getElementById('txInstallmentToggle').checked = false;
+    toggleInstallmentUI();
   }
-  hint.style.display='none';
 }
 function openTxModal(existingTx){
   populateSelects();
@@ -1807,7 +1788,6 @@ function openTxModal(existingTx){
     document.getElementById('txModalTitle').textContent='編輯記帳 Edit Entry';
     document.getElementById('txAmount').value = existingTx.originalAmount || existingTx.amount;
     txSelectedCurrency = existingTx.currency || 'TWD';
-    document.getElementById('txItem').value = existingTx.item;
     document.getElementById('txDate').value = existingTx.date;
     document.getElementById('txAccount').value = existingTx.account;
     document.getElementById('txNote').value = existingTx.note||'';
@@ -1826,7 +1806,6 @@ function openTxModal(existingTx){
     document.getElementById('txModalTitle').textContent='新增記帳 Add Entry';
     document.getElementById('txAmount').value='';
     txSelectedCurrency='TWD';
-    document.getElementById('txItem').value='';
     document.getElementById('txDate').value = todayStr();
     document.getElementById('txNote').value='';
     document.getElementById('txInstallmentToggle').checked=false;
@@ -1839,9 +1818,9 @@ function openTxModal(existingTx){
     document.querySelectorAll('#txSplitMembers input').forEach(cb=>cb.checked=false);
   }
   selectCatUI(document.getElementById('catPicker'), txSelectedCat);
+  updateInstallmentAvailability();
   buildCurrencyChips();
   buildInstallmentChips();
-  document.getElementById('autoHint').style.display='none';
   updateCurrencyHint();
   document.getElementById('txModalOverlay').classList.add('open');
 }
@@ -1851,10 +1830,9 @@ function closeModal(id){ document.getElementById(id).classList.remove('open'); }
 function saveTx(){
   const rawAmount = parseFloat(document.getElementById('txAmount').value);
   const currency = txSelectedCurrency;
-  const item = document.getElementById('txItem').value.trim();
+  const item = catById(txSelectedCat).name;
   const date = document.getElementById('txDate').value;
   if(!rawAmount || rawAmount<=0){ toast('請輸入金額'); return; }
-  if(!item){ toast('請輸入項目'); return; }
   if(!date){ toast('請選擇日期'); return; }
   const amount = currency==='TWD' ? rawAmount : Math.round(rawAmount * (state.exchangeRates[currency]||1) * 100)/100;
   const account = document.getElementById('txAccount').value;
