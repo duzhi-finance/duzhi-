@@ -27,7 +27,6 @@ body{
   color:var(--dark);
   -webkit-font-smoothing:antialiased;
   padding-bottom:calc(110px + env(safe-area-inset-bottom));
-  scroll-snap-type:y proximity;
 }
 button, input, select, textarea{font-family:inherit; font-size:inherit; color:inherit;}
 button{cursor:pointer; border:none; background:none;}
@@ -93,7 +92,6 @@ main{max-width:720px; margin:0 auto; padding:8px 20px 20px;}
   border-radius:var(--radius-lg);
   padding:26px 22px;
   margin-bottom:16px;
-  scroll-snap-align:start;
   position:relative;
   overflow:hidden;
 }
@@ -462,7 +460,7 @@ select.mpc-input{
 .report-cta{
   display:flex; align-items:center; gap:14px; border-radius:var(--radius-lg); padding:18px;
   background:linear-gradient(135deg, var(--dark) 0%, #4a453c 100%); color:#fff; margin-bottom:16px;
-  box-shadow:var(--shadow-hover); position:relative; overflow:hidden; scroll-snap-align:start;
+  box-shadow:var(--shadow-hover); position:relative; overflow:hidden;
 }
 .report-cta .ic{font-size:26px; flex-shrink:0;}
 .report-cta .t{flex:1;}
@@ -1186,10 +1184,8 @@ select.mpc-input{
 
         <div class="card">
           <div class="card-title">➕ 新增保障項目</div>
-          <div class="field"><label>項目名稱</label><input type="text" id="polName" placeholder="例如：長期照護保障"></div>
           <div class="modal-section-label">🛡️ 保障類型 · Type</div>
           <div class="preset-list" id="polTypeList"></div>
-          <div class="field" style="margin-top:12px; margin-bottom:0;"><label>提供機構</label><input type="text" id="polCompany" placeholder="例如：OO機構"></div>
 
           <div class="modal-section-label">💰 費用與額度 · Cost</div>
           <div class="field" style="margin-bottom:0;"><label>保障額度（元）</label><input type="number" id="polAmount" placeholder="0"></div>
@@ -2309,7 +2305,7 @@ function selectPolicyType(id){
   renderPolicyTypeList();
 }
 function resetPolicyForm(){
-  ['polName','polCompany','polAmount','polPayWay','polNote'].forEach(id=>document.getElementById(id).value='');
+  ['polAmount','polPayWay','polNote'].forEach(id=>document.getElementById(id).value='');
   polSelectedType = 'life';
   renderPolicyTypeList();
 }
@@ -2328,15 +2324,11 @@ function renderPolicies(){
     listArea.innerHTML = '<div class="empty-state"><div class="ic">📭</div><div class="t">尚未新增保障項目</div></div>';
     return;
   }
-  const typeNames = Object.fromEntries(POLICY_TYPES.map(t=>[t.id, t.name]));
   state.policies.forEach(p=>{
     listArea.innerHTML += `<div class="policy-card">
       <div class="top">
-        <div><div class="name">${p.name}</div><div class="co">${p.company||''}</div></div>
-        <div style="display:flex; align-items:center; gap:8px;">
-          <span class="tag2">${typeNames[p.type]||'其他'}</span>
-          <div class="x-btn" onclick="removePolicy('${p.id}')">✕</div>
-        </div>
+        <div class="name">${p.name}</div>
+        <div class="x-btn" onclick="removePolicy('${p.id}')">✕</div>
       </div>
       <div class="policy-grid">
         <div><div class="k">保障額度</div><div class="v">NT$ ${fmt(p.amount||0)}</div></div>
@@ -2351,11 +2343,10 @@ function toggleCoverage(id, checked){
   saveState();
 }
 function savePolicy(){
-  const name = document.getElementById('polName').value.trim();
-  if(!name){ toast('請輸入項目名稱'); return; }
+  const typeInfo = POLICY_TYPES.find(t=>t.id===polSelectedType);
   state.policies.push({
     id: uid('pol'),
-    name, company: document.getElementById('polCompany').value.trim(),
+    name: typeInfo.name,
     type: polSelectedType,
     amount: parseFloat(document.getElementById('polAmount').value)||0,
     payWay: document.getElementById('polPayWay').value.trim(),
