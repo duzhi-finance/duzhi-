@@ -906,7 +906,7 @@ select.mpc-input{
           <li>✓ 品牌客製（Logo／配色）</li>
           <li>✓ 專屬導入教學與教材</li>
         </ul>
-        <button class="lp-btn lp-btn-outline" onclick="enterApp()">預約導入諮詢</button>
+        <button class="lp-btn lp-btn-outline" onclick="openContactModal()">預約導入諮詢</button>
       </div>
     </div>
   </div>
@@ -1596,6 +1596,16 @@ select.mpc-input{
   </div>
 </div>
 
+<!-- ============ Contact Modal ============ -->
+<div class="modal-overlay" id="contactModalOverlay">
+  <div class="modal-sheet">
+    <div class="modal-header"><h3>預約導入諮詢</h3><div class="modal-close" onclick="closeModal('contactModalOverlay')">✕</div></div>
+    <div class="field hint" style="margin-top:-6px; margin-bottom:14px;">選一個你方便的方式聯絡我們，一起討論團隊導入的細節。</div>
+    <a class="btn btn-primary btn-block" style="text-decoration:none;" href="https://line.me/ti/p/TupXYUrqMq" target="_blank" rel="noopener">💬 加 LINE 聊聊</a>
+    <a class="btn btn-outline btn-block" style="margin-top:10px; text-decoration:none;" href="https://www.instagram.com/en_______i?igsi=OG9nYzdyZndpOXBt&utm_source=qr" target="_blank" rel="noopener">📷 私訊 Instagram</a>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -1928,6 +1938,7 @@ function openTxModal(existingTx){
 function closeTxModal(){ openTxModal(); }
 function closeModal(id){ document.getElementById(id).classList.remove('open'); }
 function openPrivacyModal(){ document.getElementById('privacyModalOverlay').classList.add('open'); }
+function openContactModal(){ document.getElementById('contactModalOverlay').classList.add('open'); }
 let txAdvancedOpen = false;
 function setTxAdvancedOpen(open){
   txAdvancedOpen = open;
