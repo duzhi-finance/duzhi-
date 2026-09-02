@@ -241,8 +241,8 @@ main{max-width:720px; margin:0 auto; padding:8px 20px 20px;}
 .field{margin-bottom:14px;}
 .field label{display:block; font-size:12px; font-weight:700; color:var(--medium); margin-bottom:6px;}
 .field input, .field select, .field textarea{
-  width:100%; padding:12px 14px; border-radius:var(--radius-sm); border:1.5px solid var(--light-pink);
-  background:#fff; outline:none; box-sizing:border-box;
+  width:100%; padding:12px 14px; border-radius:var(--radius-sm); border:1.5px solid rgba(55,53,47,0.12);
+  background:var(--cream); outline:none; box-sizing:border-box; color:var(--dark); font-weight:700;
 }
 .field input, .field select{
   height:46px; -webkit-appearance:none; appearance:none;
@@ -251,7 +251,7 @@ main{max-width:720px; margin:0 auto; padding:8px 20px 20px;}
   background-image:url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235A5248' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
   background-repeat:no-repeat; background-position:right 12px center; background-size:16px; padding-right:36px;
 }
-.field input:focus, .field select:focus, .field textarea:focus{border-color:var(--pink);}
+.field input:focus, .field select:focus, .field textarea:focus{border-color:var(--gold); background:#fff;}
 .field .hint{font-size:11px; color:var(--sage); margin-top:5px; font-weight:700;}
 .type-toggle{display:flex; gap:8px;}
 .type-toggle button{flex:1; padding:11px; border-radius:var(--radius-sm); border:1.5px solid var(--light-pink); font-weight:700; font-size:13px; color:var(--medium); background:#fff;}
@@ -349,14 +349,15 @@ main{max-width:720px; margin:0 auto; padding:8px 20px 20px;}
 .policy-grid .k{color:var(--gray); font-weight:700;}
 .policy-grid .v{font-weight:900; margin-top:1px;}
 
-.checklist-grid{display:grid; grid-template-columns:1fr 1fr; gap:8px;}
+.checklist-grid{display:flex; flex-direction:column;}
 .check-item{
-  display:flex; align-items:center; gap:8px; background:var(--cream); border-radius:var(--radius-md); padding:10px 12px; transition:.15s;
+  display:flex; align-items:center; gap:10px; background:transparent; padding:12px 2px; border-bottom:1px solid var(--light-pink); transition:.15s;
 }
-.check-item.covered{background:var(--light-sage);}
-.check-item-ic{font-size:17px; flex-shrink:0;}
+.check-item:last-child{border-bottom:none;}
+.check-item-ic{font-size:18px; flex-shrink:0;}
 .check-item input{width:18px; height:18px; accent-color:var(--sage); flex-shrink:0;}
-.check-item .l{font-size:12px; font-weight:700; flex:1;}
+.check-item .l{font-size:12.5px; font-weight:700; flex:1; color:var(--dark);}
+.check-item.covered .l{color:var(--sage);}
 
 /* Goals / piggy bank */
 .goal-card{background:#fff; border-radius:var(--radius-lg); padding:18px; box-shadow:var(--shadow); margin-bottom:12px;}
@@ -387,10 +388,11 @@ main{max-width:720px; margin:0 auto; padding:8px 20px 20px;}
 .mpc-input{border:none; background:rgba(255,255,255,.8); border-radius:100px; padding:9px 16px; font-size:12px; font-weight:700; color:var(--dark); outline:none; -webkit-appearance:none;}
 
 /* Cute calculator form card (life cost / financial freedom) */
-.cute-form-card{background:linear-gradient(135deg, var(--light-pink), var(--light-blue)); border-radius:var(--radius-lg); padding:20px;}
+.cute-form-card{background:linear-gradient(135deg, var(--cream), var(--light-gold)); border-radius:var(--radius-lg); padding:20px;}
 .cute-form-head{font-size:12.5px; font-weight:700; color:var(--medium); margin-bottom:14px; display:flex; align-items:center; gap:6px;}
-.cute-form-card .field input{background:rgba(255,255,255,.8); border-color:transparent;}
-.cute-form-card .field input:focus{border-color:var(--pink);}
+.cute-form-card .field label{color:var(--medium);}
+.cute-form-card .field input{background:rgba(255,255,255,.85); border-color:rgba(55,53,47,0.1); color:var(--dark); font-weight:700;}
+.cute-form-card .field input:focus{border-color:var(--gold); background:#fff;}
 
 /* Budget control (cute) */
 .budget-hero{background:linear-gradient(135deg, var(--light-pink), var(--light-gold)); border-radius:var(--radius-lg); padding:20px; margin-bottom:12px;}
@@ -1554,6 +1556,12 @@ const DEFAULT_CATEGORIES = [
   {id:'protection', name:'保障', icon:'🛡️', color:'var(--medium)', essential:true},
   {id:'other', name:'其他', icon:'✨', color:'var(--gray)', essential:false},
 ];
+const INCOME_CATEGORIES = [
+  {id:'salary', name:'薪資', icon:'💼', color:'var(--sage)'},
+  {id:'invest_income', name:'投資／股票', icon:'📈', color:'var(--gold)'},
+  {id:'bonus', name:'獎金', icon:'🎁', color:'var(--pink)'},
+  {id:'other_income', name:'其他收入', icon:'✨', color:'var(--blue)'},
+];
 const ACCOUNT_TYPES = [
   {id:'cash', name:'現金'}, {id:'bank', name:'銀行帳戶'}, {id:'credit', name:'信用卡'},
   {id:'linepay', name:'LINE Pay'}, {id:'jkopay', name:'街口支付'}, {id:'applepay', name:'Apple Pay'},
@@ -1697,7 +1705,9 @@ document.querySelectorAll('.nav-item').forEach(item=>{
 function fmt(n){ return Math.round(n).toLocaleString('zh-Hant-TW'); }
 function todayStr(){ const d=new Date(); return d.toISOString().slice(0,10); }
 function monthKey(dateStr){ return dateStr.slice(0,7); }
-function catById(id){ return state.categories.find(c=>c.id===id) || state.categories[state.categories.length-1]; }
+function catById(id){
+  return state.categories.find(c=>c.id===id) || INCOME_CATEGORIES.find(c=>c.id===id) || state.categories[state.categories.length-1];
+}
 function toast(msg){
   const t = document.getElementById('toast');
   t.textContent = msg; t.classList.add('show');
@@ -1790,10 +1800,10 @@ function buildInstallmentChips(){
     wrap.appendChild(el);
   });
 }
-function buildCatPicker(containerId, onPick){
+function buildCatPicker(containerId, onPick, catList){
   const wrap = document.getElementById(containerId);
   wrap.innerHTML='';
-  state.categories.forEach(c=>{
+  (catList||state.categories).forEach(c=>{
     const el = document.createElement('div');
     el.className='cat-pick';
     el.dataset.cat = c.id;
@@ -1806,12 +1816,19 @@ function selectCatUI(wrap, catId){
   wrap.querySelectorAll('.cat-pick').forEach(el=>el.classList.toggle('active', el.dataset.cat===catId));
 }
 let txSelectedCat = 'food';
-buildCatPicker('catPicker', (id, wrap)=>{ txSelectedCat = id; selectCatUI(wrap, id); updateInstallmentAvailability(); });
+function renderTxCatPicker(){
+  const list = txCurrentType==='income' ? INCOME_CATEGORIES : state.categories;
+  if(!list.some(c=>c.id===txSelectedCat)) txSelectedCat = list[0].id;
+  buildCatPicker('catPicker', (id, wrap)=>{ txSelectedCat = id; selectCatUI(wrap, id); updateInstallmentAvailability(); }, list);
+  selectCatUI(document.getElementById('catPicker'), txSelectedCat);
+  updateInstallmentAvailability();
+}
 
 function setTxType(type){
   txCurrentType = type;
   document.getElementById('typeExpenseBtn').classList.toggle('active', type==='expense');
   document.getElementById('typeIncomeBtn').classList.toggle('active', type==='income');
+  renderTxCatPicker();
 }
 function updateInstallmentAvailability(){
   const row = document.getElementById('installmentSwitchRow');
@@ -1853,8 +1870,6 @@ function openTxModal(existingTx){
     txSelectedCat='food';
     setTxType('expense');
   }
-  selectCatUI(document.getElementById('catPicker'), txSelectedCat);
-  updateInstallmentAvailability();
   buildCurrencyChips();
   buildInstallmentChips();
   updateCurrencyHint();
