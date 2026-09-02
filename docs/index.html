@@ -81,7 +81,7 @@ main{max-width:720px; margin:0 auto; padding:8px 20px 20px;}
   border-radius:var(--radius-lg);
   padding:20px;
   box-shadow:var(--shadow);
-  margin-bottom:14px;
+  margin-bottom:16px;
 }
 .card-title{font-size:13px; font-weight:700; color:var(--medium); margin-bottom:10px; display:flex; align-items:center; gap:6px;}
 .section-label{font-size:12px; font-weight:700; color:var(--gray); letter-spacing:.04em; margin:22px 0 10px; padding-left:2px;}
@@ -95,18 +95,18 @@ main{max-width:720px; margin:0 auto; padding:8px 20px 20px;}
   position:relative;
   overflow:hidden;
 }
-.hero-card .label{font-size:13px; font-weight:700; color:var(--medium); opacity:.85;}
+.hero-card .label{font-size:12.5px; font-weight:700; color:var(--dark); letter-spacing:.02em;}
 .en-label{font-size:9px; font-weight:600; opacity:.65; display:block;}
 .hero-sub .pill .t .en-label{display:inline; font-size:8.5px; opacity:.6;}
-.hero-card .amount{font-size:40px; font-weight:900; margin-top:4px; letter-spacing:-.01em;}
+.hero-card .amount{font-size:40px; font-weight:900; margin-top:8px; letter-spacing:-.01em;}
 .hero-card .amount .cur{font-size:20px; font-weight:700; margin-right:2px; opacity:.7;}
-.hero-sub{display:flex; gap:10px; margin-top:16px;}
+.hero-sub{display:flex; gap:10px; margin-top:22px;}
 .hero-sub .pill{
-  flex:1; background:rgba(255,255,255,.55); border-radius:var(--radius-sm);
-  padding:10px 12px;
+  flex:1; background:rgba(255,255,255,.6); border-radius:var(--radius-md);
+  padding:12px 12px 13px;
 }
-.hero-sub .pill .t{font-size:11px; color:var(--medium); font-weight:700;}
-.hero-sub .pill .v{font-size:17px; font-weight:900; margin-top:2px;}
+.hero-sub .pill .t{font-size:10.5px; color:var(--medium); font-weight:700;}
+.hero-sub .pill .v{font-size:17px; font-weight:900; margin-top:6px;}
 .hero-doodle{position:absolute; right:-10px; bottom:-14px; font-size:70px; opacity:.15; transform:rotate(-8deg);}
 
 /* Stat grid (four numbers) */
@@ -131,7 +131,9 @@ main{max-width:720px; margin:0 auto; padding:8px 20px 20px;}
 
 /* Donut */
 .donut-wrap{display:flex; align-items:center; gap:18px;}
-.donut{width:110px; height:110px; border-radius:50%; flex-shrink:0;}
+.donut{width:110px; height:110px; border-radius:50%; flex-shrink:0; transition:width .2s, height .2s;}
+.donut.donut-empty{width:44px; height:44px;}
+.legend-item.empty{color:var(--gray); font-weight:600; opacity:.8;}
 .donut-legend{flex:1; display:flex; flex-direction:column; gap:6px;}
 .legend-item{display:flex; align-items:center; gap:7px; font-size:12px; font-weight:700; color:var(--medium);}
 .legend-dot{width:9px; height:9px; border-radius:50%; flex-shrink:0;}
@@ -221,6 +223,9 @@ main{max-width:720px; margin:0 auto; padding:8px 20px 20px;}
 .empty-state{text-align:center; padding:60px 20px; color:var(--gray);}
 .empty-state .ic{font-size:40px; margin-bottom:10px;}
 .empty-state .t{font-size:13px; font-weight:700;}
+.empty-state.compact{padding:10px 0; display:flex; align-items:center; justify-content:center; gap:7px;}
+.empty-state.compact .ic{font-size:16px; margin-bottom:0;}
+.empty-state.compact .t{font-size:11.5px; font-weight:600;}
 
 /* ---------- Modal ---------- */
 .modal-overlay{
@@ -1533,15 +1538,6 @@ select.mpc-input{
 </div>
 
 <!-- ============ License Modal ============ -->
-<div class="modal-overlay" id="licenseModalOverlay">
-  <div class="modal-sheet">
-    <div class="modal-header"><h3>輸入授權碼 <span style="font-size:10px; color:var(--gray); font-weight:700;">License Key</span></h3><div class="modal-close" onclick="closeModal('licenseModalOverlay')">✕</div></div>
-    <div class="field"><label>授權碼 License Key</label><input type="text" id="licenseKeyInput" placeholder="DUZHI-PRO-XXXXX-XXXX" style="text-transform:uppercase;"></div>
-    <div class="field hint" style="margin-top:-6px;">購買後會收到你的授權碼，貼上即可解鎖 PRO 或家庭 / 團隊版功能。</div>
-    <button class="btn btn-primary btn-block" onclick="saveLicenseFromModal()">解鎖 Unlock</button>
-  </div>
-</div>
-
 <div class="toast" id="toast"></div>
 
 <script>
@@ -1659,17 +1655,6 @@ function renderLockGate(gateId, contentId, requiredTier){
   document.getElementById(gateId).style.display = hasAccess ? 'none' : 'block';
   document.getElementById(contentId).style.display = hasAccess ? '' : 'none';
   return hasAccess;
-}
-function openLicenseModal(){
-  document.getElementById('licenseKeyInput').value = state.license.key || '';
-  document.getElementById('licenseModalOverlay').classList.add('open');
-}
-function saveLicenseFromModal(){
-  const key = document.getElementById('licenseKeyInput').value;
-  if(applyLicenseKey(key)){
-    closeModal('licenseModalOverlay');
-    refreshCurrentPage();
-  }
 }
 
 
@@ -1986,7 +1971,7 @@ function renderDashboard(){
     </div>`;
   });
   if(Object.keys(catTotals).length===0){
-    rowsWrap.innerHTML = '<div class="empty-state" style="padding:24px 0;"><div class="ic">🌱</div><div class="t">No expenses recorded this month</div></div>';
+    rowsWrap.innerHTML = '<div class="empty-state compact"><div class="ic">🌱</div><div class="t">No expenses recorded this month</div></div>';
   }
 
   // donut
@@ -2032,10 +2017,12 @@ function renderDonut(circleId, legendId, catTotals){
   const total = entries.reduce((s,e)=>s+e.val,0);
   legend.innerHTML='';
   if(total===0){
+    donut.classList.add('donut-empty');
     donut.style.background = 'var(--light-pink)';
-    legend.innerHTML = '<div class="legend-item">尚無資料</div>';
+    legend.innerHTML = '<div class="legend-item empty">🌱 這個月還沒有花費紀錄</div>';
     return;
   }
+  donut.classList.remove('donut-empty');
   let acc=0; const stops=[];
   entries.forEach(e=>{
     const pct = e.val/total*100;
