@@ -242,7 +242,14 @@ main{max-width:720px; margin:0 auto; padding:8px 20px 20px;}
 .field label{display:block; font-size:12px; font-weight:700; color:var(--medium); margin-bottom:6px;}
 .field input, .field select, .field textarea{
   width:100%; padding:12px 14px; border-radius:var(--radius-sm); border:1.5px solid var(--light-pink);
-  background:#fff; outline:none;
+  background:#fff; outline:none; box-sizing:border-box;
+}
+.field input, .field select{
+  height:46px; -webkit-appearance:none; appearance:none;
+}
+.field select{
+  background-image:url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235A5248' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right 12px center; background-size:16px; padding-right:36px;
 }
 .field input:focus, .field select:focus, .field textarea:focus{border-color:var(--pink);}
 .field .hint{font-size:11px; color:var(--sage); margin-top:5px; font-weight:700;}
@@ -1340,15 +1347,6 @@ main{max-width:720px; margin:0 auto; padding:8px 20px 20px;}
       <div class="period-chip-row" id="installmentChipRow"></div>
     </div>
 
-    <div class="switch-row">
-      <div class="lbl">與他人分攤 Split with others</div>
-      <label class="switch"><input type="checkbox" id="txSplitToggle" onchange="toggleSplitUI()"><span class="slider"></span></label>
-    </div>
-    <div class="switch-panel" id="splitUIArea" style="display:none;">
-      <div class="field"><label>付款人 Paid by</label><select id="txPaidBy"></select></div>
-      <div class="field" style="margin-bottom:0;"><label>分攤成員 Split with</label><div id="txSplitMembers" class="tag-input-chips"></div></div>
-    </div>
-
     <div class="field" style="margin-top:16px;">
       <label>備註 Note</label>
       <textarea id="txNote" rows="2" placeholder="選填"></textarea>
@@ -1716,7 +1714,6 @@ let txCurrentType = 'expense';
 function populateSelects(){
   const acc = document.getElementById('txAccount');
   const fxAcc = document.getElementById('fixedAccount');
-  const paidBy = document.getElementById('txPaidBy');
   [acc, fxAcc].forEach(sel=>{ if(sel) sel.innerHTML=''; });
   state.accounts.forEach(a=>{
     const opt2 = document.createElement('option'); opt2.value=a.id; opt2.textContent=a.name;
@@ -1724,23 +1721,6 @@ function populateSelects(){
     const opt3 = document.createElement('option'); opt3.value=a.id; opt3.textContent=a.name;
     fxAcc.appendChild(opt3);
   });
-  if(paidBy){
-    paidBy.innerHTML='';
-    (state.members||[]).forEach(m=>{
-      const opt = document.createElement('option'); opt.value=m; opt.textContent=m;
-      paidBy.appendChild(opt);
-    });
-  }
-  const splitWrap = document.getElementById('txSplitMembers');
-  if(splitWrap){
-    splitWrap.innerHTML='';
-    (state.members||[]).forEach(m=>{
-      const label = document.createElement('label');
-      label.className='tc'; label.style.cursor='pointer';
-      label.innerHTML = `<input type="checkbox" value="${m}" style="width:auto; margin:0;"> ${m}`;
-      splitWrap.appendChild(label);
-    });
-  }
 }
 function updateCurrencyHint(){
   const cur = txSelectedCurrency;
@@ -1749,9 +1729,6 @@ function updateCurrencyHint(){
   const rate = state.exchangeRates[cur] || 0;
   hint.style.display='block';
   hint.textContent = `依匯率 1 ${cur} ≈ ${rate} TWD 換算，可於設定頁調整匯率`;
-}
-function toggleSplitUI(){
-  document.getElementById('splitUIArea').style.display = document.getElementById('txSplitToggle').checked ? 'block' : 'none';
 }
 function toggleInstallmentUI(){
   document.getElementById('installmentPanel').style.display = document.getElementById('txInstallmentToggle').checked ? 'block' : 'none';
@@ -1833,10 +1810,6 @@ function openTxModal(existingTx){
     txSelectedCat = existingTx.category;
     setTxType(existingTx.type);
     document.getElementById('txDeleteBtn').style.display='block';
-    document.getElementById('txSplitToggle').checked = !!(existingTx.splitMembers && existingTx.splitMembers.length);
-    toggleSplitUI();
-    if(existingTx.paidBy) document.getElementById('txPaidBy').value = existingTx.paidBy;
-    document.querySelectorAll('#txSplitMembers input').forEach(cb=>{ cb.checked = (existingTx.splitMembers||[]).includes(cb.value); });
   } else {
     document.getElementById('txModalTitle').textContent='新增記帳 Add Entry';
     document.getElementById('txAmount').value='';
@@ -1848,9 +1821,6 @@ function openTxModal(existingTx){
     toggleInstallmentUI();
     txSelectedCat='food';
     setTxType('expense');
-    document.getElementById('txSplitToggle').checked=false;
-    toggleSplitUI();
-    document.querySelectorAll('#txSplitMembers input').forEach(cb=>cb.checked=false);
   }
   selectCatUI(document.getElementById('catPicker'), txSelectedCat);
   updateInstallmentAvailability();
@@ -1875,13 +1845,10 @@ function saveTx(){
   const tags = [];
   const note = document.getElementById('txNote').value.trim();
   const installmentTotal = document.getElementById('txInstallmentToggle').checked ? txInstallmentPeriod : 1;
-  const isSplit = document.getElementById('txSplitToggle').checked;
-  const paidBy = isSplit ? document.getElementById('txPaidBy').value : null;
-  const splitMembers = isSplit ? Array.from(document.querySelectorAll('#txSplitMembers input:checked')).map(cb=>cb.value) : [];
 
   if(txEditingId){
     const tx = state.transactions.find(t=>t.id===txEditingId);
-    Object.assign(tx, {amount, originalAmount:rawAmount, currency, item, date, payMethod, account, tags, note, type:txCurrentType, category:txSelectedCat, paidBy, splitMembers});
+    Object.assign(tx, {amount, originalAmount:rawAmount, currency, item, date, payMethod, account, tags, note, type:txCurrentType, category:txSelectedCat});
   } else if(installmentTotal>1){
     const group = uid('grp');
     const perAmount = Math.round((amount/installmentTotal)*100)/100;
@@ -1891,13 +1858,13 @@ function saveTx(){
       state.transactions.push({
         id: uid('tx'), type:txCurrentType, amount:perAmount, originalAmount:rawAmount, currency, category:txSelectedCat, item,
         date: d.toISOString().slice(0,10), payMethod, account, note, tags,
-        installmentTotal, installmentIndex:i+1, installmentGroup:group, paidBy, splitMembers,
+        installmentTotal, installmentIndex:i+1, installmentGroup:group,
       });
     }
   } else {
     state.transactions.push({
       id: uid('tx'), type:txCurrentType, amount, originalAmount:rawAmount, currency, category:txSelectedCat, item, date,
-      payMethod, account, note, tags, installmentTotal:1, installmentIndex:1, installmentGroup:null, paidBy, splitMembers,
+      payMethod, account, note, tags, installmentTotal:1, installmentIndex:1, installmentGroup:null,
     });
   }
   saveState();
