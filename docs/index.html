@@ -371,6 +371,27 @@ main{max-width:720px; margin:0 auto; padding:8px 20px 20px;}
 .invest-grid .v{font-weight:900; margin-top:1px;}
 .gain-pos{color:var(--sage);} .gain-neg{color:var(--pink);}
 
+/* Budget control (cute) */
+.budget-hero{background:linear-gradient(135deg, var(--light-pink), var(--light-gold)); border-radius:var(--radius-lg); padding:20px; margin-bottom:12px;}
+.budget-hero-top{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;}
+.budget-hero-label{font-size:13px; font-weight:700; color:var(--medium);}
+.budget-hero-amount{display:flex; align-items:center; gap:3px; font-size:19px; font-weight:900; color:var(--dark);}
+.budget-hero-amount span{font-size:12px; font-weight:700; opacity:.65;}
+.budget-hero-amount input{width:100px; background:transparent; border:none; outline:none; font-size:19px; font-weight:900; color:var(--dark); text-align:right;}
+.budget-hero-track{height:12px; background:rgba(255,255,255,.65); border-radius:100px; overflow:hidden; margin-top:14px;}
+.budget-hero-fill{height:100%; border-radius:100px; background:linear-gradient(90deg, var(--sage), var(--light-sage)); transition:width .3s;}
+.budget-hero-status{font-size:11px; font-weight:700; color:var(--medium); margin-top:8px;}
+.budget-cat-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+.budget-cat-card{background:#fff; border-radius:var(--radius-md); padding:14px; box-shadow:var(--shadow);}
+.budget-cat-top{display:flex; align-items:center; gap:8px; margin-bottom:9px;}
+.budget-cat-icon{width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0;}
+.budget-cat-name{font-size:12px; font-weight:700;}
+.budget-cat-track{height:8px; background:var(--light-pink); border-radius:100px; overflow:hidden;}
+.budget-cat-fill{height:100%; border-radius:100px; transition:width .3s;}
+.budget-cat-row{display:flex; align-items:center; justify-content:space-between; margin-top:9px; gap:6px;}
+.budget-cat-spent{font-size:10.5px; color:var(--gray); font-weight:700;}
+.budget-cat-input{width:64px; text-align:right; border:1.5px solid var(--light-pink); border-radius:8px; padding:5px 7px; font-size:11px; font-weight:700; background:var(--cream);}
+
 /* Settings */
 .settings-item{display:flex; align-items:center; justify-content:space-between; background:#fff; border-radius:var(--radius-md); padding:14px 16px; margin-bottom:8px; box-shadow:var(--shadow);}
 .settings-item .l{font-size:13.5px; font-weight:700;}
@@ -1224,11 +1245,15 @@ main{max-width:720px; margin:0 auto; padding:8px 20px 20px;}
         <button class="btn btn-soft btn-block" onclick="openAccountModal()">＋ 新增帳戶</button>
 
         <div class="section-label">預算控制</div>
-        <div class="card">
-          <div class="field"><label>每月總支出上限（元，0 表示不設限）</label><input type="number" id="budgetOverall" oninput="updateBudgetOverall(this.value)"></div>
-          <div class="field" style="margin-bottom:0;"><label>分類上限（元，留空表示不設限）</label></div>
-          <div id="budgetCatRows" style="margin-top:8px;"></div>
+        <div class="budget-hero">
+          <div class="budget-hero-top">
+            <div class="budget-hero-label">🐷 每月總預算</div>
+            <div class="budget-hero-amount"><span>NT$</span><input type="number" id="budgetOverall" placeholder="不設限" oninput="updateBudgetOverall(this.value)"></div>
+          </div>
+          <div class="budget-hero-track"><div class="budget-hero-fill" id="budgetHeroFill" style="width:0%;"></div></div>
+          <div class="budget-hero-status" id="budgetHeroStatus"></div>
         </div>
+        <div class="budget-cat-grid" id="budgetCatRows"></div>
 
         <div class="section-label">匯率設定</div>
         <div class="card">
@@ -2736,6 +2761,12 @@ function removeMember(i){
 /* ==================================================================
    SETTINGS: fixed expenses / accounts / backup
    ================================================================== */
+function currentMonthCatTotals(){
+  const ym = new Date().toISOString().slice(0,7);
+  const totals = {};
+  monthRange(ym).filter(t=>t.type==='expense').forEach(t=>{ totals[t.category]=(totals[t.category]||0)+t.amount; });
+  return totals;
+}
 function renderSettings(){
   const tierNames = {free:'免費版 Free', pro:'專業版 PRO', family:'家庭 / 團隊版 Family'};
   document.getElementById('licenseTierDisplay').textContent = tierNames[state.license.tier] || tierNames.free;
@@ -2757,13 +2788,35 @@ function renderSettings(){
   });
 
   document.getElementById('budgetOverall').value = state.budget.overall || '';
+  const budgetCatTotals = currentMonthCatTotals();
+  const budgetTotalSpent = Object.values(budgetCatTotals).reduce((s,v)=>s+v,0);
+  const overallLimit = state.budget.overall || 0;
+  const heroFill = document.getElementById('budgetHeroFill');
+  const heroStatus = document.getElementById('budgetHeroStatus');
+  if(overallLimit>0){
+    const overPct = Math.min(100, budgetTotalSpent/overallLimit*100);
+    const isOver = budgetTotalSpent>overallLimit;
+    heroFill.style.width = overPct+'%';
+    heroFill.style.background = isOver ? 'linear-gradient(90deg, var(--pink), var(--soft-pink))' : 'linear-gradient(90deg, var(--sage), var(--light-sage))';
+    heroStatus.textContent = isOver ? `已超支 NT$ ${fmt(budgetTotalSpent-overallLimit)} 了喔 😥` : `這個月還可以花 NT$ ${fmt(overallLimit-budgetTotalSpent)} 🌸`;
+  } else {
+    heroFill.style.width='0%';
+    heroStatus.textContent = '還沒設定總預算，輸入金額就會開始追蹤囉';
+  }
   const budgetCatWrap = document.getElementById('budgetCatRows');
   budgetCatWrap.innerHTML='';
   state.categories.forEach(c=>{
-    const val = state.budget.byCategory[c.id] || '';
-    budgetCatWrap.innerHTML += `<div class="field-row" style="align-items:center; margin-bottom:8px;">
-      <div style="width:70px; font-size:12.5px; font-weight:700;">${c.icon} ${c.name}</div>
-      <input type="number" style="flex:1; padding:8px 10px; border-radius:8px; border:1.5px solid var(--light-pink);" value="${val}" placeholder="不設限" oninput="updateBudgetCategory('${c.id}', this.value)">
+    const spent = budgetCatTotals[c.id]||0;
+    const limit = state.budget.byCategory[c.id]||0;
+    const pct = limit>0 ? Math.min(100, spent/limit*100) : 0;
+    const fillColor = (limit>0 && spent>limit) ? 'var(--pink)' : c.color;
+    budgetCatWrap.innerHTML += `<div class="budget-cat-card">
+      <div class="budget-cat-top"><div class="budget-cat-icon" style="background:${c.color}22;">${c.icon}</div><div class="budget-cat-name">${c.name}</div></div>
+      <div class="budget-cat-track"><div class="budget-cat-fill" style="width:${pct}%; background:${fillColor};"></div></div>
+      <div class="budget-cat-row">
+        <span class="budget-cat-spent">已花 $${fmt(spent)}</span>
+        <input type="number" class="budget-cat-input" value="${state.budget.byCategory[c.id]||''}" placeholder="不設限" oninput="updateBudgetCategory('${c.id}', this.value)">
+      </div>
     </div>`;
   });
 
