@@ -145,6 +145,12 @@ main{max-width:720px; margin:0 auto; padding:8px 20px 20px;}
 }
 .alert-card .ic{font-size:18px;}
 .alert-card .txt{font-size:13px; font-weight:700; color:var(--medium); line-height:1.5;}
+.reminder-card{
+  background:var(--light-blue); border-radius:var(--radius-md); padding:14px 16px;
+  display:flex; gap:10px; align-items:flex-start; margin-bottom:10px;
+}
+.reminder-card .ic{font-size:18px;}
+.reminder-card .txt{font-size:13px; font-weight:700; color:var(--medium); line-height:1.5;}
 
 /* Buttons */
 .btn{
@@ -473,14 +479,6 @@ select.mpc-input{
 .report-cta .t .sub{font-size:11.5px; opacity:.75; margin-top:2px;}
 .report-cta .arrow{font-size:18px; opacity:.7;}
 .report-cta-doodle{position:absolute; right:-6px; bottom:-16px; font-size:52px; opacity:.12; transform:rotate(8deg);}
-
-/* ---------- Quick add ---------- */
-.quickadd-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:8px;}
-.quickadd-btn{display:flex; flex-direction:column; align-items:center; gap:4px; padding:12px 6px; border-radius:var(--radius-md); background:var(--cream); border:1.5px solid transparent; transition:.15s;}
-.quickadd-btn:active{transform:scale(.94); background:var(--light-pink); border-color:var(--pink);}
-.quickadd-btn .ic{font-size:20px;}
-.quickadd-btn .lbl{font-size:11.5px; font-weight:700; color:var(--dark);}
-.quickadd-btn .amt{font-size:10.5px; color:var(--gray); font-weight:700;}
 
 /* ---------- Privacy entry ---------- */
 .privacy-entry{
@@ -1032,11 +1030,6 @@ select.mpc-input{
       <!-- ================= LIST ================= -->
       <section class="page" id="page-list">
         <div class="filter-row" id="filterRow"></div>
-
-        <div class="card">
-          <div class="card-title">⚡ 快速記帳</div>
-          <div class="quickadd-grid" id="quickAddGrid"></div>
-        </div>
 
         <div class="card" id="txInlineForm">
           <div class="card-title" id="txFormTitle">✏️ 新增記帳</div>
@@ -1883,33 +1876,6 @@ function updateInstallmentAvailability(){
     toggleInstallmentUI();
   }
 }
-const QUICK_ADD_PRESETS = [
-  {icon:'🍳', label:'早餐', category:'food', amount:60},
-  {icon:'🍱', label:'午餐', category:'food', amount:100},
-  {icon:'☕', label:'咖啡', category:'food', amount:50},
-  {icon:'🚌', label:'交通', category:'transport', amount:30},
-  {icon:'🛒', label:'買菜', category:'life', amount:300},
-  {icon:'🎬', label:'娛樂', category:'fun', amount:200},
-];
-function renderQuickAdd(){
-  const wrap = document.getElementById('quickAddGrid');
-  if(!wrap) return;
-  wrap.innerHTML = QUICK_ADD_PRESETS.map((p,i)=>
-    `<div class="quickadd-btn" onclick="quickAddTx(${i})"><div class="ic">${p.icon}</div><div class="lbl">${p.label}</div><div class="amt">$${p.amount}</div></div>`
-  ).join('');
-}
-function quickAddTx(i){
-  const p = QUICK_ADD_PRESETS[i];
-  const account = (state.accounts[0] && state.accounts[0].id) || 'acc_cash';
-  state.transactions.push({
-    id: uid('tx'), type:'expense', amount:p.amount, originalAmount:p.amount, currency:'TWD',
-    category:p.category, item:p.label, date: todayStr(), payMethod:account, account,
-    note:'', tags:[], installmentTotal:1, installmentIndex:1, installmentGroup:null,
-  });
-  saveState();
-  toast(`已記一筆「${p.label}」✓`);
-  refreshCurrentPage();
-}
 function openTxModal(existingTx){
   populateSelects();
   document.getElementById('txDeleteBtn').style.display='none';
@@ -2064,6 +2030,12 @@ function renderDashboard(){
   // anomaly detection: compare to average of previous 3 months
   const anomalyArea = document.getElementById('anomalyArea');
   anomalyArea.innerHTML='';
+
+  // gentle reminder if nothing logged today yet
+  const hasLoggedToday = state.transactions.some(t=>t.date===todayStr());
+  if(!hasLoggedToday){
+    anomalyArea.innerHTML += `<div class="reminder-card"><div class="ic">📝</div><div class="txt">今天還沒記帳喔，花一分鐘記一筆，養成習慣更容易存到錢！</div></div>`;
+  }
 
   // budget control alerts
   if(state.budget.overall>0 && me>state.budget.overall){
@@ -3067,7 +3039,6 @@ function init(){
   generateFixedExpensesForThisMonth();
   populateSelects();
   openTxModal();
-  renderQuickAdd();
   renderGreeting();
   renderDashboard();
 }
