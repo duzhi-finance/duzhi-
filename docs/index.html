@@ -1215,14 +1215,6 @@ main{max-width:720px; margin:0 auto; padding:8px 20px 20px;}
           <div class="soon-badge" style="margin-top:10px; text-align:center; width:100%;">🚧 PRO 版即將推出，敬請期待</div>
         </div>
 
-        <div class="section-label">個人資訊</div>
-        <div class="card">
-          <div class="field" style="margin-bottom:0;">
-            <label>您的稱呼（顯示於首頁問候與健診報告）</label>
-            <input type="text" id="clientNameInput" placeholder="例如：Shirley" oninput="updateClientName(this.value)">
-          </div>
-        </div>
-
         <div class="section-label">固定支出</div>
         <div id="fixedListArea"></div>
         <button class="btn btn-soft btn-block" onclick="openFixedModal()">＋ 新增固定支出</button>
@@ -1328,16 +1320,25 @@ main{max-width:720px; margin:0 auto; padding:8px 20px 20px;}
 <div class="modal-overlay" id="fixedModalOverlay">
   <div class="modal-sheet">
     <div class="modal-header"><h3>新增固定支出</h3><div class="modal-close" onclick="closeModal('fixedModalOverlay')">✕</div></div>
+
+    <div class="amount-hero">
+      <input type="number" id="fixedAmount" placeholder="0" inputmode="decimal">
+    </div>
+
+    <div class="modal-section-label">📝 基本資訊 · Basic Info</div>
     <div class="field"><label>項目名稱</label><input type="text" id="fixedItem" placeholder="例如：房租"></div>
-    <div class="field"><label>金額</label><input type="number" id="fixedAmount" placeholder="0"></div>
-    <div class="field"><label>分類</label>
+    <div class="field" style="margin-bottom:0;">
+      <label>分類</label>
       <div class="cat-picker" id="fixedCatPicker"></div>
     </div>
+
+    <div class="modal-section-label">💳 扣款設定 · Billing</div>
     <div class="field-row">
       <div class="field"><label>每月幾號扣款</label><input type="number" id="fixedDay" min="1" max="28" placeholder="例如 5"></div>
       <div class="field"><label>帳戶</label><select id="fixedAccount"></select></div>
     </div>
-    <button class="btn btn-primary btn-block" onclick="saveFixed()">儲存</button>
+
+    <button class="btn btn-primary btn-block" style="margin-top:6px;" onclick="saveFixed()">儲存</button>
   </div>
 </div>
 
@@ -2744,17 +2745,10 @@ function removeMember(i){
 /* ==================================================================
    SETTINGS: fixed expenses / accounts / backup
    ================================================================== */
-function updateClientName(val){
-  state.settings = state.settings || {clientName:''};
-  state.settings.clientName = val;
-  saveState();
-  renderGreeting();
-}
 function renderSettings(){
   const tierNames = {free:'免費版 Free', pro:'專業版 PRO', family:'家庭 / 團隊版 Family'};
   document.getElementById('licenseTierDisplay').textContent = tierNames[state.license.tier] || tierNames.free;
   document.getElementById('licenseKeyDisplay').textContent = state.license.key ? `授權碼：${state.license.key}` : '尚未輸入授權碼，僅能使用免費功能。';
-  document.getElementById('clientNameInput').value = (state.settings && state.settings.clientName) || '';
   const fixedWrap = document.getElementById('fixedListArea');
   fixedWrap.innerHTML='';
   if(state.fixedExpenses.length===0){
