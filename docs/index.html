@@ -313,6 +313,19 @@ main{max-width:720px; margin:0 auto; padding:8px 20px 20px;}
 .split-member-row input[type="checkbox"]{width:18px; height:18px; accent-color:var(--pink);}
 .split-amount-input{width:96px; text-align:right; border:1.5px solid var(--light-pink); border-radius:8px; padding:7px 9px; font-size:13px; font-weight:700; color:var(--dark);}
 .split-amount-input:disabled{opacity:.35;}
+.split-record-card{background:#fff; border-radius:var(--radius-lg); padding:14px 16px; margin-bottom:9px; box-shadow:var(--shadow);}
+.split-record-head{display:flex; align-items:center; gap:12px;}
+.split-record-head .ic{width:36px; height:36px; border-radius:12px; background:var(--light-blue); display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0;}
+.split-record-head .mid{flex:1; min-width:0;}
+.split-record-head .item-name{font-size:14px; font-weight:700;}
+.split-record-head .meta{font-size:11.5px; color:var(--gray); margin-top:2px;}
+.split-record-head .amt{font-size:15px; font-weight:900; flex-shrink:0; color:var(--dark);}
+.split-debts{margin-top:10px; padding-top:10px; border-top:1px dashed rgba(55,53,47,0.14); display:flex; flex-direction:column; gap:8px;}
+.split-debt-row{display:flex; align-items:center; justify-content:space-between; font-size:13px; font-weight:700; color:var(--dark);}
+.split-debt-row label{display:flex; align-items:center; gap:8px; cursor:pointer;}
+.split-debt-row input[type="checkbox"]{width:18px; height:18px; accent-color:var(--sage); flex-shrink:0;}
+.split-debt-row.settled{color:var(--gray);}
+.split-debt-row.settled .amt-label{text-decoration:line-through;}
 .cat-picker{display:grid; grid-template-columns:repeat(4,1fr); gap:10px;}
 .cat-pick{
   display:flex; flex-direction:column; align-items:center; gap:6px; padding:14px 6px;
@@ -1072,7 +1085,7 @@ select.mpc-input{
                 <label>誰先付的 Paid by</label>
                 <select id="splitPaidBy" onchange="buildSplitChips()"></select>
               </div>
-              <div class="hint" style="margin-bottom:8px;">其他人要付給他多少</div>
+              <div class="hint" style="margin-bottom:8px;">勾選一起分攤的人，填他要還多少</div>
               <div id="splitMemberChipRow"></div>
             </div>
             <div class="hint" id="splitNoMembersHint" style="display:none; color:var(--pink);">至少需要 2 位成員才能分攤——先到「財務工具 → 多人分帳」新增成員。</div>
@@ -1847,7 +1860,7 @@ function buildSplitChips(){
     row.innerHTML = `
       <label class="name ${checked?'checked':''}">
         <input type="checkbox" ${checked?'checked':''}>
-        ${m} 欠他
+        ${m}
       </label>
       <input type="number" class="split-amount-input" value="${checked ? (txSplitShares[m]??'') : ''}" ${checked?'':'disabled'} placeholder="0">
     `;
@@ -2940,6 +2953,7 @@ function renderSplit(){
   (state.members||[]).forEach(m=>balances[m]=0);
   sharedTx.forEach(t=>{
     (t.splitMembers||[]).forEach(debtor=>{
+      if(t.splitSettled && t.splitSettled[debtor]) return;
       const owed = (t.splitShares && t.splitShares[debtor]!==undefined) ? t.splitShares[debtor] : 0;
       balances[debtor] = (balances[debtor]||0) - owed;
       if(t.paidBy){ balances[t.paidBy] = (balances[t.paidBy]||0) + owed; }
@@ -2962,11 +2976,21 @@ function renderSplit(){
     txWrap.innerHTML='<div class="empty-state" style="padding:14px 0;"><div class="t">在記帳時打開「與他人分攤」即可紀錄在這裡</div></div>';
   } else {
     sharedTx.sort((a,b)=>b.date.localeCompare(a.date)).forEach(t=>{
-      const owedText = (t.splitMembers||[]).map(p=>{
+      const debtRows = (t.splitMembers||[]).map(p=>{
         const s = (t.splitShares && t.splitShares[p]!==undefined) ? t.splitShares[p] : 0;
-        return `${p} 欠 $${fmt(s)}`;
-      }).join('、');
-      txWrap.innerHTML += `<div class="tx-item"><div class="ic" style="background:var(--light-blue);">🤝</div><div class="mid"><div class="item-name">${t.item}</div><div class="meta">${t.date} · ${t.paidBy||'—'}付款 · ${owedText}</div></div><div class="amt expense">$${fmt(t.amount)}</div></div>`;
+        const settled = !!(t.splitSettled && t.splitSettled[p]);
+        return `<div class="split-debt-row ${settled?'settled':''}">
+          <label><input type="checkbox" ${settled?'checked':''} onchange="toggleSplitSettled('${t.id}','${p.replace(/'/g,"\\'")}')"> ${settled?'✓ ':''}${p} <span class="amt-label">還 $${fmt(s)}</span></label>
+        </div>`;
+      }).join('');
+      txWrap.innerHTML += `<div class="split-record-card">
+        <div class="split-record-head">
+          <div class="ic">🤝</div>
+          <div class="mid"><div class="item-name">${t.item}</div><div class="meta">${t.date} · ${t.paidBy||'—'}先付</div></div>
+          <div class="amt">$${fmt(t.amount)}</div>
+        </div>
+        <div class="split-debts">${debtRows}</div>
+      </div>`;
     });
   }
 }
@@ -2986,6 +3010,14 @@ function saveMember(){
 }
 function removeMember(i){
   state.members.splice(i,1);
+  saveState();
+  renderSplit();
+}
+function toggleSplitSettled(txId, debtor){
+  const t = state.transactions.find(t=>t.id===txId);
+  if(!t) return;
+  t.splitSettled = t.splitSettled || {};
+  t.splitSettled[debtor] = !t.splitSettled[debtor];
   saveState();
   renderSplit();
 }
