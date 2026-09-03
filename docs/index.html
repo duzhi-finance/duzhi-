@@ -35,6 +35,7 @@
   --sage:#9AAE9B; --light-sage:#E8F0E8;
   --cream:#FAF3EE; --bg:#FAFAF8; --dark:#37352F; --medium:#5A5248; --gray:#9B9A97;
   --gold:#8B6B47; --light-gold:#F0E2CC;
+  --charcoal:#26241F; --warm-gold:#C9A66B;
   --radius-lg:24px; --radius-md:16px; --radius-sm:10px;
   --shadow: 0 2px 12px rgba(55,53,47,0.06), 0 1px 2px rgba(55,53,47,0.04);
   --shadow-hover: 0 8px 24px rgba(55,53,47,0.1);
@@ -572,27 +573,35 @@ select.mpc-input{
 .lp-h1, .lp-h2{font-family:'Noto Serif TC', serif; font-weight:900; letter-spacing:-.01em; color:var(--dark);}
 .lp-eyebrow{font-size:12.5px; font-weight:700; letter-spacing:.14em; color:var(--gold); text-transform:uppercase;}
 
-.lp-nav{position:sticky; top:0; z-index:50; background:rgba(250,251,248,0.88); backdrop-filter:blur(10px); border-bottom:1px solid rgba(55,53,47,0.06);}
+.lp-nav{position:sticky; top:0; z-index:50; background:rgba(38,36,31,0.82); backdrop-filter:blur(10px); border-bottom:1px solid rgba(255,255,255,0.08);}
 .lp-nav-inner{display:flex; align-items:center; justify-content:space-between; padding:16px 24px; max-width:1080px; margin:0 auto;}
-.lp-logo{font-family:'Noto Serif TC', serif; font-weight:900; font-size:18px;}
-.lp-links{display:none; gap:30px; font-size:13.5px; font-weight:700; color:var(--medium);}
-.lp-nav-cta{background:transparent; color:var(--medium); border:1.5px solid rgba(55,53,47,0.15); padding:8px 18px; border-radius:100px; font-size:12.5px; font-weight:700;}
+.lp-logo{font-family:'Noto Serif TC', serif; font-weight:900; font-size:18px; color:rgba(250,243,238,.96);}
+.lp-links{display:none; gap:30px; font-size:13.5px; font-weight:700; color:rgba(255,255,255,.72);}
+.lp-nav-cta{background:transparent; color:#fff; border:1.5px solid rgba(255,255,255,0.25); padding:8px 18px; border-radius:100px; font-size:12.5px; font-weight:700;}
 @media(min-width:800px){ .lp-links{display:flex;} }
 
-.lp-hero{padding:64px 0 40px; position:relative;}
-.lp-hero-grid{display:grid; grid-template-columns:1fr; gap:44px; align-items:center;}
+.lp-hero{padding:64px 0 40px; position:relative; background:var(--charcoal); overflow:hidden;}
+.lp-hero-grid{display:grid; grid-template-columns:1fr; gap:44px; align-items:center; position:relative; z-index:1;}
 @media(min-width:900px){ .lp-hero-grid{grid-template-columns:1.1fr .9fr;} }
+.lp-hero .lp-eyebrow{color:var(--warm-gold);}
 .lp-h1{font-size:34px; line-height:1.36; margin:16px 0 18px;}
-.lp-h1 .lp-accent{color:var(--pink);}
+.lp-hero .lp-h1{color:#fff;}
+.lp-h1 .lp-accent{color:var(--warm-gold);}
 @media(min-width:640px){ .lp-h1{font-size:44px;} }
 .lp-lead{font-size:15.5px; color:var(--medium); line-height:1.85; max-width:480px;}
+.lp-hero .lp-lead{color:rgba(255,255,255,.72);}
 .lp-actions{display:flex; flex-wrap:wrap; gap:12px; margin-top:28px;}
 .lp-btn{display:inline-flex; align-items:center; gap:8px; padding:14px 26px; border-radius:100px; font-weight:700; font-size:14.5px; cursor:pointer; border:none;}
 .lp-btn-dark{background:var(--dark); color:#fff;}
+.lp-hero .lp-btn-dark{background:var(--warm-gold); color:var(--charcoal);}
 .lp-btn-outline{border:1.5px solid rgba(55,53,47,0.18); color:var(--dark); background:transparent;}
+.lp-hero .lp-btn-outline{border-color:rgba(255,255,255,0.28); color:#fff;}
 .lp-trust{display:flex; gap:22px; margin-top:34px; flex-wrap:wrap;}
 .lp-trust .item{font-size:12px; color:var(--gray); font-weight:700;}
 .lp-trust .item b{display:block; font-size:20px; color:var(--dark); font-family:'Noto Serif TC', serif; font-weight:900;}
+.lp-hero .lp-trust .item{color:rgba(255,255,255,.55);}
+.lp-hero .lp-trust .item b{color:#fff;}
+.lp-hero-glow{position:absolute; border-radius:50%; z-index:0; pointer-events:none;}
 
 .lp-mockup-stage{position:relative; display:flex; justify-content:center;}
 .lp-phone{width:250px; background:#fff; border-radius:32px; padding:14px; box-shadow:0 30px 60px rgba(55,53,47,0.18), 0 4px 14px rgba(55,53,47,0.08); transform:rotate(3deg); position:relative; z-index:2;}
@@ -672,16 +681,21 @@ select.mpc-input{
 @media(min-width:700px){ .lp-pricing-grid{grid-template-columns:1fr 1fr;} }
 @media(min-width:980px){ .lp-pricing-grid.lp-pricing-3{grid-template-columns:1fr 1fr 1fr; max-width:1040px;} }
 .lp-price-card{border-radius:26px; padding:32px; background:#fff; border:1.5px solid rgba(55,53,47,0.08); position:relative;}
-.lp-price-card.featured{background:var(--dark); color:#fff;}
+.lp-price-card.featured{background:var(--cream); color:var(--dark); box-shadow:0 40px 90px rgba(0,0,0,0.35);}
 .lp-price-card .plan{font-size:13px; font-weight:900; letter-spacing:.04em; color:var(--pink);}
-.lp-price-card.featured .plan{color:var(--soft-pink);}
+.lp-price-card.featured .plan{color:var(--gold);}
 .lp-price-card .price{font-family:'Noto Serif TC', serif; font-size:32px; font-weight:900; margin:12px 0 4px;}
 .lp-price-card .unit{font-size:12px; color:var(--gray); font-weight:700;}
-.lp-price-card.featured .unit{color:rgba(255,255,255,0.6);}
+.lp-price-card.featured .unit{color:var(--medium);}
 .lp-price-card ul{margin-top:20px; list-style:none;}
 .lp-price-card li{font-size:13px; padding:8px 0;}
-.lp-price-card .badge-top{position:absolute; top:-12px; right:24px; background:var(--gold); color:#fff; font-size:11px; font-weight:700; padding:5px 14px; border-radius:100px;}
+.lp-price-card .badge-top{position:absolute; top:-12px; right:24px; background:var(--warm-gold); color:var(--charcoal); font-size:11px; font-weight:700; padding:5px 14px; border-radius:100px;}
 .lp-price-card .lp-btn{width:100%; justify-content:center; margin-top:22px;}
+.lp-price-card.featured .lp-btn-dark{background:var(--charcoal); color:#fff;}
+.lp-pricing-dark{background:var(--charcoal);}
+.lp-pricing-dark .lp-eyebrow{color:var(--warm-gold);}
+.lp-pricing-dark .lp-h2{color:#fff;}
+.lp-pricing-dark .field.hint{color:rgba(255,255,255,.55) !important;}
 
 .lp-faq-item{border-bottom:1px solid rgba(55,53,47,0.1); padding:20px 0;}
 .lp-faq-item summary{font-size:14.5px; font-weight:700; cursor:pointer; list-style:none; display:flex; justify-content:space-between; align-items:center;}
@@ -690,12 +704,13 @@ select.mpc-input{
 .lp-faq-item[open] summary::after{content:'–';}
 .lp-faq-item p{font-size:13px; color:var(--medium); margin-top:12px; line-height:1.8;}
 
-.lp-final-cta{background:linear-gradient(135deg, var(--pink), var(--gold)); border-radius:32px; padding:52px 26px; text-align:center; color:#fff;}
+.lp-final-cta{background:linear-gradient(135deg, var(--charcoal), #3d3527); border-radius:32px; padding:52px 26px; text-align:center; color:#fff;}
 .lp-final-cta .lp-h2{color:#fff; font-size:25px;}
-.lp-final-cta p{color:rgba(255,255,255,0.88); font-size:14px; margin:12px 0 24px;}
-.lp-final-cta .lp-btn-dark{background:#fff; color:var(--dark);}
+.lp-final-cta p{color:rgba(255,255,255,0.72); font-size:14px; margin:12px 0 24px;}
+.lp-final-cta .lp-btn-dark{background:var(--warm-gold); color:var(--charcoal);}
 
-.lp-footer{padding:36px 0; text-align:center; color:var(--gray); font-size:12px;}
+.lp-footer{padding:36px 0; text-align:center; color:rgba(255,255,255,.5); font-size:12px; background:var(--charcoal);}
+.lp-footer div{color:rgba(255,255,255,.65);}
 
 .lp-reveal{opacity:0; transform:translateY(18px); transition:opacity .7s ease, transform .7s ease;}
 .lp-reveal.show{opacity:1; transform:translateY(0);}
@@ -723,6 +738,8 @@ select.mpc-input{
 </nav>
 
 <header class="lp-hero">
+  <div class="lp-hero-glow" style="width:520px; height:520px; left:-180px; top:-180px; background:radial-gradient(circle, rgba(201,166,107,0.18) 0%, rgba(201,166,107,0) 70%);"></div>
+  <div class="lp-hero-glow" style="width:420px; height:420px; right:-140px; bottom:-160px; background:radial-gradient(circle, rgba(201,166,107,0.12) 0%, rgba(201,166,107,0) 70%);"></div>
   <div class="lp-wrap">
     <div class="lp-hero-grid">
       <div>
@@ -741,8 +758,8 @@ select.mpc-input{
       </div>
 
       <div class="lp-mockup-stage">
-        <div class="lp-blob" style="width:280px; height:280px; background:var(--light-pink); top:-20px; right:20px;"></div>
-        <div class="lp-blob" style="width:200px; height:200px; background:var(--light-blue); bottom:-10px; left:0;"></div>
+        <div class="lp-blob" style="width:280px; height:280px; background:rgba(201,166,107,0.25); top:-20px; right:20px;"></div>
+        <div class="lp-blob" style="width:200px; height:200px; background:rgba(201,166,107,0.15); bottom:-10px; left:0;"></div>
         <div class="lp-float-card c1"><div class="lbl">本月已存</div>NT$ 12,400 ↑</div>
         <div class="lp-float-card c2"><div class="lbl">保障覆蓋率</div>80% 良好</div>
         <div class="lp-phone">
@@ -887,7 +904,7 @@ select.mpc-input{
   </div>
 </section>
 
-<section class="lp-section" id="lp-pricing">
+<section class="lp-section lp-pricing-dark" id="lp-pricing">
   <div class="lp-wrap">
     <div class="lp-section-head">
       <div class="lp-eyebrow">方案價格</div>
@@ -909,6 +926,7 @@ select.mpc-input{
         </ul>
         <button class="lp-btn lp-btn-dark" onclick="openContactModal()">立即購買 →</button>
         <div style="text-align:center; margin-top:14px;"><span style="font-size:12px; color:var(--gray); font-weight:700; cursor:pointer; text-decoration:underline;" onclick="openUnlockModal()">已經購買了？輸入序號解鎖</span></div>
+        <div style="text-align:center; margin-top:10px; font-size:11px; color:var(--gray); line-height:1.7;">本產品為虛擬商品，序號開通即完成交付，恕不接受退換。</div>
       </div>
     </div>
     <div class="field hint" style="max-width:440px; margin:20px auto 0; text-align:center; line-height:1.8;">介面持續優化中，未來你會持續收到更好用的更新，不會再額外收費。團隊導入或品牌客製需求，也歡迎透過「立即購買」的聯絡方式跟我們聊聊。</div>
