@@ -265,6 +265,17 @@ main{max-width:720px; margin:0 auto; padding:8px 20px 20px;}
 .modal-header h3{font-size:18px; font-weight:900;}
 .modal-close{width:32px; height:32px; border-radius:50%; background:var(--light-pink); font-size:16px; display:flex; align-items:center; justify-content:center; color:var(--medium);}
 
+.welcome-sheet{text-align:center; position:relative; overflow:hidden; padding-top:36px;}
+.welcome-glow{position:absolute; top:-60px; left:50%; transform:translateX(-50%); width:260px; height:260px; border-radius:50%; background:radial-gradient(circle, var(--light-gold) 0%, rgba(240,226,204,0) 70%); pointer-events:none;}
+.welcome-badge{
+  position:relative; width:76px; height:76px; margin:0 auto 18px; border-radius:50%;
+  background:linear-gradient(135deg, var(--soft-pink), var(--gold));
+  display:flex; align-items:center; justify-content:center; font-size:34px;
+  box-shadow:0 12px 24px rgba(139,107,71,0.28);
+}
+.welcome-title{position:relative; font-size:20px; margin-bottom:12px;}
+.welcome-text{position:relative; font-size:13.5px; color:var(--medium); line-height:1.85; max-width:340px; margin:0 auto 24px;}
+
 .field{margin-bottom:14px;}
 .field label{display:block; font-size:12px; font-weight:700; color:var(--medium); margin-bottom:6px;}
 .field input, .field select, .field textarea{
@@ -1628,10 +1639,11 @@ select.mpc-input{
 
 <!-- ============ Welcome Modal (post-purchase) ============ -->
 <div class="modal-overlay" id="welcomeModalOverlay">
-  <div class="modal-sheet" style="text-align:center; padding-top:8px;">
-    <div style="font-size:44px; margin:12px 0 4px;">🎉</div>
-    <h3 style="font-size:19px; margin-bottom:10px;">歡迎加入 duzhi 完整版</h3>
-    <div class="field hint" style="text-align:center; max-width:340px; margin:0 auto 22px;">謝謝你的支持！從現在開始，記帳、健診報告、投資理財等所有功能都完整開放給你，未來的更新也都不會再額外收費。</div>
+  <div class="modal-sheet welcome-sheet">
+    <div class="welcome-glow"></div>
+    <div class="welcome-badge">🎉</div>
+    <h3 class="welcome-title">歡迎加入 duzhi 完整版</h3>
+    <div class="welcome-text">謝謝你的支持！從現在開始，記帳、健診報告、投資理財等所有功能都完整開放給你，未來的更新也都不會再額外收費。</div>
     <button class="btn btn-primary btn-block" onclick="closeModal('welcomeModalOverlay'); enterApp();">開始使用 →</button>
   </div>
 </div>
