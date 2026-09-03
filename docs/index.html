@@ -1574,6 +1574,16 @@ select.mpc-input{
   </div>
 </div>
 
+<!-- ============ Welcome Modal (post-purchase) ============ -->
+<div class="modal-overlay" id="welcomeModalOverlay">
+  <div class="modal-sheet" style="text-align:center; padding-top:8px;">
+    <div style="font-size:44px; margin:12px 0 4px;">🎉</div>
+    <h3 style="font-size:19px; margin-bottom:10px;">歡迎加入 duzhi 完整版</h3>
+    <div class="field hint" style="text-align:center; max-width:340px; margin:0 auto 22px;">謝謝你的支持！從現在開始，記帳、健診報告、投資理財等所有功能都完整開放給你，未來的更新也都不會再額外收費。</div>
+    <button class="btn btn-primary btn-block" onclick="closeModal('welcomeModalOverlay'); enterApp();">開始使用 →</button>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -1681,7 +1691,6 @@ function applyLicenseKey(key){
   if(!tier){ toast('授權碼無效，請確認後再試一次'); return false; }
   state.license = { key: key.trim().toUpperCase(), tier };
   saveState();
-  toast(tier==='family' ? '🎉 已解鎖家庭 / 團隊版！' : '🎉 已解鎖專業版！');
   return true;
 }
 
@@ -1907,7 +1916,7 @@ function unlockWithCode(){
   const key = document.getElementById('unlockCodeInput').value;
   if(applyLicenseKey(key)){
     closeModal('unlockModalOverlay');
-    enterApp();
+    document.getElementById('welcomeModalOverlay').classList.add('open');
   }
 }
 let txAdvancedOpen = false;
