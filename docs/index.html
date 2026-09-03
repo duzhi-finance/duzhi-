@@ -306,6 +306,13 @@ main{max-width:720px; margin:0 auto; padding:8px 20px 20px;}
 .period-chip-row{display:flex; gap:6px; flex-wrap:wrap;}
 .period-chip{padding:8px 15px; border-radius:100px; font-size:12.5px; font-weight:700; background:#fff; color:var(--medium); cursor:pointer; border:1.5px solid var(--light-pink);}
 .period-chip.active{background:var(--pink); color:#fff; border-color:var(--pink);}
+.split-member-row{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:9px 0; border-bottom:1px solid rgba(55,53,47,0.06);}
+.split-member-row:last-child{border-bottom:none;}
+.split-member-row .name{display:flex; align-items:center; gap:8px; font-size:13.5px; font-weight:700; color:var(--medium);}
+.split-member-row .name.checked{color:var(--dark);}
+.split-member-row input[type="checkbox"]{width:18px; height:18px; accent-color:var(--pink);}
+.split-amount-input{width:96px; text-align:right; border:1.5px solid var(--light-pink); border-radius:8px; padding:7px 9px; font-size:13px; font-weight:700; color:var(--dark);}
+.split-amount-input:disabled{opacity:.35;}
 .cat-picker{display:grid; grid-template-columns:repeat(4,1fr); gap:10px;}
 .cat-pick{
   display:flex; flex-direction:column; align-items:center; gap:6px; padding:14px 6px;
@@ -1061,12 +1068,13 @@ select.mpc-input{
               <label class="switch"><input type="checkbox" id="txSplitToggle" onchange="toggleSplitUI()"><span class="slider"></span></label>
             </div>
             <div class="switch-panel" id="splitPanel" style="display:none;">
-              <div class="hint" style="margin-bottom:8px;">分攤成員（可複選）</div>
-              <div class="period-chip-row" id="splitMemberChipRow"></div>
-              <div class="field" style="margin-top:14px;">
+              <div class="field" style="margin-bottom:14px;">
                 <label>付款人 Paid by</label>
                 <select id="splitPaidBy"></select>
               </div>
+              <div class="hint" style="margin-bottom:8px;">勾選分攤成員，並可自行調整每人金額（不一定要平分）</div>
+              <div id="splitMemberChipRow"></div>
+              <div class="rowline" id="splitTotalCheck" style="margin-top:10px; font-size:12.5px; font-weight:700;"></div>
             </div>
             <div class="hint" id="splitNoMembersHint" style="display:none; color:var(--pink);">還沒有分攤成員——先到「財務工具 → 多人分帳」新增成員，才能在這裡指定分攤對象。</div>
 
@@ -1814,8 +1822,16 @@ function toggleInstallmentUI(){
   document.getElementById('installmentPanel').style.display = document.getElementById('txInstallmentToggle').checked ? 'block' : 'none';
 }
 let txSplitMembers = [];
+let txSplitShares = {};
 function toggleSplitUI(){
   document.getElementById('splitPanel').style.display = document.getElementById('txSplitToggle').checked ? 'block' : 'none';
+}
+function splitEqualize(){
+  const n = txSplitMembers.length;
+  if(n===0) return;
+  const total = parseFloat(document.getElementById('txAmount').value)||0;
+  const each = Math.round((total/n)*100)/100;
+  txSplitMembers.forEach(m=>{ txSplitShares[m] = each; });
 }
 function buildSplitChips(){
   const wrap = document.getElementById('splitMemberChipRow');
@@ -1823,25 +1839,51 @@ function buildSplitChips(){
   wrap.innerHTML='';
   paidBySelect.innerHTML='';
   (state.members||[]).forEach(m=>{
-    const el = document.createElement('div');
-    el.className = 'period-chip' + (txSplitMembers.includes(m)?' active':'');
-    el.textContent = m;
-    el.onclick = ()=>{
+    const checked = txSplitMembers.includes(m);
+    const row = document.createElement('div');
+    row.className = 'split-member-row';
+    row.innerHTML = `
+      <label class="name ${checked?'checked':''}">
+        <input type="checkbox" ${checked?'checked':''}>
+        ${m}
+      </label>
+      <input type="number" class="split-amount-input" value="${checked ? (txSplitShares[m]??0) : ''}" ${checked?'':'disabled'} placeholder="0">
+    `;
+    row.querySelector('input[type="checkbox"]').onchange = (e)=>{
       const idx = txSplitMembers.indexOf(m);
-      if(idx>-1) txSplitMembers.splice(idx,1); else txSplitMembers.push(m);
+      if(e.target.checked){ if(idx===-1) txSplitMembers.push(m); }
+      else { if(idx>-1) txSplitMembers.splice(idx,1); delete txSplitShares[m]; }
+      splitEqualize();
       buildSplitChips();
+      updateSplitTotalCheck();
     };
-    wrap.appendChild(el);
+    row.querySelector('.split-amount-input').oninput = (e)=>{
+      txSplitShares[m] = parseFloat(e.target.value)||0;
+      updateSplitTotalCheck();
+    };
+    wrap.appendChild(row);
     const opt = document.createElement('option');
     opt.value = m; opt.textContent = m;
     paidBySelect.appendChild(opt);
   });
+  updateSplitTotalCheck();
+}
+function updateSplitTotalCheck(){
+  const el = document.getElementById('splitTotalCheck');
+  const total = parseFloat(document.getElementById('txAmount').value)||0;
+  const allocated = txSplitMembers.reduce((s,m)=> s + (txSplitShares[m]||0), 0);
+  const match = Math.abs(allocated-total) < 0.5;
+  el.style.borderBottom = 'none';
+  el.style.color = match ? 'var(--sage)' : 'var(--pink)';
+  el.innerHTML = `<div>已分配</div><div>NT$ ${fmt(allocated)} ／ 總金額 NT$ ${fmt(total)}${match?' ✓':''}</div>`;
 }
 function initSplitUIForModal(existingTx){
   const hasMembers = (state.members||[]).length>0;
   document.getElementById('splitSwitchRow').style.display = hasMembers ? '' : 'none';
   document.getElementById('splitNoMembersHint').style.display = hasMembers ? 'none' : '';
   txSplitMembers = (existingTx && existingTx.splitMembers) ? [...existingTx.splitMembers] : [];
+  txSplitShares = (existingTx && existingTx.splitShares) ? {...existingTx.splitShares} : {};
+  if(txSplitMembers.length>0 && Object.keys(txSplitShares).length===0) splitEqualize();
   document.getElementById('txSplitToggle').checked = txSplitMembers.length>0;
   buildSplitChips();
   toggleSplitUI();
@@ -1999,11 +2041,12 @@ function saveTx(){
   const installmentTotal = document.getElementById('txInstallmentToggle').checked ? txInstallmentPeriod : 1;
   const isSplit = document.getElementById('txSplitToggle').checked && txSplitMembers.length>0;
   const splitMembers = isSplit ? [...txSplitMembers] : null;
+  const splitShares = isSplit ? {...txSplitShares} : null;
   const paidBy = isSplit ? document.getElementById('splitPaidBy').value : null;
 
   if(txEditingId){
     const tx = state.transactions.find(t=>t.id===txEditingId);
-    Object.assign(tx, {amount, originalAmount:rawAmount, currency, item, date, payMethod, account, tags, note, type:txCurrentType, category:txSelectedCat, splitMembers, paidBy});
+    Object.assign(tx, {amount, originalAmount:rawAmount, currency, item, date, payMethod, account, tags, note, type:txCurrentType, category:txSelectedCat, splitMembers, splitShares, paidBy});
   } else if(installmentTotal>1){
     const group = uid('grp');
     const perAmount = Math.round((amount/installmentTotal)*100)/100;
@@ -2019,7 +2062,7 @@ function saveTx(){
   } else {
     state.transactions.push({
       id: uid('tx'), type:txCurrentType, amount, originalAmount:rawAmount, currency, category:txSelectedCat, item, date,
-      payMethod, account, note, tags, installmentTotal:1, installmentIndex:1, installmentGroup:null, splitMembers, paidBy,
+      payMethod, account, note, tags, installmentTotal:1, installmentIndex:1, installmentGroup:null, splitMembers, splitShares, paidBy,
     });
   }
   saveState();
@@ -2903,8 +2946,11 @@ function renderSplit(){
   (state.members||[]).forEach(m=>balances[m]=0);
   sharedTx.forEach(t=>{
     const people = t.splitMembers;
-    const share = t.amount/people.length;
-    people.forEach(p=>{ balances[p] = (balances[p]||0) - share; });
+    const equalShare = t.amount/people.length;
+    people.forEach(p=>{
+      const share = (t.splitShares && t.splitShares[p]!==undefined) ? t.splitShares[p] : equalShare;
+      balances[p] = (balances[p]||0) - share;
+    });
     if(t.paidBy){ balances[t.paidBy] = (balances[t.paidBy]||0) + t.amount; }
   });
   const balArea = document.getElementById('splitBalanceArea');
@@ -2924,7 +2970,12 @@ function renderSplit(){
     txWrap.innerHTML='<div class="empty-state" style="padding:14px 0;"><div class="t">在記帳時勾選「與他人分攤」即可紀錄在這裡</div></div>';
   } else {
     sharedTx.sort((a,b)=>b.date.localeCompare(a.date)).forEach(t=>{
-      txWrap.innerHTML += `<div class="tx-item"><div class="ic" style="background:var(--light-blue);">🤝</div><div class="mid"><div class="item-name">${t.item}</div><div class="meta">${t.date} · 付款人：${t.paidBy||'—'} · 分攤：${(t.splitMembers||[]).join('、')}</div></div><div class="amt expense">$${fmt(t.amount)}</div></div>`;
+      const equalShare = t.amount/t.splitMembers.length;
+      const shareText = (t.splitMembers||[]).map(p=>{
+        const s = (t.splitShares && t.splitShares[p]!==undefined) ? t.splitShares[p] : equalShare;
+        return `${p} $${fmt(s)}`;
+      }).join('、');
+      txWrap.innerHTML += `<div class="tx-item"><div class="ic" style="background:var(--light-blue);">🤝</div><div class="mid"><div class="item-name">${t.item}</div><div class="meta">${t.date} · 付款人：${t.paidBy||'—'} · 分攤：${shareText}</div></div><div class="amt expense">$${fmt(t.amount)}</div></div>`;
     });
   }
 }
