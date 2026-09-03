@@ -1069,14 +1069,13 @@ select.mpc-input{
             </div>
             <div class="switch-panel" id="splitPanel" style="display:none;">
               <div class="field" style="margin-bottom:14px;">
-                <label>付款人 Paid by</label>
-                <select id="splitPaidBy"></select>
+                <label>誰先付的 Paid by</label>
+                <select id="splitPaidBy" onchange="buildSplitChips()"></select>
               </div>
-              <div class="hint" style="margin-bottom:8px;">勾選分攤成員，並可自行調整每人金額（不一定要平分）</div>
+              <div class="hint" style="margin-bottom:8px;">其他人要付給他多少</div>
               <div id="splitMemberChipRow"></div>
-              <div class="rowline" id="splitTotalCheck" style="margin-top:10px; font-size:12.5px; font-weight:700;"></div>
             </div>
-            <div class="hint" id="splitNoMembersHint" style="display:none; color:var(--pink);">還沒有分攤成員——先到「財務工具 → 多人分帳」新增成員，才能在這裡指定分攤對象。</div>
+            <div class="hint" id="splitNoMembersHint" style="display:none; color:var(--pink);">至少需要 2 位成員才能分攤——先到「財務工具 → 多人分帳」新增成員。</div>
 
             <div class="field" style="margin-top:16px;">
               <label>備註 Note</label>
@@ -1821,73 +1820,68 @@ function updateCurrencyHint(){
 function toggleInstallmentUI(){
   document.getElementById('installmentPanel').style.display = document.getElementById('txInstallmentToggle').checked ? 'block' : 'none';
 }
-let txSplitMembers = [];
-let txSplitShares = {};
+let txSplitMembers = []; // people who OWE the payer (payer is not in this list)
+let txSplitShares = {};  // { debtorName: amountTheyOwe }
 function toggleSplitUI(){
   document.getElementById('splitPanel').style.display = document.getElementById('txSplitToggle').checked ? 'block' : 'none';
-}
-function splitEqualize(){
-  const n = txSplitMembers.length;
-  if(n===0) return;
-  const total = parseFloat(document.getElementById('txAmount').value)||0;
-  const each = Math.round((total/n)*100)/100;
-  txSplitMembers.forEach(m=>{ txSplitShares[m] = each; });
 }
 function buildSplitChips(){
   const wrap = document.getElementById('splitMemberChipRow');
   const paidBySelect = document.getElementById('splitPaidBy');
-  wrap.innerHTML='';
+  const prevPayer = paidBySelect.value;
   paidBySelect.innerHTML='';
   (state.members||[]).forEach(m=>{
+    const opt = document.createElement('option');
+    opt.value = m; opt.textContent = m;
+    paidBySelect.appendChild(opt);
+  });
+  if((state.members||[]).includes(prevPayer)) paidBySelect.value = prevPayer;
+  const payer = paidBySelect.value;
+  txSplitMembers = txSplitMembers.filter(m=>m!==payer);
+
+  wrap.innerHTML='';
+  (state.members||[]).filter(m=>m!==payer).forEach(m=>{
     const checked = txSplitMembers.includes(m);
     const row = document.createElement('div');
     row.className = 'split-member-row';
     row.innerHTML = `
       <label class="name ${checked?'checked':''}">
         <input type="checkbox" ${checked?'checked':''}>
-        ${m}
+        ${m} 欠他
       </label>
-      <input type="number" class="split-amount-input" value="${checked ? (txSplitShares[m]??0) : ''}" ${checked?'':'disabled'} placeholder="0">
+      <input type="number" class="split-amount-input" value="${checked ? (txSplitShares[m]??'') : ''}" ${checked?'':'disabled'} placeholder="0">
     `;
     row.querySelector('input[type="checkbox"]').onchange = (e)=>{
       const idx = txSplitMembers.indexOf(m);
-      if(e.target.checked){ if(idx===-1) txSplitMembers.push(m); }
-      else { if(idx>-1) txSplitMembers.splice(idx,1); delete txSplitShares[m]; }
-      splitEqualize();
+      if(e.target.checked){
+        if(idx===-1) txSplitMembers.push(m);
+        if(txSplitShares[m]===undefined) txSplitShares[m] = parseFloat(document.getElementById('txAmount').value)||0;
+      } else { if(idx>-1) txSplitMembers.splice(idx,1); delete txSplitShares[m]; }
       buildSplitChips();
-      updateSplitTotalCheck();
     };
     row.querySelector('.split-amount-input').oninput = (e)=>{
       txSplitShares[m] = parseFloat(e.target.value)||0;
-      updateSplitTotalCheck();
     };
     wrap.appendChild(row);
-    const opt = document.createElement('option');
-    opt.value = m; opt.textContent = m;
-    paidBySelect.appendChild(opt);
   });
-  updateSplitTotalCheck();
-}
-function updateSplitTotalCheck(){
-  const el = document.getElementById('splitTotalCheck');
-  const total = parseFloat(document.getElementById('txAmount').value)||0;
-  const allocated = txSplitMembers.reduce((s,m)=> s + (txSplitShares[m]||0), 0);
-  const match = Math.abs(allocated-total) < 0.5;
-  el.style.borderBottom = 'none';
-  el.style.color = match ? 'var(--sage)' : 'var(--pink)';
-  el.innerHTML = `<div>已分配</div><div>NT$ ${fmt(allocated)} ／ 總金額 NT$ ${fmt(total)}${match?' ✓':''}</div>`;
 }
 function initSplitUIForModal(existingTx){
-  const hasMembers = (state.members||[]).length>0;
+  const hasMembers = (state.members||[]).length>1;
   document.getElementById('splitSwitchRow').style.display = hasMembers ? '' : 'none';
   document.getElementById('splitNoMembersHint').style.display = hasMembers ? 'none' : '';
   txSplitMembers = (existingTx && existingTx.splitMembers) ? [...existingTx.splitMembers] : [];
   txSplitShares = (existingTx && existingTx.splitShares) ? {...existingTx.splitShares} : {};
-  if(txSplitMembers.length>0 && Object.keys(txSplitShares).length===0) splitEqualize();
   document.getElementById('txSplitToggle').checked = txSplitMembers.length>0;
+  const paidBySelect = document.getElementById('splitPaidBy');
+  paidBySelect.innerHTML='';
+  (state.members||[]).forEach(m=>{
+    const opt = document.createElement('option');
+    opt.value = m; opt.textContent = m;
+    paidBySelect.appendChild(opt);
+  });
+  if(existingTx && existingTx.paidBy && (state.members||[]).includes(existingTx.paidBy)) paidBySelect.value = existingTx.paidBy;
   buildSplitChips();
   toggleSplitUI();
-  if(existingTx && existingTx.paidBy) document.getElementById('splitPaidBy').value = existingTx.paidBy;
 }
 const CURRENCY_OPTIONS = ['TWD','USD'];
 let txSelectedCurrency = 'TWD';
@@ -2945,13 +2939,11 @@ function renderSplit(){
   const balances = {};
   (state.members||[]).forEach(m=>balances[m]=0);
   sharedTx.forEach(t=>{
-    const people = t.splitMembers;
-    const equalShare = t.amount/people.length;
-    people.forEach(p=>{
-      const share = (t.splitShares && t.splitShares[p]!==undefined) ? t.splitShares[p] : equalShare;
-      balances[p] = (balances[p]||0) - share;
+    (t.splitMembers||[]).forEach(debtor=>{
+      const owed = (t.splitShares && t.splitShares[debtor]!==undefined) ? t.splitShares[debtor] : 0;
+      balances[debtor] = (balances[debtor]||0) - owed;
+      if(t.paidBy){ balances[t.paidBy] = (balances[t.paidBy]||0) + owed; }
     });
-    if(t.paidBy){ balances[t.paidBy] = (balances[t.paidBy]||0) + t.amount; }
   });
   const balArea = document.getElementById('splitBalanceArea');
   balArea.innerHTML='';
@@ -2967,15 +2959,14 @@ function renderSplit(){
   const txWrap = document.getElementById('splitTxListArea');
   txWrap.innerHTML='';
   if(sharedTx.length===0){
-    txWrap.innerHTML='<div class="empty-state" style="padding:14px 0;"><div class="t">在記帳時勾選「與他人分攤」即可紀錄在這裡</div></div>';
+    txWrap.innerHTML='<div class="empty-state" style="padding:14px 0;"><div class="t">在記帳時打開「與他人分攤」即可紀錄在這裡</div></div>';
   } else {
     sharedTx.sort((a,b)=>b.date.localeCompare(a.date)).forEach(t=>{
-      const equalShare = t.amount/t.splitMembers.length;
-      const shareText = (t.splitMembers||[]).map(p=>{
-        const s = (t.splitShares && t.splitShares[p]!==undefined) ? t.splitShares[p] : equalShare;
-        return `${p} $${fmt(s)}`;
+      const owedText = (t.splitMembers||[]).map(p=>{
+        const s = (t.splitShares && t.splitShares[p]!==undefined) ? t.splitShares[p] : 0;
+        return `${p} 欠 $${fmt(s)}`;
       }).join('、');
-      txWrap.innerHTML += `<div class="tx-item"><div class="ic" style="background:var(--light-blue);">🤝</div><div class="mid"><div class="item-name">${t.item}</div><div class="meta">${t.date} · 付款人：${t.paidBy||'—'} · 分攤：${shareText}</div></div><div class="amt expense">$${fmt(t.amount)}</div></div>`;
+      txWrap.innerHTML += `<div class="tx-item"><div class="ic" style="background:var(--light-blue);">🤝</div><div class="mid"><div class="item-name">${t.item}</div><div class="meta">${t.date} · ${t.paidBy||'—'}付款 · ${owedText}</div></div><div class="amt expense">$${fmt(t.amount)}</div></div>`;
     });
   }
 }
