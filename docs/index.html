@@ -580,17 +580,17 @@ select.mpc-input{
 .lp-nav-cta{background:transparent; color:#fff; border:1.5px solid rgba(255,255,255,0.25); padding:8px 18px; border-radius:100px; font-size:12.5px; font-weight:700;}
 @media(min-width:800px){ .lp-links{display:flex;} }
 
-.lp-hero{padding:64px 0 40px; position:relative; background:var(--charcoal); overflow:hidden;}
-.lp-hero-grid{display:grid; grid-template-columns:1fr; gap:44px; align-items:center; position:relative; z-index:1;}
-@media(min-width:900px){ .lp-hero-grid{grid-template-columns:1.1fr .9fr;} }
+.lp-hero{padding:88px 0 76px; position:relative; background:var(--charcoal); overflow:hidden;}
+.lp-hero-grid{display:grid; grid-template-columns:1fr; gap:44px; align-items:center; position:relative; z-index:1; text-align:center;}
 .lp-hero .lp-eyebrow{color:var(--warm-gold);}
 .lp-h1{font-size:34px; line-height:1.36; margin:16px 0 18px;}
 .lp-hero .lp-h1{color:#fff;}
 .lp-h1 .lp-accent{color:var(--warm-gold);}
 @media(min-width:640px){ .lp-h1{font-size:44px;} }
 .lp-lead{font-size:15.5px; color:var(--medium); line-height:1.85; max-width:480px;}
-.lp-hero .lp-lead{color:rgba(255,255,255,.72);}
+.lp-hero .lp-lead{color:rgba(255,255,255,.72); margin-left:auto; margin-right:auto;}
 .lp-actions{display:flex; flex-wrap:wrap; gap:12px; margin-top:28px;}
+.lp-hero .lp-actions{justify-content:center;}
 .lp-btn{display:inline-flex; align-items:center; gap:8px; padding:14px 26px; border-radius:100px; font-weight:700; font-size:14.5px; cursor:pointer; border:none;}
 .lp-btn-dark{background:var(--dark); color:#fff;}
 .lp-hero .lp-btn-dark{background:var(--warm-gold); color:var(--charcoal);}
@@ -599,31 +599,10 @@ select.mpc-input{
 .lp-trust{display:flex; gap:22px; margin-top:34px; flex-wrap:wrap;}
 .lp-trust .item{font-size:12px; color:var(--gray); font-weight:700;}
 .lp-trust .item b{display:block; font-size:20px; color:var(--dark); font-family:'Noto Serif TC', serif; font-weight:900;}
+.lp-hero .lp-trust{justify-content:center;}
 .lp-hero .lp-trust .item{color:rgba(255,255,255,.55);}
 .lp-hero .lp-trust .item b{color:#fff;}
 .lp-hero-glow{position:absolute; border-radius:50%; z-index:0; pointer-events:none;}
-
-.lp-mockup-stage{position:relative; display:flex; justify-content:center;}
-.lp-phone{width:250px; background:#fff; border-radius:32px; padding:14px; box-shadow:0 30px 60px rgba(55,53,47,0.18), 0 4px 14px rgba(55,53,47,0.08); transform:rotate(3deg); position:relative; z-index:2;}
-.lp-phone .lp-screen{background:var(--bg); border-radius:22px; padding:16px 14px 20px; min-height:400px;}
-.lp-phone .lp-hi{font-size:11px; color:var(--gray); font-weight:700;}
-.lp-phone .lp-greet{font-size:15px; font-weight:900; margin-top:2px;}
-.lp-phone .lp-hero-mini{margin-top:14px; border-radius:18px; padding:16px; background:linear-gradient(135deg, var(--light-pink), var(--light-blue));}
-.lp-phone .lp-hero-mini .l{font-size:10px; font-weight:700; color:var(--medium);}
-.lp-phone .lp-hero-mini .v{font-size:23px; font-weight:900; margin-top:2px;}
-.lp-phone .lp-pillrow{display:flex; gap:6px; margin-top:10px;}
-.lp-phone .lp-pillrow div{flex:1; background:rgba(255,255,255,.6); border-radius:9px; padding:7px; font-size:8.5px; font-weight:700; color:var(--medium);}
-.lp-phone .lp-pillrow div span{display:block; font-size:11px; font-weight:900; color:var(--dark); margin-top:1px;}
-.lp-phone .lp-mini-card{background:#fff; border-radius:16px; padding:12px; margin-top:10px; box-shadow:0 2px 10px rgba(55,53,47,0.05);}
-.lp-phone .lp-row{display:flex; align-items:center; gap:8px; padding:6px 0;}
-.lp-phone .lp-row .ic{width:22px; height:22px; border-radius:7px; display:flex; align-items:center; justify-content:center; font-size:11px;}
-.lp-phone .lp-row .bar{flex:1; height:5px; background:var(--light-pink); border-radius:4px; overflow:hidden;}
-.lp-phone .lp-row .bar i{display:block; height:100%; border-radius:4px;}
-.lp-float-card{position:absolute; z-index:3; background:#fff; border-radius:16px; padding:12px 14px; box-shadow:0 14px 30px rgba(55,53,47,0.14); font-size:11.5px; font-weight:700;}
-.lp-float-card.c1{top:8%; left:-4%; color:var(--sage);}
-.lp-float-card.c2{bottom:10%; right:-6%; color:var(--gold);}
-.lp-float-card .lbl{font-size:9.5px; color:var(--gray); font-weight:700;}
-.lp-blob{position:absolute; border-radius:50%; z-index:0; opacity:.5;}
 
 .lp-section{padding:70px 0;}
 .lp-section-head{max-width:600px; margin:0 auto 40px; text-align:center;}
@@ -754,33 +733,6 @@ select.mpc-input{
           <div class="item"><b>9</b>大財務模組整合</div>
           <div class="item"><b>1</b>頁式專業健診報告</div>
           <div class="item"><b>0</b>安裝門檻・純網頁</div>
-        </div>
-      </div>
-
-      <div class="lp-mockup-stage">
-        <div class="lp-blob" style="width:280px; height:280px; background:rgba(201,166,107,0.25); top:-20px; right:20px;"></div>
-        <div class="lp-blob" style="width:200px; height:200px; background:rgba(201,166,107,0.15); bottom:-10px; left:0;"></div>
-        <div class="lp-float-card c1"><div class="lbl">本月已存</div>NT$ 12,400 ↑</div>
-        <div class="lp-float-card c2"><div class="lbl">保障覆蓋率</div>80% 良好</div>
-        <div class="lp-phone">
-          <div class="lp-screen">
-            <div class="lp-hi">哈囉 👋</div>
-            <div class="lp-greet">早安 ☀️</div>
-            <div class="lp-hero-mini">
-              <div class="l">目前可用</div>
-              <div class="v">NT$ 86,200</div>
-              <div class="lp-pillrow">
-                <div>本月收入<span>68,000</span></div>
-                <div>本月支出<span>41,300</span></div>
-                <div>本月已存<span>26,700</span></div>
-              </div>
-            </div>
-            <div class="lp-mini-card">
-              <div class="lp-row"><div class="ic" style="background:#C9938A22;">🍜</div><div class="bar"><i style="width:70%; background:var(--pink);"></i></div></div>
-              <div class="lp-row"><div class="ic" style="background:#7A9BAD22;">🚗</div><div class="bar"><i style="width:40%; background:var(--blue);"></i></div></div>
-              <div class="lp-row"><div class="ic" style="background:#9AAE9B22;">🏠</div><div class="bar"><i style="width:55%; background:var(--sage);"></i></div></div>
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -961,8 +913,8 @@ select.mpc-input{
         <p>多人分帳功能已經可以使用，會自動計算每人分攤金額與應收應付結餘；但因為資料僅存在單一裝置上，目前還沒有多人即時雲端同步，建議由一人統一輸入記錄，或透過匯出／匯入備份手動同步給其他成員。</p>
       </details>
       <details class="lp-faq-item">
-        <summary>需要品牌客製化（Logo、主色調）嗎？</summary>
-        <p>可以，如果你是顧問／團隊想用自己的品牌形象導入 duzhi，歡迎透過購買頁的聯絡方式跟我們討論客製需求。</p>
+        <summary>可以提出功能建議或客製需求嗎？</summary>
+        <p>歡迎，如果你有想加入的功能、想調整的介面，或團隊導入的客製需求，都可以透過購買頁的聯絡方式跟我們聊聊。</p>
       </details>
     </div>
   </div>
