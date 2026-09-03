@@ -1056,6 +1056,20 @@ select.mpc-input{
               <div class="period-chip-row" id="installmentChipRow"></div>
             </div>
 
+            <div class="switch-row" id="splitSwitchRow" style="display:none;">
+              <div class="lbl">與他人分攤 Split with others</div>
+              <label class="switch"><input type="checkbox" id="txSplitToggle" onchange="toggleSplitUI()"><span class="slider"></span></label>
+            </div>
+            <div class="switch-panel" id="splitPanel" style="display:none;">
+              <div class="hint" style="margin-bottom:8px;">分攤成員（可複選）</div>
+              <div class="period-chip-row" id="splitMemberChipRow"></div>
+              <div class="field" style="margin-top:14px;">
+                <label>付款人 Paid by</label>
+                <select id="splitPaidBy"></select>
+              </div>
+            </div>
+            <div class="hint" id="splitNoMembersHint" style="display:none; color:var(--pink);">還沒有分攤成員——先到「財務工具 → 多人分帳」新增成員，才能在這裡指定分攤對象。</div>
+
             <div class="field" style="margin-top:16px;">
               <label>備註 Note</label>
               <textarea id="txNote" rows="2" placeholder="選填"></textarea>
@@ -1167,7 +1181,8 @@ select.mpc-input{
             </div>
             <div class="rowline"><div class="l">建議準備金額</div><div class="r" id="efTargetAmount">NT$ 0</div></div>
             <div class="progress-track"><div class="progress-fill" id="efBar" style="width:0%; background:linear-gradient(90deg, var(--sage), var(--light-sage));"></div></div>
-            <div class="backup-note" style="margin-top:8px;">依近 3 個月平均支出估算，建議準備 3～6 個月生活費作為緊急預備金。</div>
+            <div class="backup-note" id="efEmptyHint" style="display:none; margin-top:8px; color:var(--pink);">還沒有支出紀錄，無法估算建議金額——先到「記帳明細」新增至少一筆支出，這裡就會自動算出建議準備金額。</div>
+            <div class="backup-note" id="efNormalNote" style="margin-top:8px;">依近 3 個月平均支出估算，建議準備 3～6 個月生活費作為緊急預備金。</div>
           </div>
         </div>
       </section>
@@ -1798,6 +1813,40 @@ function updateCurrencyHint(){
 function toggleInstallmentUI(){
   document.getElementById('installmentPanel').style.display = document.getElementById('txInstallmentToggle').checked ? 'block' : 'none';
 }
+let txSplitMembers = [];
+function toggleSplitUI(){
+  document.getElementById('splitPanel').style.display = document.getElementById('txSplitToggle').checked ? 'block' : 'none';
+}
+function buildSplitChips(){
+  const wrap = document.getElementById('splitMemberChipRow');
+  const paidBySelect = document.getElementById('splitPaidBy');
+  wrap.innerHTML='';
+  paidBySelect.innerHTML='';
+  (state.members||[]).forEach(m=>{
+    const el = document.createElement('div');
+    el.className = 'period-chip' + (txSplitMembers.includes(m)?' active':'');
+    el.textContent = m;
+    el.onclick = ()=>{
+      const idx = txSplitMembers.indexOf(m);
+      if(idx>-1) txSplitMembers.splice(idx,1); else txSplitMembers.push(m);
+      buildSplitChips();
+    };
+    wrap.appendChild(el);
+    const opt = document.createElement('option');
+    opt.value = m; opt.textContent = m;
+    paidBySelect.appendChild(opt);
+  });
+}
+function initSplitUIForModal(existingTx){
+  const hasMembers = (state.members||[]).length>0;
+  document.getElementById('splitSwitchRow').style.display = hasMembers ? '' : 'none';
+  document.getElementById('splitNoMembersHint').style.display = hasMembers ? 'none' : '';
+  txSplitMembers = (existingTx && existingTx.splitMembers) ? [...existingTx.splitMembers] : [];
+  document.getElementById('txSplitToggle').checked = txSplitMembers.length>0;
+  buildSplitChips();
+  toggleSplitUI();
+  if(existingTx && existingTx.paidBy) document.getElementById('splitPaidBy').value = existingTx.paidBy;
+}
 const CURRENCY_OPTIONS = ['TWD','USD'];
 let txSelectedCurrency = 'TWD';
 function buildCurrencyChips(){
@@ -1898,6 +1947,7 @@ function openTxModal(existingTx){
   }
   buildCurrencyChips();
   buildInstallmentChips();
+  initSplitUIForModal(existingTx);
   updateCurrencyHint();
   setTxAdvancedOpen(!!existingTx);
   if(existingTx){
@@ -1947,10 +1997,13 @@ function saveTx(){
   const tags = [];
   const note = document.getElementById('txNote').value.trim();
   const installmentTotal = document.getElementById('txInstallmentToggle').checked ? txInstallmentPeriod : 1;
+  const isSplit = document.getElementById('txSplitToggle').checked && txSplitMembers.length>0;
+  const splitMembers = isSplit ? [...txSplitMembers] : null;
+  const paidBy = isSplit ? document.getElementById('splitPaidBy').value : null;
 
   if(txEditingId){
     const tx = state.transactions.find(t=>t.id===txEditingId);
-    Object.assign(tx, {amount, originalAmount:rawAmount, currency, item, date, payMethod, account, tags, note, type:txCurrentType, category:txSelectedCat});
+    Object.assign(tx, {amount, originalAmount:rawAmount, currency, item, date, payMethod, account, tags, note, type:txCurrentType, category:txSelectedCat, splitMembers, paidBy});
   } else if(installmentTotal>1){
     const group = uid('grp');
     const perAmount = Math.round((amount/installmentTotal)*100)/100;
@@ -1966,7 +2019,7 @@ function saveTx(){
   } else {
     state.transactions.push({
       id: uid('tx'), type:txCurrentType, amount, originalAmount:rawAmount, currency, category:txSelectedCat, item, date,
-      payMethod, account, note, tags, installmentTotal:1, installmentIndex:1, installmentGroup:null,
+      payMethod, account, note, tags, installmentTotal:1, installmentIndex:1, installmentGroup:null, splitMembers, paidBy,
     });
   }
   saveState();
@@ -2204,6 +2257,8 @@ function updateEmergencyFund(){
   const targetAmount = avgExp*months;
   document.getElementById('efTargetAmount').textContent = 'NT$ '+fmt(targetAmount);
   document.getElementById('efBar').style.width = targetAmount>0 ? Math.min(100, current/targetAmount*100)+'%' : '0%';
+  document.getElementById('efEmptyHint').style.display = avgExp===0 ? '' : 'none';
+  document.getElementById('efNormalNote').style.display = avgExp===0 ? 'none' : '';
 }
 
 /* ==================================================================
