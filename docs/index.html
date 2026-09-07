@@ -181,6 +181,10 @@ main{max-width:720px; margin:0 auto; padding:8px 20px 20px;}
 .btn-sm{padding:8px 14px; font-size:12px; border-radius:100px;}
 .btn-ghost{background:transparent; color:var(--gray); font-weight:700; font-size:13px;}
 .btn-danger{color:var(--pink);}
+.btn-loading{opacity:.7; pointer-events:none;}
+.btn-spinner{width:14px; height:14px; border-radius:50%; border:2px solid rgba(255,255,255,.45); border-top-color:#fff; display:inline-block; animation:btnspin .6s linear infinite;}
+.btn-outline .btn-spinner, .btn-ghost .btn-spinner{border-color:rgba(0,0,0,.15); border-top-color:var(--medium);}
+@keyframes btnspin{to{transform:rotate(360deg);}}
 
 /* FAB */
 .fab{
@@ -1114,7 +1118,7 @@ select.mpc-input{
               <textarea id="txNote" rows="2" placeholder="選填"></textarea>
             </div>
           </div>
-          <button class="btn btn-primary btn-block" style="margin-top:16px;" onclick="saveTx()">儲存 Save</button>
+          <button class="btn btn-primary btn-block" style="margin-top:16px;" onclick="saveTx(this)">儲存 Save</button>
           <button class="btn btn-ghost btn-block" id="txDeleteBtn" style="display:none; margin-top:6px;" onclick="deleteTxFromModal()">刪除這筆紀錄 Delete</button>
           <button class="btn btn-ghost btn-block" id="txCancelEditBtn" style="display:none; margin-top:6px;" onclick="closeTxModal()">取消編輯</button>
         </div>
@@ -1265,7 +1269,7 @@ select.mpc-input{
           <div class="field" style="margin-top:12px;"><label>繳費方式</label><input type="text" id="polPayWay" placeholder="例如：年繳、信用卡自動扣款"></div>
 
           <div class="field" style="margin-top:12px;"><label>備註</label><textarea id="polNote" rows="2"></textarea></div>
-          <button class="btn btn-primary btn-block" style="margin-top:6px;" onclick="savePolicy()">儲存</button>
+          <button class="btn btn-primary btn-block" style="margin-top:6px;" onclick="savePolicy(this)">儲存</button>
         </div>
 
         <div class="card-title" style="margin:18px 4px 8px;">📄 我的保障項目</div>
@@ -1478,7 +1482,7 @@ select.mpc-input{
       <div class="field"><label>帳戶</label><select id="fixedAccount"></select></div>
     </div>
 
-    <button class="btn btn-primary btn-block" style="margin-top:6px;" onclick="saveFixed()">儲存</button>
+    <button class="btn btn-primary btn-block" style="margin-top:6px;" onclick="saveFixed(this)">儲存</button>
   </div>
 </div>
 
@@ -1489,7 +1493,7 @@ select.mpc-input{
     <div class="field hint" style="margin-top:-6px; margin-bottom:14px;">勾選常用的支付方式，一次全部新增，不用一個個手動輸入。</div>
     <div class="checklist-grid" id="accountTypeChecklist"></div>
     <div class="field hint" style="margin-top:14px;">💳 信用卡、電子支付與電子票證目前無法自動連接發卡機構，刷卡／感應後請手動輸入金額，這裡先幫你建好帳戶方便快速選取；銀行與載具自動同步為後續規劃功能。</div>
-    <button class="btn btn-primary btn-block" style="margin-top:10px;" onclick="saveAccountsFromChecklist()">儲存</button>
+    <button class="btn btn-primary btn-block" style="margin-top:10px;" onclick="saveAccountsFromChecklist(this)">儲存</button>
   </div>
 </div>
 
@@ -1504,7 +1508,7 @@ select.mpc-input{
     <div class="modal-section-label">📝 常用項目 · Quick Pick</div>
     <div class="preset-list" id="balanceRowPresetList"></div>
     <div class="field" style="margin-top:12px; margin-bottom:0;"><label>項目名稱</label><input type="text" id="balanceRowName" placeholder="例如：定存、股票、房貸"></div>
-    <button class="btn btn-primary btn-block" style="margin-top:16px;" onclick="saveBalanceRow()">儲存</button>
+    <button class="btn btn-primary btn-block" style="margin-top:16px;" onclick="saveBalanceRow(this)">儲存</button>
   </div>
 </div>
 
@@ -1521,7 +1525,7 @@ select.mpc-input{
       <div class="field"><label>平均成本</label><input type="number" id="invAvgCost" placeholder="0"></div>
     </div>
     <div class="field"><label>目前市價</label><input type="number" id="invCurrentPrice" placeholder="0"></div>
-    <button class="btn btn-primary btn-block" onclick="saveInvestment()">儲存</button>
+    <button class="btn btn-primary btn-block" onclick="saveInvestment(this)">儲存</button>
   </div>
 </div>
 
@@ -1530,7 +1534,7 @@ select.mpc-input{
   <div class="modal-sheet">
     <div class="modal-header"><h3>更新市價</h3><div class="modal-close" onclick="closeModal('investPriceModalOverlay')">✕</div></div>
     <div class="field"><label>最新市價</label><input type="number" id="invNewPrice" placeholder="0"></div>
-    <button class="btn btn-primary btn-block" onclick="saveInvestPrice()">更新</button>
+    <button class="btn btn-primary btn-block" onclick="saveInvestPrice(this)">更新</button>
   </div>
 </div>
 
@@ -1543,7 +1547,7 @@ select.mpc-input{
     </div>
     <div class="field"><label>願望名稱</label><input type="text" id="goalName" placeholder="例如：新球鞋、iPhone、頭期款"></div>
     <div class="field"><label>目標金額（元）</label><input type="number" id="goalTarget" placeholder="0"></div>
-    <button class="btn btn-primary btn-block" onclick="saveGoal()">儲存</button>
+    <button class="btn btn-primary btn-block" onclick="saveGoal(this)">儲存</button>
   </div>
 </div>
 
@@ -1558,7 +1562,7 @@ select.mpc-input{
       <div class="chip" onclick="document.getElementById('goalDepositAmount').value=500">+500</div>
       <div class="chip" onclick="document.getElementById('goalDepositAmount').value=1000">+1000</div>
     </div>
-    <button class="btn btn-primary btn-block" onclick="saveGoalDeposit()">存入</button>
+    <button class="btn btn-primary btn-block" onclick="saveGoalDeposit(this)">存入</button>
   </div>
 </div>
 
@@ -1567,7 +1571,7 @@ select.mpc-input{
   <div class="modal-sheet">
     <div class="modal-header"><h3>新增成員</h3><div class="modal-close" onclick="closeModal('memberModalOverlay')">✕</div></div>
     <div class="field"><label>成員姓名</label><input type="text" id="memberName" placeholder="例如：小明"></div>
-    <button class="btn btn-primary btn-block" onclick="saveMember()">儲存</button>
+    <button class="btn btn-primary btn-block" onclick="saveMember(this)">儲存</button>
   </div>
 </div>
 
@@ -1787,6 +1791,20 @@ function toast(msg){
   t.textContent = msg; t.classList.add('show');
   clearTimeout(toast._tm);
   toast._tm = setTimeout(()=>t.classList.remove('show'), 1800);
+}
+function withSaving(btn, action){
+  if(!btn){ action(); return; }
+  if(btn.dataset.loading) return;
+  btn.dataset.loading = '1';
+  btn.dataset.originalHtml = btn.innerHTML;
+  btn.classList.add('btn-loading');
+  btn.innerHTML = '<span class="btn-spinner"></span>處理中...';
+  setTimeout(()=>{
+    action();
+    btn.classList.remove('btn-loading');
+    btn.innerHTML = btn.dataset.originalHtml;
+    delete btn.dataset.loading;
+  }, 260);
 }
 
 /* ==================================================================
@@ -2049,7 +2067,7 @@ function goToBudgetSettings(){
   }, 50);
 }
 
-function saveTx(){
+function saveTx(btn){
   const rawAmount = parseFloat(document.getElementById('txAmount').value);
   const currency = txSelectedCurrency;
   const item = catById(txSelectedCat).name;
@@ -2067,39 +2085,43 @@ function saveTx(){
   const splitShares = isSplit ? {...txSplitShares} : null;
   const paidBy = isSplit ? document.getElementById('splitPaidBy').value : null;
 
-  if(txEditingId){
-    const tx = state.transactions.find(t=>t.id===txEditingId);
-    Object.assign(tx, {amount, originalAmount:rawAmount, currency, item, date, payMethod, account, tags, note, type:txCurrentType, category:txSelectedCat, splitMembers, splitShares, paidBy});
-  } else if(installmentTotal>1){
-    const group = uid('grp');
-    const perAmount = Math.round((amount/installmentTotal)*100)/100;
-    const baseDate = new Date(date);
-    for(let i=0;i<installmentTotal;i++){
-      const d = new Date(baseDate); d.setMonth(d.getMonth()+i);
+  withSaving(btn, ()=>{
+    if(txEditingId){
+      const tx = state.transactions.find(t=>t.id===txEditingId);
+      Object.assign(tx, {amount, originalAmount:rawAmount, currency, item, date, payMethod, account, tags, note, type:txCurrentType, category:txSelectedCat, splitMembers, splitShares, paidBy});
+    } else if(installmentTotal>1){
+      const group = uid('grp');
+      const perAmount = Math.round((amount/installmentTotal)*100)/100;
+      const baseDate = new Date(date);
+      for(let i=0;i<installmentTotal;i++){
+        const d = new Date(baseDate); d.setMonth(d.getMonth()+i);
+        state.transactions.push({
+          id: uid('tx'), type:txCurrentType, amount:perAmount, originalAmount:rawAmount, currency, category:txSelectedCat, item,
+          date: d.toISOString().slice(0,10), payMethod, account, note, tags,
+          installmentTotal, installmentIndex:i+1, installmentGroup:group,
+        });
+      }
+    } else {
       state.transactions.push({
-        id: uid('tx'), type:txCurrentType, amount:perAmount, originalAmount:rawAmount, currency, category:txSelectedCat, item,
-        date: d.toISOString().slice(0,10), payMethod, account, note, tags,
-        installmentTotal, installmentIndex:i+1, installmentGroup:group,
+        id: uid('tx'), type:txCurrentType, amount, originalAmount:rawAmount, currency, category:txSelectedCat, item, date,
+        payMethod, account, note, tags, installmentTotal:1, installmentIndex:1, installmentGroup:null, splitMembers, splitShares, paidBy,
       });
     }
-  } else {
-    state.transactions.push({
-      id: uid('tx'), type:txCurrentType, amount, originalAmount:rawAmount, currency, category:txSelectedCat, item, date,
-      payMethod, account, note, tags, installmentTotal:1, installmentIndex:1, installmentGroup:null, splitMembers, splitShares, paidBy,
-    });
-  }
-  saveState();
-  closeTxModal();
-  toast('已儲存 ✓');
-  refreshCurrentPage();
+    saveState();
+    closeTxModal();
+    toast('已儲存 ✓');
+    refreshCurrentPage();
+  });
 }
 function deleteTxFromModal(){
   if(!txEditingId) return;
-  state.transactions = state.transactions.filter(t=>t.id!==txEditingId);
-  saveState();
-  closeTxModal();
-  toast('已刪除');
-  refreshCurrentPage();
+  showConfirm('刪除紀錄', '確定要刪除這筆紀錄嗎？刪除後無法復原。', ()=>{
+    state.transactions = state.transactions.filter(t=>t.id!==txEditingId);
+    saveState();
+    closeTxModal();
+    toast('已刪除');
+    refreshCurrentPage();
+  });
 }
 function refreshCurrentPage(){
   const active = document.querySelector('.page.active').id.replace('page-','');
@@ -2420,22 +2442,27 @@ function addBalanceRow(key){
   ).join('');
   document.getElementById('balanceRowModalOverlay').classList.add('open');
 }
-function saveBalanceRow(){
+function saveBalanceRow(btn){
   const name = document.getElementById('balanceRowName').value.trim();
   const amount = parseFloat(document.getElementById('balanceRowAmount').value);
   if(!name || !amount){ toast('請完整輸入項目名稱與金額'); return; }
   const key = balanceRowPendingKey;
-  state.balanceSheet[key] = state.balanceSheet[key]||[];
-  state.balanceSheet[key].push({name, amount});
-  saveState();
-  closeModal('balanceRowModalOverlay');
-  renderBalanceSheet();
-  toast('已新增 ✓');
+  withSaving(btn, ()=>{
+    state.balanceSheet[key] = state.balanceSheet[key]||[];
+    state.balanceSheet[key].push({name, amount});
+    saveState();
+    closeModal('balanceRowModalOverlay');
+    renderBalanceSheet();
+    toast('已新增 ✓');
+  });
 }
 function removeBalanceRow(key, idx){
-  state.balanceSheet[key].splice(idx,1);
-  saveState();
-  renderBalanceSheet();
+  showConfirm('刪除項目', '確定要刪除這筆項目嗎？刪除後無法復原。', ()=>{
+    state.balanceSheet[key].splice(idx,1);
+    saveState();
+    renderBalanceSheet();
+    toast('已刪除');
+  });
 }
 
 /* ==================================================================
@@ -2523,25 +2550,30 @@ function toggleCoverage(id, checked){
   state.coverage[id]=checked;
   saveState();
 }
-function savePolicy(){
+function savePolicy(btn){
   const typeInfo = POLICY_TYPES.find(t=>t.id===polSelectedType);
-  state.policies.push({
-    id: uid('pol'),
-    name: typeInfo.name,
-    type: polSelectedType,
-    amount: parseFloat(document.getElementById('polAmount').value)||0,
-    payWay: document.getElementById('polPayWay').value.trim(),
-    note: document.getElementById('polNote').value.trim(),
+  withSaving(btn, ()=>{
+    state.policies.push({
+      id: uid('pol'),
+      name: typeInfo.name,
+      type: polSelectedType,
+      amount: parseFloat(document.getElementById('polAmount').value)||0,
+      payWay: document.getElementById('polPayWay').value.trim(),
+      note: document.getElementById('polNote').value.trim(),
+    });
+    saveState();
+    resetPolicyForm();
+    renderPolicies();
+    toast('已新增保障項目 ✓');
   });
-  saveState();
-  resetPolicyForm();
-  renderPolicies();
-  toast('已新增保障項目 ✓');
 }
 function removePolicy(id){
-  state.policies = state.policies.filter(p=>p.id!==id);
-  saveState();
-  renderPolicies();
+  showConfirm('刪除保障項目', '確定要刪除這筆保障項目嗎？刪除後無法復原。', ()=>{
+    state.policies = state.policies.filter(p=>p.id!==id);
+    saveState();
+    renderPolicies();
+    toast('已刪除');
+  });
 }
 
 /* ==================================================================
@@ -2790,18 +2822,20 @@ function addInvestment(){
   document.getElementById('invCurrentPrice').value='';
   document.getElementById('investModalOverlay').classList.add('open');
 }
-function saveInvestment(){
+function saveInvestment(btn){
   const name = document.getElementById('invName').value.trim();
   const market = document.getElementById('invMarket').value;
   const quantity = parseFloat(document.getElementById('invQuantity').value);
   const avgCost = parseFloat(document.getElementById('invAvgCost').value);
   const currentPrice = parseFloat(document.getElementById('invCurrentPrice').value);
   if(!name || !quantity || isNaN(avgCost) || isNaN(currentPrice)){ toast('請完整輸入資料'); return; }
-  state.investments.push({id:uid('inv'), name, market, quantity, avgCost, currentPrice});
-  saveState();
-  closeModal('investModalOverlay');
-  renderInvestments();
-  toast('已新增 ✓');
+  withSaving(btn, ()=>{
+    state.investments.push({id:uid('inv'), name, market, quantity, avgCost, currentPrice});
+    saveState();
+    closeModal('investModalOverlay');
+    renderInvestments();
+    toast('已新增 ✓');
+  });
 }
 let investPricePendingId = null;
 function updateInvestPrice(id){
@@ -2810,20 +2844,25 @@ function updateInvestPrice(id){
   document.getElementById('invNewPrice').value = inv.currentPrice;
   document.getElementById('investPriceModalOverlay').classList.add('open');
 }
-function saveInvestPrice(){
+function saveInvestPrice(btn){
   const p = parseFloat(document.getElementById('invNewPrice').value);
   if(isNaN(p)){ toast('請輸入市價'); return; }
-  const inv = state.investments.find(i=>i.id===investPricePendingId);
-  inv.currentPrice = p;
-  saveState();
-  closeModal('investPriceModalOverlay');
-  renderInvestments();
-  toast('已更新 ✓');
+  withSaving(btn, ()=>{
+    const inv = state.investments.find(i=>i.id===investPricePendingId);
+    inv.currentPrice = p;
+    saveState();
+    closeModal('investPriceModalOverlay');
+    renderInvestments();
+    toast('已更新 ✓');
+  });
 }
 function removeInvestment(id){
-  state.investments = state.investments.filter(i=>i.id!==id);
-  saveState();
-  renderInvestments();
+  showConfirm('刪除持有部位', '確定要刪除這筆持有部位嗎？刪除後無法復原。', ()=>{
+    state.investments = state.investments.filter(i=>i.id!==id);
+    saveState();
+    renderInvestments();
+    toast('已刪除');
+  });
 }
 
 /* ==================================================================
@@ -2919,15 +2958,17 @@ function addGoal(){
   });
   document.getElementById('goalModalOverlay').classList.add('open');
 }
-function saveGoal(){
+function saveGoal(btn){
   const name = document.getElementById('goalName').value.trim();
   const targetAmount = parseFloat(document.getElementById('goalTarget').value);
   if(!name || !targetAmount){ toast('請完整輸入願望名稱與目標金額'); return; }
-  state.goals.push({id:uid('goal'), name, icon:goalSelectedIcon, targetAmount, currentAmount:0, deposits:[]});
-  saveState();
-  closeModal('goalModalOverlay');
-  renderGoals();
-  toast('已新增願望 ✓');
+  withSaving(btn, ()=>{
+    state.goals.push({id:uid('goal'), name, icon:goalSelectedIcon, targetAmount, currentAmount:0, deposits:[]});
+    saveState();
+    closeModal('goalModalOverlay');
+    renderGoals();
+    toast('已新增願望 ✓');
+  });
 }
 let goalDepositPendingId = null;
 function depositGoal(id){
@@ -2935,22 +2976,27 @@ function depositGoal(id){
   document.getElementById('goalDepositAmount').value='';
   document.getElementById('goalDepositModalOverlay').classList.add('open');
 }
-function saveGoalDeposit(){
+function saveGoalDeposit(btn){
   const amount = parseFloat(document.getElementById('goalDepositAmount').value);
   if(!amount || amount<=0){ toast('請輸入金額'); return; }
-  const g = state.goals.find(x=>x.id===goalDepositPendingId);
-  g.currentAmount += amount;
-  g.deposits = g.deposits||[];
-  g.deposits.push({date: todayStr(), amount});
-  saveState();
-  closeModal('goalDepositModalOverlay');
-  renderGoals();
-  toast(g.currentAmount>=g.targetAmount ? '🎉 恭喜達成目標！' : '已存入 ✓');
+  withSaving(btn, ()=>{
+    const g = state.goals.find(x=>x.id===goalDepositPendingId);
+    g.currentAmount += amount;
+    g.deposits = g.deposits||[];
+    g.deposits.push({date: todayStr(), amount});
+    saveState();
+    closeModal('goalDepositModalOverlay');
+    renderGoals();
+    toast(g.currentAmount>=g.targetAmount ? '🎉 恭喜達成目標！' : '已存入 ✓');
+  });
 }
 function removeGoal(id){
-  state.goals = state.goals.filter(g=>g.id!==id);
-  saveState();
-  renderGoals();
+  showConfirm('刪除願望', '確定要刪除這個願望嗎？刪除後無法復原。', ()=>{
+    state.goals = state.goals.filter(g=>g.id!==id);
+    saveState();
+    renderGoals();
+    toast('已刪除');
+  });
 }
 
 /* ==================================================================
@@ -3016,20 +3062,25 @@ function addMember(){
   document.getElementById('memberName').value='';
   document.getElementById('memberModalOverlay').classList.add('open');
 }
-function saveMember(){
+function saveMember(btn){
   const name = document.getElementById('memberName').value.trim();
   if(!name){ toast('請輸入姓名'); return; }
-  state.members = state.members||[];
-  state.members.push(name);
-  saveState();
-  closeModal('memberModalOverlay');
-  renderSplit();
-  toast('已新增成員 ✓');
+  withSaving(btn, ()=>{
+    state.members = state.members||[];
+    state.members.push(name);
+    saveState();
+    closeModal('memberModalOverlay');
+    renderSplit();
+    toast('已新增成員 ✓');
+  });
 }
 function removeMember(i){
-  state.members.splice(i,1);
-  saveState();
-  renderSplit();
+  showConfirm('刪除成員', '確定要刪除這位成員嗎？刪除後無法復原。', ()=>{
+    state.members.splice(i,1);
+    saveState();
+    renderSplit();
+    toast('已刪除');
+  });
 }
 function toggleSplitSettled(txId, debtor){
   const t = state.transactions.find(t=>t.id===txId);
@@ -3126,22 +3177,27 @@ function openFixedModal(){
   document.getElementById('fixedModalOverlay').classList.add('open');
 }
 let fixedSelectedCat='life';
-function saveFixed(){
+function saveFixed(btn){
   const item = document.getElementById('fixedItem').value.trim();
   const amount = parseFloat(document.getElementById('fixedAmount').value);
   const day = parseInt(document.getElementById('fixedDay').value)||1;
   const account = document.getElementById('fixedAccount').value;
   if(!item || !amount){ toast('請填寫完整資訊'); return; }
-  state.fixedExpenses.push({id:uid('fx'), item, amount, category:fixedSelectedCat, day, account, generatedMonths:[]});
-  saveState();
-  closeModal('fixedModalOverlay');
-  renderSettings();
-  toast('已新增固定支出 ✓');
+  withSaving(btn, ()=>{
+    state.fixedExpenses.push({id:uid('fx'), item, amount, category:fixedSelectedCat, day, account, generatedMonths:[]});
+    saveState();
+    closeModal('fixedModalOverlay');
+    renderSettings();
+    toast('已新增固定支出 ✓');
+  });
 }
 function removeFixed(id){
-  state.fixedExpenses = state.fixedExpenses.filter(f=>f.id!==id);
-  saveState();
-  renderSettings();
+  showConfirm('刪除固定支出', '確定要刪除這筆固定支出嗎？刪除後無法復原。', ()=>{
+    state.fixedExpenses = state.fixedExpenses.filter(f=>f.id!==id);
+    saveState();
+    renderSettings();
+    toast('已刪除');
+  });
 }
 function accTypeName(id){
   const t = ACCOUNT_TYPES.find(x=>x.id===id);
@@ -3155,22 +3211,27 @@ function openAccountModal(){
   });
   document.getElementById('accountModalOverlay').classList.add('open');
 }
-function saveAccountsFromChecklist(){
+function saveAccountsFromChecklist(btn){
   const checked = Array.from(document.querySelectorAll('#accountTypeChecklist input:checked'));
   if(checked.length===0){ toast('請至少勾選一個'); return; }
-  checked.forEach(cb=>{
-    const t = ACCOUNT_TYPES.find(x=>x.id===cb.value);
-    state.accounts.push({id:uid('acc'), name:t.name, type:t.id});
+  withSaving(btn, ()=>{
+    checked.forEach(cb=>{
+      const t = ACCOUNT_TYPES.find(x=>x.id===cb.value);
+      state.accounts.push({id:uid('acc'), name:t.name, type:t.id});
+    });
+    saveState();
+    closeModal('accountModalOverlay');
+    renderSettings();
+    toast(`已新增 ${checked.length} 個帳戶 ✓`);
   });
-  saveState();
-  closeModal('accountModalOverlay');
-  renderSettings();
-  toast(`已新增 ${checked.length} 個帳戶 ✓`);
 }
 function removeAccount(id){
-  state.accounts = state.accounts.filter(a=>a.id!==id);
-  saveState();
-  renderSettings();
+  showConfirm('刪除帳戶', '確定要刪除這個帳戶嗎？刪除後無法復原。', ()=>{
+    state.accounts = state.accounts.filter(a=>a.id!==id);
+    saveState();
+    renderSettings();
+    toast('已刪除');
+  });
 }
 function exportBackup(){
   const blob = new Blob([JSON.stringify(state,null,2)], {type:'application/json'});
