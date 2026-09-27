@@ -130,6 +130,8 @@ main{max-width:720px; margin:0 auto; padding:8px 20px 20px;}
 .hero-sub .pill .t{font-size:10.5px; color:var(--medium); font-weight:700;}
 .hero-sub .pill .v{font-size:17px; font-weight:900; margin-top:6px;}
 .hero-doodle{position:absolute; right:-10px; bottom:-14px; font-size:70px; opacity:.15; transform:rotate(-8deg);}
+#freeSavingCard .amount{font-size:28px; font-weight:900; color:var(--gold); letter-spacing:-.01em;}
+#freeSavingCard .amount .cur{font-size:15px; font-weight:700; margin-right:2px; opacity:.7; color:var(--medium);}
 
 /* Stat grid (four numbers) */
 .stat-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:6px;}
@@ -246,6 +248,7 @@ main{max-width:720px; margin:0 auto; padding:8px 20px 20px;}
 .tx-item .amt{font-size:15px; font-weight:900; flex-shrink:0;}
 .tx-item .amt.income{color:var(--sage);}
 .tx-item .amt.expense{color:var(--dark);}
+.tx-item .amt.saving{color:var(--gold);}
 .empty-state{text-align:center; padding:60px 20px; color:var(--gray);}
 .empty-state .ic{font-size:40px; margin-bottom:10px;}
 .empty-state .t{font-size:13px; font-weight:700;}
@@ -289,6 +292,7 @@ main{max-width:720px; margin:0 auto; padding:8px 20px 20px;}
 .type-toggle button{flex:1; padding:11px; border-radius:var(--radius-sm); border:1.5px solid var(--light-pink); font-weight:700; font-size:13px; color:var(--medium); background:#fff;}
 .type-toggle button.active.expense{background:var(--pink); color:#fff; border-color:var(--pink);}
 .type-toggle button.active.income{background:var(--sage); color:#fff; border-color:var(--sage);}
+.type-toggle button.active.saving{background:var(--gold); color:#fff; border-color:var(--gold);}
 
 /* Redesigned amount hero + polished modal sections */
 .amount-hero{background:linear-gradient(135deg, var(--light-pink), var(--light-blue)); border-radius:20px; padding:22px 20px 18px; text-align:center; margin:14px 0 16px;}
@@ -1059,6 +1063,7 @@ select.mpc-input{
           <div class="type-toggle">
             <button type="button" class="expense" id="typeExpenseBtn" onclick="setTxType('expense')">支出 Expense</button>
             <button type="button" class="income" id="typeIncomeBtn" onclick="setTxType('income')">收入 Income</button>
+            <button type="button" class="saving" id="typeSavingBtn" onclick="setTxType('saving')">存起來 Saving</button>
           </div>
 
           <div class="amount-hero">
@@ -1320,6 +1325,11 @@ select.mpc-input{
       <section class="page" id="page-tool-goals">
         <div class="tool-page-head"><div class="back" onclick="goPage('tools')">←</div><div><h2>存錢罐 <span class="en-h2">Savings Goals</span></h2><div class="sub">許願、存錢，蓋一棟屬於自己的房子</div></div></div>
         <div id="goalsContent">
+          <div class="card" id="freeSavingCard">
+            <div class="card-title">💰 自由儲蓄 · Free Savings</div>
+            <div class="hint" style="margin-top:-6px;">記帳時選「存起來」記下的錢，不算進支出，累積在這裡。</div>
+            <div class="amount" style="margin-top:10px;"><span class="cur">NT$</span><span id="freeSavingTotal">0</span></div>
+          </div>
           <div id="goalsListArea" class="tool-list"></div>
           <button class="btn btn-soft btn-block" onclick="addGoal()">＋ 新增願望目標</button>
         </div>
@@ -1658,6 +1668,12 @@ const INCOME_CATEGORIES = [
   {id:'bonus', name:'獎金', icon:'🎁', color:'var(--pink)'},
   {id:'other_income', name:'其他收入', icon:'✨', color:'var(--blue)'},
 ];
+const SAVING_CATEGORIES = [
+  {id:'general_saving', name:'一般儲蓄', icon:'💰', color:'var(--gold)'},
+  {id:'emergency_saving', name:'緊急預備金', icon:'🛟', color:'var(--sage)'},
+  {id:'invest_saving', name:'投資本金', icon:'📈', color:'var(--blue)'},
+  {id:'other_saving', name:'其他', icon:'✨', color:'var(--pink)'},
+];
 const ACCOUNT_TYPES = [
   {id:'cash', name:'現金'}, {id:'credit', name:'信用卡'},
   {id:'linepay', name:'LINE Pay'}, {id:'jkopay', name:'街口支付'}, {id:'applepay', name:'Apple Pay'},
@@ -1783,7 +1799,7 @@ function fmt(n){ return Math.round(n).toLocaleString('zh-Hant-TW'); }
 function todayStr(){ const d=new Date(); return d.toISOString().slice(0,10); }
 function monthKey(dateStr){ return dateStr.slice(0,7); }
 function catById(id){
-  return state.categories.find(c=>c.id===id) || INCOME_CATEGORIES.find(c=>c.id===id) || state.categories[state.categories.length-1];
+  return state.categories.find(c=>c.id===id) || INCOME_CATEGORIES.find(c=>c.id===id) || SAVING_CATEGORIES.find(c=>c.id===id) || state.categories[state.categories.length-1];
 }
 function toast(msg){
   const t = document.getElementById('toast');
@@ -1972,7 +1988,7 @@ function selectCatUI(wrap, catId){
 }
 let txSelectedCat = 'food';
 function renderTxCatPicker(){
-  const list = txCurrentType==='income' ? INCOME_CATEGORIES : state.categories;
+  const list = txCurrentType==='income' ? INCOME_CATEGORIES : (txCurrentType==='saving' ? SAVING_CATEGORIES : state.categories);
   if(!list.some(c=>c.id===txSelectedCat)) txSelectedCat = list[0].id;
   buildCatPicker('catPicker', (id, wrap)=>{ txSelectedCat = id; selectCatUI(wrap, id); updateInstallmentAvailability(); }, list);
   selectCatUI(document.getElementById('catPicker'), txSelectedCat);
@@ -1983,6 +1999,7 @@ function setTxType(type){
   txCurrentType = type;
   document.getElementById('typeExpenseBtn').classList.toggle('active', type==='expense');
   document.getElementById('typeIncomeBtn').classList.toggle('active', type==='income');
+  document.getElementById('typeSavingBtn').classList.toggle('active', type==='saving');
   renderTxCatPicker();
 }
 function updateInstallmentAvailability(){
@@ -2148,14 +2165,16 @@ function renderDashboard(){
 
   const allIncome = state.transactions.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
   const allExpense = state.transactions.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
-  document.getElementById('dashAvailable').textContent = fmt(allIncome-allExpense);
+  const allSaved = state.transactions.filter(t=>t.type==='saving').reduce((s,t)=>s+t.amount,0);
+  document.getElementById('dashAvailable').textContent = fmt(allIncome-allExpense-allSaved);
 
   const monthTx = monthRange(ym);
   const mi = monthTx.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
   const me = monthTx.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+  const ms = monthTx.filter(t=>t.type==='saving').reduce((s,t)=>s+t.amount,0);
   document.getElementById('dashIncome').textContent = fmt(mi);
   document.getElementById('dashExpense').textContent = fmt(me);
-  document.getElementById('dashSaved').textContent = fmt(mi-me);
+  document.getElementById('dashSaved').textContent = fmt(ms);
 
   // category breakdown this month
   const catTotals = {};
@@ -2282,14 +2301,16 @@ function renderList(){
     const c = catById(t.category);
     const acc = state.accounts.find(a=>a.id===t.account);
     const installBadge = (t.installmentTotal>1) ? `<span class="badge">分期 ${t.installmentIndex}/${t.installmentTotal}</span>` : '';
+    const savingBadge = (t.type==='saving') ? `<span class="badge">💰 存起來</span>` : '';
     const tagsHtml = (t.tags||[]).map(tag=>`<span class="tag">#${tag}</span>`).join('');
+    const sign = t.type==='income' ? '+' : '-';
     html += `<div class="tx-item" onclick='openTxModal(${JSON.stringify(t).replace(/'/g,"&#39;")})'>
       <div class="ic" style="background:${c.color}22;">${c.icon}</div>
       <div class="mid">
-        <div class="item-name">${t.item} ${installBadge}</div>
+        <div class="item-name">${t.item} ${installBadge}${savingBadge}</div>
         <div class="meta">${c.name} · ${acc?acc.name:''} ${tagsHtml}</div>
       </div>
-      <div class="amt ${t.type}">${t.type==='income'?'+':'-'}$${fmt(t.amount)}</div>
+      <div class="amt ${t.type}">${sign}$${fmt(t.amount)}</div>
     </div>`;
   });
   area.innerHTML = html;
@@ -2897,7 +2918,12 @@ function goalStreak(goal){
   }
   return streak;
 }
+function renderFreeSaving(){
+  const total = state.transactions.filter(t=>t.type==='saving').reduce((s,t)=>s+t.amount,0);
+  document.getElementById('freeSavingTotal').textContent = fmt(total);
+}
 function renderGoals(){
+  renderFreeSaving();
   const wrap = document.getElementById('goalsListArea');
   wrap.innerHTML='';
   if((state.goals||[]).length===0){
